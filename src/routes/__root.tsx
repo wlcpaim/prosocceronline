@@ -77,19 +77,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Fut Manager Online — Sua carreira de jogador começa aqui" },
+      {
+        name: "description",
+        content:
+          "Comece aos 14 anos, treine na base, seja descoberto por olheiros e evolua online contra outros jogadores. Fut Manager Online: o manager de carreira individual de futebol.",
+      },
+      { name: "author", content: "Fut Manager Online" },
+      { property: "og:title", content: "Fut Manager Online — Sua carreira de jogador começa aqui" },
+      {
+        property: "og:description",
+        content:
+          "Crie seu jogador, treine na base, seja contratado e evolua online. O futebol de carreira individual no seu celular.",
+      },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@FutManager" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap",
       },
     ],
   }),
