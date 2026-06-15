@@ -111,3 +111,15 @@
 @utility glow-ring {
   box-shadow: var(--shadow-glow);
 }
+
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility shadow-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+
+@utility bg-hero-glow {
+  background: var(--gradient-hero);
+}
