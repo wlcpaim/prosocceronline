@@ -253,11 +253,8 @@ function Landing() {
 
           {/* Evolução estilo FIFA modo carreira */}
           <div className="mx-auto mt-16 max-w-2xl text-center">
-            <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-              Modo carreira
-            </span>
             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              Acompanhe seu Overall crescer
+              Evolua
             </h2>
             <p className="mt-3 text-muted-foreground">
               Como no modo carreira, cada treino e partida aumenta seus atributos
