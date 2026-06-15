@@ -21,6 +21,7 @@ import heroPlayer from "@/assets/hero-player.jpg";
 import trainingAcademy from "@/assets/training-academy.jpg";
 import scout from "@/assets/scout.jpg";
 import contract from "@/assets/contract.jpg";
+import { PlayerEvolution } from "@/components/PlayerEvolution";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -249,8 +250,26 @@ function Landing() {
               </div>
             ))}
           </div>
+
+          {/* Evolução estilo FIFA modo carreira */}
+          <div className="mx-auto mt-16 max-w-2xl text-center">
+            <span className="text-sm font-semibold uppercase tracking-widest text-primary">
+              Modo carreira
+            </span>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
+              Acompanhe seu Overall crescer
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              Como no modo carreira, cada treino e partida aumenta seus atributos
+              e seu score geral rumo ao seu potencial máximo.
+            </p>
+          </div>
+          <div className="mt-10">
+            <PlayerEvolution />
+          </div>
         </div>
       </section>
+
 
       {/* Online */}
       <section className="mx-auto max-w-6xl px-5 py-16 md:py-24">
