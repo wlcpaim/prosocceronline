@@ -21,6 +21,7 @@ import heroPlayer from "@/assets/hero-player.jpg";
 import trainingAcademy from "@/assets/training-academy.jpg";
 import scout from "@/assets/scout.jpg";
 import contract from "@/assets/contract.jpg";
+import { PlayerEvolution } from "@/components/PlayerEvolution";
 
 export const Route = createFileRoute("/")({
   head: () => ({
