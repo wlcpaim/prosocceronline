@@ -169,7 +169,7 @@ function Landing() {
             </span>
           </a>
           <Button variant="hero" size="sm" asChild>
-            <a href="#download">Jogar agora</a>
+            <a href="#jogar">Jogar agora</a>
           </Button>
         </nav>
       </header>
@@ -192,7 +192,7 @@ function Landing() {
             </p>
             <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center md:justify-start">
               <Button variant="hero" size="lg" asChild>
-                <a href="#download">
+                <a href="#jogar">
                   Começar carreira <ChevronRight className="h-4 w-4" />
                 </a>
               </Button>
@@ -445,8 +445,8 @@ function Landing() {
       </section>
 
 
-      {/* CTA download */}
-      <section id="download" className="mx-auto max-w-6xl px-5 pb-20">
+      {/* CTA jogar */}
+      <section id="jogar" className="mx-auto max-w-6xl px-5 pb-20">
         <div className="relative overflow-hidden rounded-3xl border border-border bg-card px-6 py-14 text-center">
           <div className="absolute inset-0 bg-hero-glow" aria-hidden />
           <div className="relative z-10 mx-auto max-w-xl">
@@ -454,15 +454,12 @@ function Landing() {
               Sua carreira começa <span className="text-gradient">agora</span>
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Baixe o Fut Manager Online, crie seu jogador e comece a escrever a
-              sua história rumo ao topo.
+              Jogue o Fut Manager Online direto do seu navegador, crie seu jogador e comece a escrever a
+              sua história rumo ao topo. Sem downloads, jogue de qualquer dispositivo.
             </p>
             <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row">
-              <Button variant="hero" size="lg">
-                <Apple className="h-5 w-5" /> App Store
-              </Button>
-              <Button variant="outline" size="lg">
-                <Play className="h-5 w-5" /> Google Play
+              <Button variant="hero" size="lg" className="px-8">
+                <Globe2 className="h-5 w-5" /> Jogar no Navegador (Grátis)
               </Button>
             </div>
           </div>
