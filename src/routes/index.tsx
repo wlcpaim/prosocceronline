@@ -15,6 +15,15 @@ import {
   ChevronRight,
   Apple,
   Play,
+  Users,
+  Vote,
+  CalendarClock,
+  Coins,
+  ShoppingBag,
+  MessageCircle,
+  BarChart3,
+  Medal,
+  Flame,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroPlayer from "@/assets/hero-player.jpg";
@@ -78,10 +87,71 @@ const styles = [
 ];
 
 const stats = [
-  { value: "100%", label: "Carreira individual" },
-  { value: "1v1", label: "Online entre jogadores" },
+  { value: "35", label: "Atributos no estilo FIFA" },
+  { value: "Online", label: "Multiplayer cooperativo" },
   { value: "14", label: "Anos para começar" },
-  { value: "∞", label: "Evolução do seu craque" },
+  { value: "6 em 6", label: "Meses por temporada" },
+];
+
+const competitions = [
+  { region: "🇧🇷 Brasil", items: ["Brasileirão Série A", "Copa do Brasil", "Estaduais", "Sub-20 & Copinha"] },
+  { region: "🌍 Mundo", items: ["Champions League", "Libertadores", "Copa do Mundo", "Mundial de Clubes"] },
+];
+
+const onlineFeatures = [
+  {
+    icon: Users,
+    title: "Times cooperativos",
+    desc: "Jogue sozinho com total autonomia ou divida o clube com outros jogadores reais.",
+  },
+  {
+    icon: Vote,
+    title: "Votação tática",
+    desc: "Antes de cada partida o time vota na formação. Capitão tem voto de desempate.",
+  },
+  {
+    icon: Globe2,
+    title: "Partidas automáticas",
+    desc: "Os jogos acontecem no horário marcado, com ou sem você online. O mundo nunca para.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Chat global e do time",
+    desc: "Conexão ao vivo com a comunidade, gols em tempo real e vestiário privado do clube.",
+  },
+];
+
+const systems = [
+  {
+    icon: BarChart3,
+    title: "Simulação justa",
+    desc: "Motor com xG, momentum e fator zebra: o favorito nunca passa de 70% de chance.",
+  },
+  {
+    icon: CalendarClock,
+    title: "Temporadas vivas",
+    desc: "A cada 6 meses elencos e transferências reais são atualizados — sua carreira permanece.",
+  },
+  {
+    icon: Coins,
+    title: "Economia de carreira",
+    desc: "Salário, bônus por gol e premiações de títulos. Sem dinheiro real: tudo é conquistado jogando.",
+  },
+  {
+    icon: ShoppingBag,
+    title: "Loja de evolução",
+    desc: "Chuteiras, agente, personal trainer e nutricionista para turbinar seus atributos.",
+  },
+  {
+    icon: Medal,
+    title: "Marcos de carreira",
+    desc: "Primeiro gol, 100 jogos, convocação para a seleção e o cobiçado status de estrela 90+.",
+  },
+  {
+    icon: Flame,
+    title: "Clássicos e finais",
+    desc: "Jogos decisivos rendem mais XP e definem sua reputação na geração.",
+  },
 ];
 
 function Landing() {
@@ -273,30 +343,27 @@ function Landing() {
         <div className="grid items-center gap-10 md:grid-cols-2">
           <div>
             <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-              Multiplayer
+              Multiplayer cooperativo
             </span>
             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
               Evolua online contra o mundo
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Os times jogam suas rodadas normalmente e você disputa espaço com
-              jogadores reais. Suba de nível, conquiste títulos e prove que é o
-              melhor da sua geração.
+              Os times jogam suas rodadas automaticamente e você disputa espaço
+              com jogadores reais. Decida as táticas, conquiste títulos e prove
+              que é o melhor da sua geração.
             </p>
-            <ul className="mt-6 space-y-3">
-              {[
-                { icon: Globe2, t: "Partidas e ligas online em tempo real" },
-                { icon: Gauge, t: "Atributos que evoluem a cada treino e jogo" },
-                { icon: Trophy, t: "Ranking global e disputa por contratos" },
-              ].map((f) => (
-                <li key={f.t} className="flex items-start gap-3">
-                  <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary/15 text-primary">
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              {onlineFeatures.map((f) => (
+                <div key={f.title} className="rounded-2xl border border-border bg-card p-4">
+                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">
                     <f.icon className="h-4 w-4" />
                   </span>
-                  <span className="text-sm text-foreground/90">{f.t}</span>
-                </li>
+                  <h3 className="mt-3 font-display text-sm font-bold">{f.title}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">{f.desc}</p>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
           <div className="relative">
             <div className="absolute -inset-6 rounded-3xl bg-gradient-to-tr from-primary/15 to-transparent blur-2xl" />
@@ -311,6 +378,72 @@ function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Campeonatos */}
+      <section className="border-y border-border bg-surface-elevated/40">
+        <div className="mx-auto max-w-6xl px-5 py-16 md:py-24">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="text-sm font-semibold uppercase tracking-widest text-primary">
+              Campeonatos reais
+            </span>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
+              Dispute as competições de verdade
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              Da base ao profissional, do Brasileirão à Champions e à Copa do Mundo.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2">
+            {competitions.map((c) => (
+              <div key={c.region} className="rounded-2xl border border-border bg-card p-6">
+                <h3 className="font-display text-lg font-bold">{c.region}</h3>
+                <ul className="mt-4 grid grid-cols-2 gap-2">
+                  {c.items.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-center gap-2 rounded-lg bg-surface-elevated px-3 py-2 text-xs text-foreground/90"
+                    >
+                      <Trophy className="h-3.5 w-3.5 shrink-0 text-primary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sistemas do jogo */}
+      <section className="mx-auto max-w-6xl px-5 py-16 md:py-24">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="text-sm font-semibold uppercase tracking-widest text-primary">
+            Por dentro do jogo
+          </span>
+          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
+            Um mundo de futebol completo
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Simulação realista, temporadas vivas e uma economia que recompensa
+            quem joga de verdade.
+          </p>
+        </div>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {systems.map((s) => (
+            <div
+              key={s.title}
+              className="rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
+            >
+              <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/15 text-primary">
+                <s.icon className="h-5 w-5" />
+              </span>
+              <h3 className="mt-4 font-display text-base font-bold">{s.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
 
       {/* CTA download */}
       <section id="download" className="mx-auto max-w-6xl px-5 pb-20">
