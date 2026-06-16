@@ -257,7 +257,7 @@ function Landing() {
               Evolua
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Como no modo carreira, cada treino e partida aumenta seus atributos
+              Cada treino e partida aumenta seus atributos
               e seu score geral rumo ao seu potencial máximo.
             </p>
           </div>
