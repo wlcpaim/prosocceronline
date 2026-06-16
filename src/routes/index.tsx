@@ -15,6 +15,15 @@ import {
   ChevronRight,
   Apple,
   Play,
+  Users,
+  Vote,
+  CalendarClock,
+  Coins,
+  ShoppingBag,
+  MessageCircle,
+  BarChart3,
+  Medal,
+  Flame,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroPlayer from "@/assets/hero-player.jpg";
