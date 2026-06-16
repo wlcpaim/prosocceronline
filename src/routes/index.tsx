@@ -87,10 +87,71 @@ const styles = [
 ];
 
 const stats = [
-  { value: "100%", label: "Carreira individual" },
-  { value: "1v1", label: "Online entre jogadores" },
+  { value: "35", label: "Atributos no estilo FIFA" },
+  { value: "Online", label: "Multiplayer cooperativo" },
   { value: "14", label: "Anos para começar" },
-  { value: "∞", label: "Evolução do seu craque" },
+  { value: "6 em 6", label: "Meses por temporada" },
+];
+
+const competitions = [
+  { region: "🇧🇷 Brasil", items: ["Brasileirão Série A", "Copa do Brasil", "Estaduais", "Sub-20 & Copinha"] },
+  { region: "🌍 Mundo", items: ["Champions League", "Libertadores", "Copa do Mundo", "Mundial de Clubes"] },
+];
+
+const onlineFeatures = [
+  {
+    icon: Users,
+    title: "Times cooperativos",
+    desc: "Jogue sozinho com total autonomia ou divida o clube com outros jogadores reais.",
+  },
+  {
+    icon: Vote,
+    title: "Votação tática",
+    desc: "Antes de cada partida o time vota na formação. Capitão tem voto de desempate.",
+  },
+  {
+    icon: Globe2,
+    title: "Partidas automáticas",
+    desc: "Os jogos acontecem no horário marcado, com ou sem você online. O mundo nunca para.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Chat global e do time",
+    desc: "Conexão ao vivo com a comunidade, gols em tempo real e vestiário privado do clube.",
+  },
+];
+
+const systems = [
+  {
+    icon: BarChart3,
+    title: "Simulação justa",
+    desc: "Motor com xG, momentum e fator zebra: o favorito nunca passa de 70% de chance.",
+  },
+  {
+    icon: CalendarClock,
+    title: "Temporadas vivas",
+    desc: "A cada 6 meses elencos e transferências reais são atualizados — sua carreira permanece.",
+  },
+  {
+    icon: Coins,
+    title: "Economia de carreira",
+    desc: "Salário, bônus por gol e premiações de títulos. Sem dinheiro real: tudo é conquistado jogando.",
+  },
+  {
+    icon: ShoppingBag,
+    title: "Loja de evolução",
+    desc: "Chuteiras, agente, personal trainer e nutricionista para turbinar seus atributos.",
+  },
+  {
+    icon: Medal,
+    title: "Marcos de carreira",
+    desc: "Primeiro gol, 100 jogos, convocação para a seleção e o cobiçado status de estrela 90+.",
+  },
+  {
+    icon: Flame,
+    title: "Clássicos e finais",
+    desc: "Jogos decisivos rendem mais XP e definem sua reputação na geração.",
+  },
 ];
 
 function Landing() {
