@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AguardandoConfirmacaoRouteImport } from './routes/aguardando-confirmacao'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedPagamentoRouteImport } from './routes/_authenticated/pagamento'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -49,6 +50,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedPagamentoRoute = AuthenticatedPagamentoRouteImport.update({
+  id: '/pagamento',
+  path: '/pagamento',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/pagamento': typeof AuthenticatedPagamentoRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/pagamento': typeof AuthenticatedPagamentoRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/pagamento': typeof AuthenticatedPagamentoRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/criar-personagem'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/pagamento'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -137,6 +147,7 @@ export interface FileRouteTypes {
     | '/criar-personagem'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/pagamento'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -150,6 +161,7 @@ export interface FileRouteTypes {
     | '/criar-personagem'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/_authenticated/pagamento'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -213,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/pagamento': {
+      id: '/_authenticated/pagamento'
+      path: '/pagamento'
+      fullPath: '/pagamento'
+      preLoaderRoute: typeof AuthenticatedPagamentoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -253,10 +272,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedPagamentoRoute: typeof AuthenticatedPagamentoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedPagamentoRoute: AuthenticatedPagamentoRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
