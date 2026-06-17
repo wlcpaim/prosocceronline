@@ -58,6 +58,14 @@ interface PlayerRow {
 }
 
 function Jogadores() {
+  return (
+    <AccessGate>
+      <JogadoresPanel />
+    </AccessGate>
+  );
+}
+
+function JogadoresPanel() {
   const navigate = useNavigate();
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
