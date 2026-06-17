@@ -57,7 +57,7 @@ export const createPixCharge = createServerFn({ method: "POST" })
 
     // Guarda os dados da cobrança (via service role, pois o usuário não pode
     // atualizar a própria assinatura diretamente).
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     await supabaseAdmin
       .from("subscriptions")
       .update({
