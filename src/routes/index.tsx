@@ -88,8 +88,8 @@ const styles = [
 ];
 
 const stats = [
-  { value: "35", label: "Atributos no estilo FIFA" },
-  { value: "Online", label: "Multiplayer cooperativo" },
+  { value: "35", label: "Atributos detalhados" },
+  { value: "PvP", label: "e cooperativo" },
   { value: "14", label: "Anos para começar" },
   { value: "6 em 6", label: "Meses por temporada" },
 ];
