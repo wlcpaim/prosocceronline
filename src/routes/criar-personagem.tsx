@@ -566,8 +566,14 @@ function CriarPersonagem() {
                   Continuar <ChevronRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button variant="hero" onClick={finish}>
-                  Criar conta e começar <ChevronRight className="h-4 w-4" />
+                <Button variant="hero" onClick={finish} disabled={finishing}>
+                  {finishing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      Criar conta e começar <ChevronRight className="h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               )}
             </div>
