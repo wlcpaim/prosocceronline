@@ -173,7 +173,7 @@ function AuthPage() {
             Ao continuar, você concorda com os{" "}
             <button
               onClick={() => setTermsOpen(true)}
-              className="text-primary underline hover:text-primary/80 cursor-pointer"
+              className="text-primary font-semibold hover:opacity-85 cursor-pointer"
             >
               termos de uso
             </button>{" "}
