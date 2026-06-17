@@ -9,9 +9,10 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
-
+ 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import logoMark from "../assets/logo-mark.png";
 
 function NotFoundComponent() {
   return (
