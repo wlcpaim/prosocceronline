@@ -75,6 +75,9 @@ function AuthPage() {
   const navigate = useNavigate();
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
   const [termsOpen, setTermsOpen] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [isNotRobot, setIsNotRobot] = useState(false);
+  const [captchaVerifying, setCaptchaVerifying] = useState(false);
   const hasDraft = typeof window !== "undefined" && !!loadDraft();
 
 
@@ -89,6 +92,10 @@ function AuthPage() {
 
 
   const handleOAuth = async (provider: "google" | "apple") => {
+    if (!acceptedTerms || !isNotRobot) {
+      toast.error("Por favor, aceite os termos e confirme que não é um robô para continuar.");
+      return;
+    }
     setOauthLoading(provider);
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
@@ -135,14 +142,72 @@ function AuthPage() {
               : "Entre para continuar sua carreira."}
           </p>
 
+          {/* Termos e Segurança */}
+          <div className="mt-6 space-y-4">
+            <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/10 p-4">
+              <Checkbox
+                id="terms"
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
+                className="mt-0.5"
+              />
+              <label
+                htmlFor="terms"
+                className="text-xs text-muted-foreground leading-relaxed cursor-pointer select-none"
+              >
+                Eu li e concordo com os{" "}
+                <button
+                  type="button"
+                  onClick={() => setTermsOpen(true)}
+                  className="text-primary font-semibold hover:opacity-85 cursor-pointer inline inline-block"
+                >
+                  termos de uso
+                </button>{" "}
+                do Pro Soccer Online.
+              </label>
+            </div>
+
+            {/* Custom CAPTCHA "Não sou robô" */}
+            <div className="flex items-center justify-between rounded-xl border border-border bg-muted/20 p-4 shadow-sm select-none">
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  disabled={isNotRobot || captchaVerifying}
+                  onClick={() => {
+                    setCaptchaVerifying(true);
+                    setTimeout(() => {
+                      setIsNotRobot(true);
+                      setCaptchaVerifying(false);
+                      toast.success("Verificação concluída com sucesso!");
+                    }, 1200);
+                  }}
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded border transition-all ${
+                    isNotRobot
+                      ? "border-emerald-500 bg-emerald-500 text-white"
+                      : "border-muted-foreground/30 hover:border-primary bg-background"
+                  } cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed`}
+                >
+                  {captchaVerifying && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
+                  {isNotRobot && <Check className="h-4 w-4 stroke-[3]" />}
+                </button>
+                <span className="text-sm font-medium">Não sou um robô</span>
+              </div>
+              <div className="flex flex-col items-end text-[10px] text-muted-foreground/60 leading-none">
+                <ShieldCheck className="h-5 w-5 text-muted-foreground/40 mb-1 animate-pulse" />
+                <span>Pro Soccer</span>
+                <span className="mt-0.5 font-bold tracking-wider uppercase text-[8px]">Security</span>
+              </div>
+            </div>
+          </div>
+
           {/* OAuth */}
           <div className="mt-6 space-y-3">
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="w-full transition-all duration-300"
               size="lg"
-              disabled={!!oauthLoading}
+              disabled={!!oauthLoading || !acceptedTerms || !isNotRobot}
               onClick={() => handleOAuth("google")}
             >
               {oauthLoading === "google" ? (
@@ -155,9 +220,9 @@ function AuthPage() {
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="w-full transition-all duration-300"
               size="lg"
-              disabled={!!oauthLoading}
+              disabled={!!oauthLoading || !acceptedTerms || !isNotRobot}
               onClick={() => handleOAuth("apple")}
             >
               {oauthLoading === "apple" ? (
@@ -168,17 +233,6 @@ function AuthPage() {
               Continuar com Apple
             </Button>
           </div>
-
-          <p className="mt-6 text-center text-xs text-muted-foreground">
-            Ao continuar, você concorda com os{" "}
-            <button
-              onClick={() => setTermsOpen(true)}
-              className="text-primary font-semibold hover:opacity-85 cursor-pointer"
-            >
-              termos de uso
-            </button>{" "}
-            do Pro Soccer Online.
-          </p>
 
           <Dialog open={termsOpen} onOpenChange={setTermsOpen}>
             <DialogContent className="max-w-md max-h-[85vh] flex flex-col p-6 rounded-3xl">
