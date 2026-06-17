@@ -1,4 +1,4 @@
-import { ATTRIBUTES, type Attrs, computeOverall, withStyleBonus } from "@/lib/player";
+import { CATEGORIES, cardCategories, categoryValue, type Attrs, type CatKey } from "@/lib/player";
 import { Star } from "lucide-react";
 
 interface PlayerCardProps {
@@ -26,6 +26,16 @@ function Stars({ count }: { count: number }) {
   );
 }
 
+const SHORT: Record<CatKey, string> = {
+  pace: "RIT",
+  shooting: "FIN",
+  passing: "PAS",
+  dribbling: "DRI",
+  defending: "DEF",
+  physical: "FÍS",
+  goalkeeping: "GOL",
+};
+
 export function PlayerCard({
   name,
   position,
@@ -37,6 +47,8 @@ export function PlayerCard({
   preferredFoot,
   className,
 }: PlayerCardProps) {
+  const cats = cardCategories(position);
+
   return (
     <div
       className={`relative overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-b from-surface-elevated to-card p-5 shadow-elevated ${className ?? ""}`}
@@ -60,13 +72,13 @@ export function PlayerCard({
 
       {/* 6 categorias */}
       <div className="relative mt-4 grid grid-cols-3 gap-y-3 border-t border-border pt-4">
-        {ATTRIBUTES.map((cat) => (
-          <div key={cat.key} className="flex items-baseline gap-2">
+        {cats.map((cat) => (
+          <div key={cat} className="flex items-baseline gap-2">
             <span className="font-display text-lg font-bold text-foreground">
-              {attributes[cat.key]}
+              {categoryValue(attributes, cat)}
             </span>
             <span className="text-[11px] font-semibold uppercase text-muted-foreground">
-              {cat.short}
+              {SHORT[cat]}
             </span>
           </div>
         ))}
@@ -99,8 +111,5 @@ export function PlayerCard({
   );
 }
 
-// Helper para o preview usar atributos já com bônus do estilo + overall calculado
-export function previewStats(attrs: Attrs, position: string, styleName: string) {
-  const withBonus = withStyleBonus(attrs, styleName);
-  return { attrs: withBonus, overall: computeOverall(withBonus, position) };
-}
+// Mantido por compatibilidade: retorna categorias visíveis do card
+export { CATEGORIES };
