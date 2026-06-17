@@ -101,6 +101,25 @@ function Dashboard() {
 
   const player = players.find((p) => p.id === selectedId) ?? null;
 
+  const handleDelete = async () => {
+    if (!player || confirmText.trim().toUpperCase() !== "CONFIRMAR") return;
+    setDeleting(true);
+    const { error } = await supabase.from("players").delete().eq("id", player.id);
+    setDeleting(false);
+    if (error) {
+      toast.error("Não foi possível excluir o jogador. Tente novamente.");
+      return;
+    }
+    const remaining = players.filter((p) => p.id !== player.id);
+    setPlayers(remaining);
+    setSelectedId(remaining[0]?.id ?? null);
+    setDeleteOpen(false);
+    setConfirmText("");
+    toast.success("Jogador excluído.");
+  };
+
+
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
