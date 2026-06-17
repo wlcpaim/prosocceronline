@@ -116,14 +116,12 @@ function AuthPage() {
           <Logo />
 
           <h1 className="mt-6 font-display text-2xl font-bold">
-            {mode === "signup" ? "Crie sua conta" : "Bem-vindo de volta"}
+            {hasDraft ? "Crie sua conta" : "Entrar"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {hasDraft
               ? "Crie sua conta para salvar seu jogador e iniciar a carreira."
-              : mode === "signup"
-                ? "Comece sua jornada rumo ao estrelato."
-                : "Entre para continuar sua carreira."}
+              : "Entre para continuar sua carreira."}
           </p>
 
           {/* OAuth */}
@@ -160,61 +158,10 @@ function AuthPage() {
             </Button>
           </div>
 
-          <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
-            <div className="h-px flex-1 bg-border" />
-            ou com e-mail
-            <div className="h-px flex-1 bg-border" />
-          </div>
-
-          {/* Email form */}
-          <form onSubmit={handleEmail} className="space-y-4">
-            <div>
-              <Label htmlFor="email">E-mail</Label>
-              <div className="relative mt-1.5">
-                <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="voce@email.com"
-                  className="pl-9"
-                />
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative mt-1.5">
-                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
-                  className="pl-9"
-                />
-              </div>
-            </div>
-            <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
-              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {mode === "signup" ? "Criar conta e começar" : "Entrar"}
-            </Button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            {mode === "signup" ? "Já tem conta?" : "Ainda não tem conta?"}{" "}
-            <button
-              type="button"
-              onClick={() => setMode(mode === "signup" ? "login" : "signup")}
-              className="font-semibold text-primary hover:underline"
-            >
-              {mode === "signup" ? "Entrar" : "Criar conta"}
-            </button>
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            Ao continuar, você concorda com os termos de uso do Pro Soccer Online.
           </p>
+
         </div>
       </div>
     </div>
