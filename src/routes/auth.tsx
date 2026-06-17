@@ -68,7 +68,6 @@ function AuthPage() {
 
 
   useEffect(() => {
-    if (!hasDraft) setMode("login");
     persistDraftAndGo(navigate);
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") persistDraftAndGo(navigate);
@@ -76,6 +75,7 @@ function AuthPage() {
     return () => sub.subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const handleOAuth = async (provider: "google" | "apple") => {
     setOauthLoading(provider);
