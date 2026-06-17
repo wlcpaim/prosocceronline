@@ -7,7 +7,7 @@ interface LogoProps {
 
 export function Logo({ className, showText = true }: LogoProps) {
   return (
-    <div className={`flex items-center gap-3 ${className ?? ""}`}>
+    <div className={`flex items-center gap-2.5 ${className ?? ""}`}>
       <img
         src={logoMark}
         width={512}
@@ -17,9 +17,14 @@ export function Logo({ className, showText = true }: LogoProps) {
         draggable={false}
       />
       {showText && (
-        <span className="font-display text-lg font-bold tracking-tight text-foreground sm:text-xl">
-          Pro Soccer <span className="text-primary">Online</span>
-        </span>
+        <div className="flex flex-col leading-[1.1]">
+          <span className="font-display text-[11px] font-semibold tracking-wider text-foreground/80 uppercase">
+            Pro Soccer
+          </span>
+          <span className="font-display text-base font-extrabold tracking-tight text-primary">
+            Online
+          </span>
+        </div>
       )}
     </div>
   );
