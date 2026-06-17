@@ -67,7 +67,7 @@ async function persistDraftAndGo(navigate: ReturnType<typeof useNavigate>) {
     }
     clearDraft();
   }
-  navigate({ to: "/dashboard" });
+  navigate({ to: "/jogadores" });
   return true;
 }
 
