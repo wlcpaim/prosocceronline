@@ -455,8 +455,8 @@ function Landing() {
               Sua carreira começa <span className="text-gradient">agora</span>
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Jogue o Fut Manager Online direto do seu navegador, crie seu jogador e comece a escrever a
-              sua história rumo ao topo. Sem downloads, jogue de qualquer dispositivo.
+              Pro Soccer Online, crie seu jogador e comece a escrever a sua história rumo
+              ao topo. Sem downloads, jogue de qualquer dispositivo.
             </p>
             <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row">
               <Button variant="hero" size="lg" className="px-8" asChild>
@@ -472,16 +472,9 @@ function Landing() {
       {/* Footer */}
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary text-primary-foreground">
-              <Trophy className="h-4 w-4" />
-            </span>
-            <span className="font-display text-sm font-bold">
-              Fut<span className="text-primary">Manager</span> Online
-            </span>
-          </div>
+          <Logo />
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Fut Manager Online. Todos os direitos reservados.
+            © {new Date().getFullYear()} Pro Soccer Online. Todos os direitos reservados.
           </p>
         </div>
       </footer>
