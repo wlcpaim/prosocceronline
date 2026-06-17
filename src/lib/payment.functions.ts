@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { currentPrice } from "@/lib/pricing";
 
-// Preço de acesso (em reais). Ajuste via env SYNCPAY_ACCESS_PRICE se quiser.
+// Preço de acesso (em reais). R$ 49,99, com 50% de desconto durante a pré-venda.
 function getAccessPrice() {
-  const fromEnv = Number(process.env.SYNCPAY_ACCESS_PRICE);
-  return Number.isFinite(fromEnv) && fromEnv > 0 ? fromEnv : 19.9;
+  return currentPrice();
 }
 
 function webhookUrl() {
