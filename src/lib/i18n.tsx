@@ -821,7 +821,7 @@ const dict = {
       goodFoot: "Strong foot",
     },
   },
-} as const;
+};
 
 // ----------------------------------------------------------------------------
 // Game-data translation maps (keyed by stable canonical values)
