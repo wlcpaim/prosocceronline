@@ -33,7 +33,7 @@ import { CATEGORIES, categoryValue, type Attrs } from "@/lib/player";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
-    meta: [{ title: "Dashboard — Pro Soccer Online" }],
+    meta: [{ title: "Jogadores — Pro Soccer Online" }],
   }),
   component: Dashboard,
 });
