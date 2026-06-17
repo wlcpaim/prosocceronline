@@ -11,20 +11,23 @@ import {
   Calendar,
   Loader2,
   Sparkles,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlayerCard } from "@/components/PlayerCard";
+import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
-import { ATTRIBUTES, type Attrs, subValue } from "@/lib/player";
+import { CATEGORIES, categoryValue, type Attrs } from "@/lib/player";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
-    meta: [{ title: "Dashboard — Fut Manager Online" }],
+    meta: [{ title: "Dashboard — Pro Soccer Online" }],
   }),
   component: Dashboard,
 });
 
 interface PlayerRow {
+  id: string;
   name: string;
   nationality: string | null;
   position: string;
@@ -43,7 +46,8 @@ interface PlayerRow {
 
 function Dashboard() {
   const navigate = useNavigate();
-  const [player, setPlayer] = useState<PlayerRow | null>(null);
+  const [players, setPlayers] = useState<PlayerRow[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
@@ -62,8 +66,10 @@ function Dashboard() {
       const { data } = await supabase
         .from("players")
         .select("*")
-        .maybeSingle();
-      setPlayer((data as PlayerRow | null) ?? null);
+        .order("created_at", { ascending: false });
+      const rows = (data as PlayerRow[] | null) ?? [];
+      setPlayers(rows);
+      setSelectedId(rows[0]?.id ?? null);
       setLoading(false);
     })();
   }, []);
@@ -73,17 +79,14 @@ function Dashboard() {
     navigate({ to: "/" });
   };
 
+  const player = players.find((p) => p.id === selectedId) ?? null;
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground">
-              <Trophy className="h-5 w-5" />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight">
-              Fut<span className="text-primary">Manager</span>
-            </span>
+            <Logo />
           </Link>
           <Button variant="outline" size="sm" onClick={handleLogout}>
             <LogOut className="h-4 w-4" /> Sair
@@ -109,12 +112,38 @@ function Dashboard() {
           </div>
         ) : (
           <>
-            <div className="mb-8">
-              <p className="text-sm text-muted-foreground">Olá, {displayName} 👋</p>
-              <h1 className="font-display text-3xl font-bold">
-                Carreira de <span className="text-gradient">{player.name}</span>
-              </h1>
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Olá, {displayName} 👋</p>
+                <h1 className="font-display text-3xl font-bold">
+                  Carreira de <span className="text-gradient">{player.name}</span>
+                </h1>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/criar-personagem">
+                  <Plus className="h-4 w-4" /> Criar outro jogador
+                </Link>
+              </Button>
             </div>
+
+            {players.length > 1 && (
+              <div className="mb-6 flex flex-wrap gap-2">
+                {players.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setSelectedId(p.id)}
+                    className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-all ${
+                      p.id === selectedId
+                        ? "border-primary bg-primary/15 text-primary"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/40"
+                    }`}
+                  >
+                    {p.name} · {p.position} · {p.overall}
+                  </button>
+                ))}
+              </div>
+            )}
 
             <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
               {/* Card */}
@@ -143,37 +172,38 @@ function Dashboard() {
                 <div className="rounded-2xl border border-border bg-card p-5">
                   <h2 className="mb-4 font-display text-sm font-bold">Atributos do jogador</h2>
                   <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-                    {ATTRIBUTES.map((cat) => (
-                      <div key={cat.key}>
-                        <div className="mb-2 flex items-center justify-between">
-                          <span className="text-xs font-bold uppercase text-primary">
-                            {cat.label}
-                          </span>
-                          <span className="font-display text-base font-bold">
-                            {player.attributes[cat.key]}
-                          </span>
-                        </div>
-                        <div className="h-2 overflow-hidden rounded-full bg-surface-elevated">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
-                            style={{ width: `${player.attributes[cat.key]}%` }}
-                          />
-                        </div>
-                        <div className="mt-2 space-y-1">
-                          {cat.subs.map((s) => (
+                    {CATEGORIES.map((cat) => {
+                      const catVal = categoryValue(player.attributes, cat.key);
+                      return (
+                        <div key={cat.key}>
+                          <div className="mb-2 flex items-center justify-between">
+                            <span className="text-xs font-bold uppercase text-primary">
+                              {cat.label}
+                            </span>
+                            <span className="font-display text-base font-bold">{catVal}</span>
+                          </div>
+                          <div className="h-2 overflow-hidden rounded-full bg-surface-elevated">
                             <div
-                              key={s.key}
-                              className="flex items-center justify-between text-[11px] text-muted-foreground"
-                            >
-                              <span>{s.label}</span>
-                              <span className="font-semibold text-foreground/80">
-                                {subValue(player.attributes[cat.key], s.offset)}
-                              </span>
-                            </div>
-                          ))}
+                              className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                              style={{ width: `${catVal}%` }}
+                            />
+                          </div>
+                          <div className="mt-2 space-y-1">
+                            {cat.attrs.map((a) => (
+                              <div
+                                key={a.key}
+                                className="flex items-center justify-between text-[11px] text-muted-foreground"
+                              >
+                                <span>{a.label}</span>
+                                <span className="font-semibold text-foreground/80">
+                                  {player.attributes[a.key]}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -184,7 +214,7 @@ function Dashboard() {
                     <NextStep
                       icon={Dumbbell}
                       title="Treinar"
-                      desc="Evolua seus atributos na escola de base."
+                      desc="Evolua atributos, fintas e pé ruim na escola de base."
                     />
                     <NextStep
                       icon={Search}
@@ -194,7 +224,7 @@ function Dashboard() {
                     <NextStep
                       icon={Calendar}
                       title="Temporada"
-                      desc="Dispute partidas e marque sua história."
+                      desc="Dispute partidas PvP e cooperativas e marque sua história."
                     />
                   </div>
                 </div>
