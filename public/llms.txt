@@ -1,0 +1,8 @@
+# Pro Soccer Online
+
+> Pro Soccer Online: crie seu jogador, treine na base, seja descoberto por olheiros e evolua sua carreira em partidas competitivas online diretamente no seu navegador.
+
+## Pages
+
+- [Página Inicial](https://prosoccer.online/): Crie seu jogador de futebol virtual de graça e jogue direto no navegador. Comece aos 14 anos na base e evolua sua carreira até o estrelato profissional com treinos diários e partidas PvP/cooperativas contra outros jogadores reais.
+- [Segurança e Privacidade](https://prosoccer.online/seguranca): Detalhes sobre como o jogo protege os dados dos usuários, autenticação segura, medidas anti-trapaça (anti-cheat) rodando totalmente no servidor e processamento seguro de pagamentos.
