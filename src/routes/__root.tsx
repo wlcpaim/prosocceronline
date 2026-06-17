@@ -9,9 +9,10 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
-
+ 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import logoMark from "../assets/logo-mark.png";
 
 function NotFoundComponent() {
   return (
@@ -105,6 +106,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a04f67ae-cb24-4ca2-a888-f0cf9dd70773/id-preview-427e8e79--8d5dfa4b-f4b3-473f-b0ed-a599b3f5385e.lovable.app-1781662124762.png" },
     ],
     links: [
+      {
+        rel: "icon",
+        type: "image/png",
+        href: logoMark,
+      },
       {
         rel: "stylesheet",
         href: appCss,
