@@ -181,7 +181,7 @@ function CarreiraInner() {
               <Stat
                 icon={Crown}
                 label="Margem"
-                value={`+${Math.max(0, computePotential(player.overall, player.age) - player.overall)}`}
+                value={`+${Math.max(0, player.potential - player.overall)}`}
               />
             </div>
 
