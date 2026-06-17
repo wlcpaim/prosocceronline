@@ -115,6 +115,30 @@ function sanitizeDraft(input: RawDraft): PlayerDraft {
   };
 }
 
+// Verifica, no servidor, se um nome de jogador está livre. A função do banco
+// (is_player_name_available) só pode ser executada pela service role, então o
+// cliente nunca a chama diretamente.
+export const checkPlayerName = createServerFn({ method: "POST" })
+  .inputValidator((input: { name: string }) => input)
+  .handler(async ({ data }) => {
+    const name = typeof data?.name === "string" ? data.name.trim().replace(/\s{2,}/g, " ") : "";
+    if (name.length < 3 || name.length > 24) {
+      return { ok: false as const, available: false };
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: available, error } = await supabaseAdmin.rpc("is_player_name_available", {
+      _name: name,
+    });
+
+    if (error) {
+      console.error("checkPlayerName error", error);
+      return { ok: false as const, available: false };
+    }
+
+    return { ok: true as const, available: !!available };
+  });
+
 export const createPlayer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: RawDraft) => input)
