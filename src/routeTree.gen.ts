@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as CriarPersonagemRouteImport } from './routes/criar-personagem'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AguardandoConfirmacaoRouteImport } from './routes/aguardando-confirmacao'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -31,6 +32,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AguardandoConfirmacaoRoute = AguardandoConfirmacaoRouteImport.update({
+  id: '/aguardando-confirmacao',
+  path: '/aguardando-confirmacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -48,6 +54,7 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aguardando-confirmacao': typeof AguardandoConfirmacaoRoute
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -55,6 +62,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aguardando-confirmacao': typeof AguardandoConfirmacaoRoute
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -64,6 +72,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/aguardando-confirmacao': typeof AguardandoConfirmacaoRoute
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -71,13 +80,26 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/criar-personagem' | '/sitemap.xml' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/aguardando-confirmacao'
+    | '/auth'
+    | '/criar-personagem'
+    | '/sitemap.xml'
+    | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/criar-personagem' | '/sitemap.xml' | '/dashboard'
+  to:
+    | '/'
+    | '/aguardando-confirmacao'
+    | '/auth'
+    | '/criar-personagem'
+    | '/sitemap.xml'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/aguardando-confirmacao'
     | '/auth'
     | '/criar-personagem'
     | '/sitemap.xml'
@@ -87,6 +109,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AguardandoConfirmacaoRoute: typeof AguardandoConfirmacaoRoute
   AuthRoute: typeof AuthRoute
   CriarPersonagemRoute: typeof CriarPersonagemRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -113,6 +136,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aguardando-confirmacao': {
+      id: '/aguardando-confirmacao'
+      path: '/aguardando-confirmacao'
+      fullPath: '/aguardando-confirmacao'
+      preLoaderRoute: typeof AguardandoConfirmacaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -153,6 +183,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AguardandoConfirmacaoRoute: AguardandoConfirmacaoRoute,
   AuthRoute: AuthRoute,
   CriarPersonagemRoute: CriarPersonagemRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

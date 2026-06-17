@@ -112,17 +112,25 @@ function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: `${window.location.origin}/auth` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/aguardando-confirmacao`,
+          },
         });
         if (error) {
-          toast.error(error.message);
+          if (error.message.toLowerCase().includes("already")) {
+            toast.error("Este e-mail já está cadastrado. Faça login.");
+            setMode("login");
+          } else {
+            toast.error(error.message);
+          }
           return;
         }
         if (data.session) {
           await persistDraftAndGo(navigate);
         } else {
-          toast.success("Conta criada! Confirme seu e-mail para entrar.");
-          setMode("login");
+          localStorage.setItem("pso_pending_email", email);
+          toast.success("Conta criada! Confirme seu e-mail para continuar.");
+          navigate({ to: "/aguardando-confirmacao" });
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
