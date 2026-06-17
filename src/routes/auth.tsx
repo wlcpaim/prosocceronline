@@ -30,40 +30,20 @@ async function persistDraftAndGo(navigate: ReturnType<typeof useNavigate>) {
   const { data } = await supabase.auth.getSession();
   const session = data.session;
   if (!session) return false;
-  const userId = session.user.id;
 
   const draft = loadDraft();
   if (draft) {
-    const attrs = finalAttrs(draft);
-    const overall = computeOverall(attrs, draft.position);
-    const potential = computePotential(overall, draft.age);
-    const { error } = await supabase.from("players").insert({
-      user_id: userId,
-      name: draft.name,
-      nationality: draft.nationality,
-      position: draft.position,
-      alt_positions: draft.altPositions,
-      preferred_foot: draft.preferredFoot,
-      weak_foot: draft.weakFoot,
-      skill_moves: draft.skillMoves,
-      height_cm: draft.heightCm,
-      weight_kg: draft.weightKg,
-      age: draft.age,
-      play_style: draft.playStyle,
-      overall,
-      potential,
-      attributes: attrs,
-    });
-    if (error) {
-      if (error.code === "23505") {
+    // O jogador é criado e calculado 100% na nuvem (servidor), evitando trapaça.
+    const res = await createPlayer({ data: draft });
+    if (!res.ok) {
+      if (res.error === "name_taken") {
         // Nome já usado por outra pessoa enquanto o jogador fazia login.
         // Mantém o rascunho e volta para a criação para trocar o nome.
         toast.error("Esse nome de jogador já está em uso. Escolha outro para continuar.");
         navigate({ to: "/criar-personagem" });
         return false;
       }
-      console.error(error);
-      toast.error("Não foi possível salvar seu jogador. Tente novamente.");
+      toast.error(res.error);
       return false;
     }
     clearDraft();
