@@ -13,8 +13,6 @@ import {
   Hand,
   Wind,
   ChevronRight,
-  Apple,
-  Play,
   Users,
   Vote,
   CalendarClock,
@@ -33,6 +31,7 @@ import contract from "@/assets/contract.jpg";
 import { PlayerEvolution } from "@/components/PlayerEvolution";
 import { Logo } from "@/components/Logo";
 import { PresaleBanner } from "@/components/PresaleBanner";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -51,115 +50,16 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-const journey = [
-  {
-    n: "01",
-    title: "Comece aos 14 anos",
-    desc: "Crie seu jogador do zero e entre na escola de treino. Toda lenda começa pequena.",
-    icon: Sparkles,
-    img: heroPlayer,
-  },
-  {
-    n: "02",
-    title: "Treine na escola de base",
-    desc: "Aprimore atributos, defina sua posição e evolua treino após treino até se destacar.",
-    icon: GraduationCap,
-    img: trainingAcademy,
-  },
-  {
-    n: "03",
-    title: "Seja visto por olheiros",
-    desc: "Quando você brilha, um olheiro de um time se interessa. Sua chance de ser notado.",
-    icon: Search,
-    img: scout,
-  },
-  {
-    n: "04",
-    title: "Aceite e assine contrato",
-    desc: "Negocie as condições, treine na base do clube e seja contratado como profissional.",
-    icon: ShieldCheck,
-    img: contract,
-  },
-];
-
-const styles = [
-  { name: "Velocista", desc: "Explosão e drible nas pontas", icon: Wind },
-  { name: "Artilheiro", desc: "Faro de gol dentro da área", icon: Target },
-  { name: "Maestro", desc: "Visão de jogo e passe decisivo", icon: Brain },
-  { name: "Muralha", desc: "Força e desarme na defesa", icon: ShieldCheck },
-  { name: "Goleiro", desc: "Reflexo e segurança no gol", icon: Hand },
-  { name: "Box-to-box", desc: "Energia do ataque à defesa", icon: Zap },
-];
-
-const stats = [
-  { value: "35", label: "Atributos detalhados" },
-  { value: "PvP", label: "e cooperativo" },
-  { value: "14", label: "Anos para começar" },
-  { value: "6 em 6", label: "Meses por temporada" },
-];
-
-const competitions = [
-  { region: "🇧🇷 Brasil", items: ["Brasileirão Série A", "Copa do Brasil", "Estaduais", "Sub-20 & Copinha"] },
-  { region: "🌍 Mundo", items: ["Champions League", "Libertadores", "Copa do Mundo", "Mundial de Clubes"] },
-];
-
-const onlineFeatures = [
-  {
-    icon: Users,
-    title: "Times cooperativos",
-    desc: "Jogue sozinho com total autonomia ou divida o clube com outros jogadores reais.",
-  },
-  {
-    icon: Vote,
-    title: "Votação tática",
-    desc: "Antes de cada partida o time vota na formação. Capitão tem voto de desempate.",
-  },
-  {
-    icon: Globe2,
-    title: "Partidas automáticas",
-    desc: "Os jogos acontecem no horário marcado, com ou sem você online. O mundo nunca para.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Chat global e do time",
-    desc: "Conexão ao vivo com a comunidade, gols em tempo real e vestiário privado do clube.",
-  },
-];
-
-const systems = [
-  {
-    icon: BarChart3,
-    title: "Simulação justa",
-    desc: "Motor com xG, momentum e fator zebra: o favorito nunca passa de 70% de chance.",
-  },
-  {
-    icon: CalendarClock,
-    title: "Temporadas vivas",
-    desc: "A cada 6 meses elencos e transferências reais são atualizados — sua carreira permanece.",
-  },
-  {
-    icon: Coins,
-    title: "Economia de carreira",
-    desc: "Salário, bônus por gol e premiações de títulos. Sem dinheiro real: tudo é conquistado jogando.",
-  },
-  {
-    icon: ShoppingBag,
-    title: "Loja de evolução",
-    desc: "Chuteiras, agente, personal trainer e nutricionista para turbinar seus atributos.",
-  },
-  {
-    icon: Medal,
-    title: "Marcos de carreira",
-    desc: "Primeiro gol, 100 jogos, convocação para a seleção e o cobiçado status de estrela 90+.",
-  },
-  {
-    icon: Flame,
-    title: "Clássicos e finais",
-    desc: "Jogos decisivos rendem mais XP e definem sua reputação na geração.",
-  },
-];
+const journeyIcons = [Sparkles, GraduationCap, Search, ShieldCheck];
+const journeyImgs = [heroPlayer, trainingAcademy, scout, contract];
+const styleIcons = [Wind, Target, Brain, ShieldCheck, Hand, Zap];
+const onlineIcons = [Users, Vote, Globe2, MessageCircle];
+const systemIcons = [BarChart3, CalendarClock, Coins, ShoppingBag, Medal, Flame];
 
 function Landing() {
+  const { t } = useI18n();
+  const L = t.landing;
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Nav */}
@@ -173,10 +73,10 @@ function Landing() {
               to="/auth"
               className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
             >
-              Entrar
+              {t.nav.enter}
             </Link>
             <Button variant="hero" size="sm" asChild className="text-xs sm:text-sm px-4">
-              <Link to="/criar-personagem">Jogar agora</Link>
+              <Link to="/criar-personagem">{t.nav.playNow}</Link>
             </Button>
           </div>
         </nav>
@@ -189,27 +89,27 @@ function Landing() {
           <div className="relative z-10 text-center md:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-semibold text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              Manager de carreira individual · PvP e cooperativo
+              {L.badge}
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
-              Da escola de base ao <span className="text-gradient">estrelato mundial</span>
+              {L.heroTitlePre}
+              <span className="text-gradient">{L.heroTitleHi}</span>
             </h1>
             <p className="mx-auto mt-5 max-w-md text-base text-muted-foreground md:mx-0 md:text-lg">
-              Pro Soccer Online: crie seu jogador e comece a escrever a sua história
-              rumo ao topo. Sem downloads, jogue de qualquer dispositivo.
+              {L.heroSubtitle}
             </p>
             <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center md:justify-start">
               <Button variant="hero" size="lg" asChild>
                 <a href="#jogar">
-                  Começar carreira <ChevronRight className="h-4 w-4" />
+                  {L.startCareer} <ChevronRight className="h-4 w-4" />
                 </a>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <a href="#jornada">Ver como funciona</a>
+                <a href="#jornada">{L.seeHow}</a>
               </Button>
             </div>
             <div className="mt-10 grid grid-cols-4 gap-3 border-t border-border/60 pt-6">
-              {stats.map((s) => (
+              {L.stats.map((s) => (
                 <div key={s.label}>
                   <div className="font-display text-xl font-bold text-primary sm:text-2xl">
                     {s.value}
@@ -231,7 +131,7 @@ function Landing() {
                 height={1600}
                 fetchPriority="high"
                 decoding="async"
-                alt="Jovem jogador de futebol no estádio iluminado"
+                alt={L.heroImgAlt}
                 className="relative w-full rounded-[1.75rem] border border-border object-cover shadow-elevated"
               />
               <div className="absolute -bottom-4 left-1/2 z-20 flex w-[88%] -translate-x-1/2 items-center justify-between rounded-2xl border border-border bg-card/90 p-3 backdrop-blur-md">
@@ -240,12 +140,12 @@ function Landing() {
                     <Gauge className="h-4 w-4" />
                   </span>
                   <div className="text-left">
-                    <div className="text-xs text-muted-foreground">Overall</div>
-                    <div className="font-display text-sm font-bold">+0.4 hoje</div>
+                    <div className="text-xs text-muted-foreground">{L.overall}</div>
+                    <div className="font-display text-sm font-bold">{L.todayGain}</div>
                   </div>
                 </div>
                 <span className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">
-                  AO VIVO
+                  {L.live}
                 </span>
               </div>
             </div>
@@ -260,47 +160,46 @@ function Landing() {
       <section id="jornada" className="mx-auto max-w-6xl px-5 py-16 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Sua jornada
+            {L.journeyKicker}
           </span>
-          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-            Do garoto ao profissional
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Quatro etapas que definem a sua trajetória dentro do Pro Soccer Online.
-          </p>
+          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{L.journeyTitle}</h2>
+          <p className="mt-3 text-muted-foreground">{L.journeySubtitle}</p>
         </div>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2">
-          {journey.map((step) => (
-            <article
-              key={step.n}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/50"
-            >
-              <div className="relative h-44 overflow-hidden">
-                <img
-                  src={step.img}
-                  loading="lazy"
-                  width={1280}
-                  height={960}
-                  alt={step.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
-                <span className="absolute right-4 top-4 font-display text-3xl font-bold text-primary/80">
-                  {step.n}
-                </span>
-              </div>
-              <div className="p-5">
-                <div className="flex items-center gap-2">
-                  <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
-                    <step.icon className="h-4 w-4" />
+          {L.journey.map((step, i) => {
+            const Icon = journeyIcons[i];
+            return (
+              <article
+                key={step.title}
+                className="group relative overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/50"
+              >
+                <div className="relative h-44 overflow-hidden">
+                  <img
+                    src={journeyImgs[i]}
+                    loading="lazy"
+                    width={1280}
+                    height={960}
+                    alt={step.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+                  <span className="absolute right-4 top-4 font-display text-3xl font-bold text-primary/80">
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="text-lg font-bold">{step.title}</h3>
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
-              </div>
-            </article>
-          ))}
+                <div className="p-5">
+                  <div className="flex items-center gap-2">
+                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <h3 className="text-lg font-bold">{step.title}</h3>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
 
@@ -309,40 +208,45 @@ function Landing() {
         <div className="mx-auto max-w-6xl px-5 py-16 md:py-24">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-              Escolha seu estilo
+              {L.stylesKicker}
             </span>
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              Qual craque você quer ser?
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Defina o DNA do seu jogador e desenvolva atributos únicos.
-            </p>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{L.stylesTitle}</h2>
+            <p className="mt-3 text-muted-foreground">{L.stylesSubtitle}</p>
           </div>
 
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {styles.map((s) => (
-              <div
-                key={s.name}
-                className="group rounded-2xl border border-border bg-card p-5 text-center transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-glow"
-              >
-                <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-primary/15 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  <s.icon className="h-6 w-6" />
-                </span>
-                <h3 className="mt-4 font-display text-base font-bold">{s.name}</h3>
-                <p className="mt-1 text-xs text-muted-foreground">{s.desc}</p>
-              </div>
-            ))}
+            {styleIcons.map((Icon, i) => {
+              const name = t.styleName(["Velocista", "Artilheiro", "Maestro", "Muralha", "Goleiro", "Box-to-box"][i]);
+              const desc =
+                t.lang === "en"
+                  ? t.styleDesc(["Velocista", "Artilheiro", "Maestro", "Muralha", "Goleiro", "Box-to-box"][i])
+                  : [
+                      "Explosão e drible nas pontas",
+                      "Faro de gol dentro da área",
+                      "Visão de jogo e passe decisivo",
+                      "Força e desarme na defesa",
+                      "Reflexo e segurança no gol",
+                      "Energia do ataque à defesa",
+                    ][i];
+              return (
+                <div
+                  key={name}
+                  className="group rounded-2xl border border-border bg-card p-5 text-center transition-all hover:-translate-y-1 hover:border-primary/50 hover:shadow-glow"
+                >
+                  <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-primary/15 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <Icon className="h-6 w-6" />
+                  </span>
+                  <h3 className="mt-4 font-display text-base font-bold">{name}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">{desc}</p>
+                </div>
+              );
+            })}
           </div>
 
           {/* Evolução no modo carreira */}
           <div className="mx-auto mt-16 max-w-2xl text-center">
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              Evolua
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Cada treino e partida aumenta seus atributos
-              e seu score geral rumo ao seu potencial máximo.
-            </p>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{L.evolveTitle}</h2>
+            <p className="mt-3 text-muted-foreground">{L.evolveSubtitle}</p>
           </div>
           <div className="mt-10">
             <PlayerEvolution />
@@ -350,32 +254,28 @@ function Landing() {
         </div>
       </section>
 
-
       {/* Online */}
       <section className="mx-auto max-w-6xl px-5 py-16 md:py-24">
         <div className="grid items-center gap-10 md:grid-cols-2">
           <div>
             <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-              Multiplayer cooperativo
+              {L.onlineKicker}
             </span>
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              Evolua online contra o mundo
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Os times jogam suas rodadas automaticamente e você disputa espaço
-              com jogadores reais. Decida as táticas, conquiste títulos e prove
-              que é o melhor da sua geração.
-            </p>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{L.onlineTitle}</h2>
+            <p className="mt-4 text-muted-foreground">{L.onlineSubtitle}</p>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {onlineFeatures.map((f) => (
-                <div key={f.title} className="rounded-2xl border border-border bg-card p-4">
-                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">
-                    <f.icon className="h-4 w-4" />
-                  </span>
-                  <h3 className="mt-3 font-display text-sm font-bold">{f.title}</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">{f.desc}</p>
-                </div>
-              ))}
+              {L.onlineFeatures.map((f, i) => {
+                const Icon = onlineIcons[i];
+                return (
+                  <div key={f.title} className="rounded-2xl border border-border bg-card p-4">
+                    <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary/15 text-primary">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <h3 className="mt-3 font-display text-sm font-bold">{f.title}</h3>
+                    <p className="mt-1 text-xs text-muted-foreground">{f.desc}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
           <div className="relative">
@@ -385,7 +285,7 @@ function Landing() {
               loading="lazy"
               width={1280}
               height={960}
-              alt="Jogadores treinando na escola de base"
+              alt={L.onlineImgAlt}
               className="relative w-full rounded-2xl border border-border object-cover shadow-elevated"
             />
           </div>
@@ -397,17 +297,13 @@ function Landing() {
         <div className="mx-auto max-w-6xl px-5 py-16 md:py-24">
           <div className="mx-auto max-w-2xl text-center">
             <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-              Campeonatos reais
+              {L.compsKicker}
             </span>
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              Dispute as competições de verdade
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              Da base ao profissional, do Brasileirão à Champions e à Copa do Mundo.
-            </p>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{L.compsTitle}</h2>
+            <p className="mt-3 text-muted-foreground">{L.compsSubtitle}</p>
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2">
-            {competitions.map((c) => (
+            {L.competitions.map((c) => (
               <div key={c.region} className="rounded-2xl border border-border bg-card p-6">
                 <h3 className="font-display text-lg font-bold">{c.region}</h3>
                 <ul className="mt-4 grid grid-cols-2 gap-2">
@@ -431,32 +327,29 @@ function Landing() {
       <section className="mx-auto max-w-6xl px-5 py-16 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Por dentro do jogo
+            {L.systemsKicker}
           </span>
-          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-            Um mundo de futebol completo
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Simulação realista, temporadas vivas e uma economia que recompensa
-            quem joga de verdade.
-          </p>
+          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">{L.systemsTitle}</h2>
+          <p className="mt-3 text-muted-foreground">{L.systemsSubtitle}</p>
         </div>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {systems.map((s) => (
-            <div
-              key={s.title}
-              className="rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
-            >
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/15 text-primary">
-                <s.icon className="h-5 w-5" />
-              </span>
-              <h3 className="mt-4 font-display text-base font-bold">{s.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
-            </div>
-          ))}
+          {L.systems.map((s, i) => {
+            const Icon = systemIcons[i];
+            return (
+              <div
+                key={s.title}
+                className="rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
+              >
+                <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/15 text-primary">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-4 font-display text-base font-bold">{s.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+              </div>
+            );
+          })}
         </div>
       </section>
-
 
       {/* CTA jogar */}
       <section id="jogar" className="mx-auto max-w-6xl px-5 pb-20">
@@ -464,16 +357,14 @@ function Landing() {
           <div className="absolute inset-0 bg-hero-glow" aria-hidden />
           <div className="relative z-10 mx-auto max-w-xl">
             <h2 className="text-3xl font-bold sm:text-4xl">
-              Sua carreira começa <span className="text-gradient">agora</span>
+              {L.ctaTitlePre}
+              <span className="text-gradient">{L.ctaTitleHi}</span>
             </h2>
-            <p className="mt-3 text-muted-foreground">
-              Pro Soccer Online, crie seu jogador e comece a escrever a sua história rumo
-              ao topo. Sem downloads, jogue de qualquer dispositivo.
-            </p>
+            <p className="mt-3 text-muted-foreground">{L.ctaSubtitle}</p>
             <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row">
               <Button variant="hero" size="lg" className="px-8" asChild>
                 <Link to="/criar-personagem">
-                  Criar meu jogador <ChevronRight className="h-5 w-5" />
+                  {L.createMyPlayer} <ChevronRight className="h-5 w-5" />
                 </Link>
               </Button>
             </div>
@@ -490,11 +381,9 @@ function Landing() {
               to="/seguranca"
               className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
             >
-              Segurança e Privacidade
+              {L.footerSecurity}
             </Link>
-            <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Pro Soccer Online. Todos os direitos reservados.
-            </p>
+            <p className="text-xs text-muted-foreground">{L.footerRights(new Date().getFullYear())}</p>
           </div>
         </div>
       </footer>
