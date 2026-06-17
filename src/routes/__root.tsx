@@ -85,6 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Pro Soccer Online: crie seu jogador, comece aos 14 anos, treine na base e evolua em partidas PvP e cooperativas. Manager de carreira individual de futebol.",
       },
       { name: "author", content: "Pro Soccer Online" },
+      { name: "google-site-verification", content: "WbKctHZ-gxFIqZ0yTx5jxb7nnE7BfYDWA6dUWnNno1k" },
       { property: "og:title", content: "Pro Soccer Online — Sua carreira de jogador começa aqui" },
       {
         property: "og:description",
