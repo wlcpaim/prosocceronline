@@ -239,14 +239,17 @@ function CriarPersonagem() {
                         value={draft.name}
                         maxLength={24}
                         placeholder="Ex: João Silva"
-                        onChange={(e) =>
-                          // Espaço só é permitido no meio do nome: remove espaços
-                          // no início, junta espaços repetidos e bloqueia espaço no final.
-                          update(
-                            "name",
-                            e.target.value.replace(/^\s+/, "").replace(/\s{2,}/g, " "),
-                          )
-                        }
+                        onChange={(e) => {
+                          let val = e.target.value.replace(/^\s+/, "");
+                          val = val.replace(/\s{2,}/g, " ");
+                          const firstSpaceIndex = val.indexOf(" ");
+                          if (firstSpaceIndex !== -1) {
+                            const beforeSpace = val.substring(0, firstSpaceIndex + 1);
+                            const afterSpace = val.substring(firstSpaceIndex + 1).replace(/\s/g, "");
+                            val = beforeSpace + afterSpace;
+                          }
+                          update("name", val);
+                        }}
                         onBlur={(e) => update("name", e.target.value.trimEnd())}
                         className={`pr-9 ${
                           nameStatus === "ok"
