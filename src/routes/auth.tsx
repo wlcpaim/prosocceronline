@@ -63,12 +63,9 @@ async function persistDraftAndGo(navigate: ReturnType<typeof useNavigate>) {
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signup" | "login">("signup");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
   const hasDraft = typeof window !== "undefined" && !!loadDraft();
+
 
   useEffect(() => {
     if (!hasDraft) setMode("login");
