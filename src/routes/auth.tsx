@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, ShieldCheck, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
 import {
