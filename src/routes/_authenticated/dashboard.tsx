@@ -48,7 +48,6 @@ interface PlayerRow {
 
 function Dashboard() {
   const navigate = useNavigate();
-  const checkAccess = useServerFn(getMyAccess);
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
@@ -56,18 +55,8 @@ function Dashboard() {
 
   useEffect(() => {
     (async () => {
-      // Bloqueia o acesso de quem não é admin e ainda não pagou.
-      try {
-        const access = await checkAccess({});
-        if (!access.hasAccess) {
-          navigate({ to: "/pagamento" });
-          return;
-        }
-      } catch {
-        navigate({ to: "/pagamento" });
-        return;
-      }
-
+      // Pagamento desativado por enquanto: todos os usuários acessam o painel.
+      // O bloqueio será reativado quando o sistema for construído.
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;
       if (user) {
@@ -89,6 +78,7 @@ function Dashboard() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
 
   const handleLogout = async () => {
