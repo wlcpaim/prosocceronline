@@ -36,11 +36,13 @@ function TimeBox({ value, label }: { value: number | null; label: string }) {
 
 export function PresaleBanner() {
   const fetchStats = useServerFn(getPlayerStats);
+  const [mounted, setMounted] = useState(false);
   const [remaining, setRemaining] = useState(() => getRemaining(PRESALE_END));
   const [active, setActive] = useState(() => isPresaleActive());
   const [stats, setStats] = useState<{ online: number; registered: number } | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     const id = setInterval(() => {
       const r = getRemaining(PRESALE_END);
       setRemaining(r);
