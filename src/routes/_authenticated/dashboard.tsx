@@ -12,8 +12,20 @@ import {
   Loader2,
   Sparkles,
   Plus,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,6 +62,9 @@ function Dashboard() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
   const [loading, setLoading] = useState(true);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [confirmText, setConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -85,6 +100,25 @@ function Dashboard() {
   };
 
   const player = players.find((p) => p.id === selectedId) ?? null;
+
+  const handleDelete = async () => {
+    if (!player || confirmText.trim().toUpperCase() !== "CONFIRMAR") return;
+    setDeleting(true);
+    const { error } = await supabase.from("players").delete().eq("id", player.id);
+    setDeleting(false);
+    if (error) {
+      toast.error("Não foi possível excluir o jogador. Tente novamente.");
+      return;
+    }
+    const remaining = players.filter((p) => p.id !== player.id);
+    setPlayers(remaining);
+    setSelectedId(remaining[0]?.id ?? null);
+    setDeleteOpen(false);
+    setConfirmText("");
+    toast.success("Jogador excluído.");
+  };
+
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -124,12 +158,26 @@ function Dashboard() {
                   Carreira de <span className="text-gradient">{player.name}</span>
                 </h1>
               </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/criar-personagem">
-                  <Plus className="h-4 w-4" /> Criar outro jogador
-                </Link>
-              </Button>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/criar-personagem">
+                    <Plus className="h-4 w-4" /> Criar outro jogador
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => {
+                    setConfirmText("");
+                    setDeleteOpen(true);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" /> Excluir jogador
+                </Button>
+              </div>
             </div>
+
 
             {players.length > 1 && (
               <div className="mb-6 flex flex-wrap gap-2">
@@ -238,9 +286,50 @@ function Dashboard() {
           </>
         )}
       </main>
+
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excluir jogador</DialogTitle>
+            <DialogDescription>
+              Esta ação é permanente e não pode ser desfeita
+              {player ? <> — o jogador <strong>{player.name}</strong> será apagado</> : null}.
+              Digite <strong>CONFIRMAR</strong> para avançar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-delete">Confirmação</Label>
+            <Input
+              id="confirm-delete"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder="CONFIRMAR"
+              autoComplete="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteOpen(false)}
+              disabled={deleting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={deleting || confirmText.trim().toUpperCase() !== "CONFIRMAR"}
+            >
+              {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Excluir definitivamente
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
 
 function Stat({
   icon: Icon,
