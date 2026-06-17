@@ -12,8 +12,20 @@ import {
   Loader2,
   Sparkles,
   Plus,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
