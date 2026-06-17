@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_authenticated/jogadores")({
   head: () => ({
     meta: [{ title: "Jogadores — Pro Soccer Online" }],
   }),
-  component: Dashboard,
+  component: Jogadores,
 });
 
 interface PlayerRow {
@@ -56,7 +56,7 @@ interface PlayerRow {
   attributes: Attrs;
 }
 
-function Dashboard() {
+function Jogadores() {
   const navigate = useNavigate();
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
