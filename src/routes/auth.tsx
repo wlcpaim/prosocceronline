@@ -144,33 +144,7 @@ function AuthPage() {
 
           {/* Termos e Segurança */}
           <div className="mt-6 rounded-2xl border border-border/80 bg-muted/5 p-4.5 space-y-4 shadow-sm">
-            {/* Termos */}
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="terms"
-                checked={acceptedTerms}
-                onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
-                className="mt-0.5 border-muted-foreground/30 data-[state=checked]:border-primary"
-              />
-              <label
-                htmlFor="terms"
-                className="text-xs text-muted-foreground leading-relaxed cursor-pointer select-none"
-              >
-                Eu li e concordo com os{" "}
-                <button
-                  type="button"
-                  onClick={() => setTermsOpen(true)}
-                  className="text-primary font-semibold hover:opacity-85 cursor-pointer inline"
-                >
-                  termos de uso
-                </button>{" "}
-                do Pro Soccer Online.
-              </label>
-            </div>
-
-            <div className="h-[1px] bg-border/50" />
-
-            {/* Custom CAPTCHA "Não sou robô" */}
+            {/* Custom CAPTCHA "Não sou robô" (Topo) */}
             <div className="flex items-center justify-between select-none">
               <div className="flex items-center gap-3">
                 <button
@@ -203,6 +177,34 @@ function AuthPage() {
                 <ShieldCheck className="h-5 w-5 text-primary/60 animate-pulse" />
               </div>
             </div>
+
+            <div className="h-[1px] bg-border/50" />
+
+            {/* Termos (Meio - entre 2 linhas) */}
+            <div className="flex items-center justify-center gap-2.5 py-1">
+              <Checkbox
+                id="terms"
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
+                className="border-muted-foreground/30 data-[state=checked]:border-primary"
+              />
+              <label
+                htmlFor="terms"
+                className="text-xs text-muted-foreground cursor-pointer select-none text-center"
+              >
+                Eu li e concordo com os{" "}
+                <button
+                  type="button"
+                  onClick={() => setTermsOpen(true)}
+                  className="text-primary font-semibold hover:opacity-85 cursor-pointer inline"
+                >
+                  termos de uso
+                </button>{" "}
+                do Pro Soccer Online.
+              </label>
+            </div>
+
+            <div className="h-[1px] bg-border/50" />
           </div>
 
           {/* OAuth */}
