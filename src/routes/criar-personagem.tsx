@@ -62,6 +62,14 @@ function CriarPersonagem() {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<PlayerDraft>(() => defaultDraft());
 
+  // Restaura um rascunho salvo (ex.: quando o nome escolhido já foi usado e o
+  // jogador voltou para escolher outro). Feito após montar para não quebrar a
+  // hidratação do SSR.
+  useEffect(() => {
+    const saved = loadDraft();
+    if (saved) setDraft(saved);
+  }, []);
+
   const update = <K extends keyof PlayerDraft>(key: K, value: PlayerDraft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
 
