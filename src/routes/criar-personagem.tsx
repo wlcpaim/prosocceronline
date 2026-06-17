@@ -240,7 +240,13 @@ function CriarPersonagem() {
                         maxLength={24}
                         placeholder="Ex: João Silva"
                         onChange={(e) => update("name", e.target.value)}
-                        className="pr-9"
+                        className={`pr-9 ${
+                          nameStatus === "ok"
+                            ? "border-primary focus-visible:ring-primary"
+                            : nameStatus === "taken" || nameStatus === "short"
+                              ? "border-destructive focus-visible:ring-destructive"
+                              : ""
+                        }`}
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2">
                         {nameStatus === "checking" && (
