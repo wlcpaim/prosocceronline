@@ -162,16 +162,16 @@ function Landing() {
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <a href="#top" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
-              <Trophy className="h-5 w-5" />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight">
-              Fut<span className="text-primary">Manager</span>
-            </span>
+            <Logo />
           </a>
-          <Button variant="hero" size="sm" asChild>
-            <Link to="/criar-personagem">Jogar agora</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/auth">Entrar</Link>
+            </Button>
+            <Button variant="hero" size="sm" asChild>
+              <Link to="/criar-personagem">Jogar agora</Link>
+            </Button>
+          </div>
         </nav>
       </header>
 
