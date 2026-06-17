@@ -82,22 +82,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Comece aos 14 anos, treine na base, seja descoberto por olheiros e evolua online contra outros jogadores. Fut Manager Online: o manager de carreira individual de futebol.",
+          "Pro Soccer Online: crie seu jogador, comece aos 14 anos, treine na base e evolua em partidas PvP e cooperativas. Manager de carreira individual de futebol.",
       },
-      { name: "author", content: "Fut Manager Online" },
+      { name: "author", content: "Pro Soccer Online" },
       { property: "og:title", content: "Pro Soccer Online — Sua carreira de jogador começa aqui" },
       {
         property: "og:description",
         content:
-          "Crie seu jogador, treine na base, seja contratado e evolua online. O futebol de carreira individual no seu celular.",
+          "Crie seu jogador, treine na base e evolua em partidas PvP e cooperativas. O futebol de carreira individual no seu navegador.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@FutManager" },
+      { name: "twitter:site", content: "@ProSoccerOnline" },
       { name: "twitter:title", content: "Pro Soccer Online — Sua carreira de jogador começa aqui" },
-      { name: "description", content: "Player Rise is a responsive mobile-first landing page for a football career simulation game." },
-      { property: "og:description", content: "Player Rise is a responsive mobile-first landing page for a football career simulation game." },
-      { name: "twitter:description", content: "Player Rise is a responsive mobile-first landing page for a football career simulation game." },
+      {
+        name: "twitter:description",
+        content:
+          "Crie seu jogador, treine na base e evolua em partidas PvP e cooperativas no Pro Soccer Online.",
+      },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a04f67ae-cb24-4ca2-a888-f0cf9dd70773/id-preview-427e8e79--8d5dfa4b-f4b3-473f-b0ed-a599b3f5385e.lovable.app-1781662124762.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a04f67ae-cb24-4ca2-a888-f0cf9dd70773/id-preview-427e8e79--8d5dfa4b-f4b3-473f-b0ed-a599b3f5385e.lovable.app-1781662124762.png" },
     ],
