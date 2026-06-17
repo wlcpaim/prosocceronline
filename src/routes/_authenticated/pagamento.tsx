@@ -158,6 +158,37 @@ function PaymentPage() {
                 automática.
               </p>
 
+              <div className="mt-6 space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                  Forma de pagamento
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2 rounded-xl border-2 border-primary bg-primary/10 px-3 py-2.5 text-sm font-semibold text-foreground">
+                    <QrCode className="h-4 w-4 text-primary" />
+                    Pix
+                  </div>
+                  {[
+                    { label: "Play Store", icon: Smartphone },
+                    { label: "Apple", icon: Apple },
+                    { label: "Cartão", icon: CreditCard },
+                  ].map(({ label, icon: Icon }) => (
+                    <div
+                      key={label}
+                      aria-disabled
+                      className="flex cursor-not-allowed items-center gap-2 rounded-xl border border-border bg-surface-elevated px-3 py-2.5 text-sm font-medium text-muted-foreground opacity-60"
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span className="flex flex-col leading-none">
+                        {label}
+                        <span className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-primary/70">
+                          Em breve
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                 <div>
                   <Label htmlFor="name">Nome completo</Label>
