@@ -165,12 +165,15 @@ function Landing() {
           <a href="#top" className="flex items-center gap-2">
             <Logo />
           </a>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2">
-            <Button variant="hero" size="sm" asChild className="order-1 sm:order-2 text-xs sm:text-sm py-1.5 h-auto sm:h-9">
+          <div className="flex items-center gap-4">
+            <Link
+              to="/auth"
+              className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Entrar
+            </Link>
+            <Button variant="hero" size="sm" asChild className="text-xs sm:text-sm px-4">
               <Link to="/criar-personagem">Jogar agora</Link>
-            </Button>
-            <Button variant="ghost" size="sm" asChild className="order-2 sm:order-1 text-xs sm:text-sm py-1 h-auto sm:h-9">
-              <Link to="/auth">Entrar</Link>
             </Button>
           </div>
         </nav>
