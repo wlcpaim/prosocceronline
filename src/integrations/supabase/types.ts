@@ -285,6 +285,13 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      get_player_stats: {
+        Args: never
+        Returns: {
+          online: number
+          registered: number
+        }[]
+      }
       has_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
