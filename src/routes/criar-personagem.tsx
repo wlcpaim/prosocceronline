@@ -155,12 +155,12 @@ function CriarPersonagem() {
     try {
       // Revalida o nome no banco logo antes de avançar para o login, evitando
       // que dois jogadores escolham o mesmo nome ao mesmo tempo.
-      const { data, error } = await supabase.rpc("is_player_name_available", { _name: name });
-      if (error) {
+      const check = await checkPlayerName({ data: { name } });
+      if (!check.ok) {
         toast.error("Não foi possível validar o nome. Tente novamente.");
         return;
       }
-      if (!data) {
+      if (!check.available) {
         setNameStatus("taken");
         setStep(0);
         toast.error("Esse nome de jogador já está em uso. Escolha outro para continuar.");
