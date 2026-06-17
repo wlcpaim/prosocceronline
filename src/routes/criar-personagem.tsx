@@ -41,7 +41,7 @@ import {
   loadDraft,
   clearDraft,
 } from "@/lib/player";
-import { createPlayer } from "@/lib/players.functions";
+import { createPlayer, checkPlayerName } from "@/lib/players.functions";
 
 export const Route = createFileRoute("/criar-personagem")({
   head: () => ({
@@ -99,10 +99,10 @@ function CriarPersonagem() {
     setNameStatus("checking");
     const id = ++checkRef.current;
     const t = setTimeout(async () => {
-      const { data, error } = await supabase.rpc("is_player_name_available", { _name: name });
+      const res = await checkPlayerName({ data: { name } });
       if (id !== checkRef.current) return;
-      if (error) setNameStatus("idle");
-      else setNameStatus(data ? "ok" : "taken");
+      if (!res.ok) setNameStatus("idle");
+      else setNameStatus(res.available ? "ok" : "taken");
     }, 450);
     return () => clearTimeout(t);
   }, [draft.name]);
@@ -155,12 +155,12 @@ function CriarPersonagem() {
     try {
       // Revalida o nome no banco logo antes de avançar para o login, evitando
       // que dois jogadores escolham o mesmo nome ao mesmo tempo.
-      const { data, error } = await supabase.rpc("is_player_name_available", { _name: name });
-      if (error) {
+      const check = await checkPlayerName({ data: { name } });
+      if (!check.ok) {
         toast.error("Não foi possível validar o nome. Tente novamente.");
         return;
       }
-      if (!data) {
+      if (!check.available) {
         setNameStatus("taken");
         setStep(0);
         toast.error("Esse nome de jogador já está em uso. Escolha outro para continuar.");

@@ -34,8 +34,10 @@ export const createPixCharge = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { userId, claims } = context;
 
-    // Já tem acesso? Não precisa cobrar de novo.
-    const { data: hasAccess } = await context.supabase.rpc("has_access", {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Já tem acesso? Não precisa cobrar de novo. (has_access roda via service role)
+    const { data: hasAccess } = await supabaseAdmin.rpc("has_access", {
       _user_id: userId,
     });
     if (hasAccess) {
@@ -55,7 +57,7 @@ export const createPixCharge = createServerFn({ method: "POST" })
 
     // Guarda os dados da cobrança (via service role, pois o usuário não pode
     // atualizar a própria assinatura diretamente).
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     await supabaseAdmin
       .from("subscriptions")
       .update({
@@ -81,9 +83,11 @@ export const getMyAccess = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { userId } = context;
 
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     const [{ data: hasAccess }, { data: isAdmin }, { data: sub }] = await Promise.all([
-      context.supabase.rpc("has_access", { _user_id: userId }),
-      context.supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
+      supabaseAdmin.rpc("has_access", { _user_id: userId }),
+      supabaseAdmin.rpc("has_role", { _user_id: userId, _role: "admin" }),
       context.supabase
         .from("subscriptions")
         .select("status, pix_code, amount_cents")

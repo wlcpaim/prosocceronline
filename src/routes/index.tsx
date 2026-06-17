@@ -480,9 +480,17 @@ function Landing() {
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 sm:flex-row">
           <Logo />
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Pro Soccer Online. Todos os direitos reservados.
-          </p>
+          <div className="flex flex-col items-center gap-2 sm:items-end">
+            <Link
+              to="/seguranca"
+              className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Segurança e Privacidade
+            </Link>
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} Pro Soccer Online. Todos os direitos reservados.
+            </p>
+          </div>
         </div>
       </footer>
     </div>

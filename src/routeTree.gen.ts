@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SegurancaRouteImport } from './routes/seguranca'
 import { Route as CriarPersonagemRouteImport } from './routes/criar-personagem'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AguardandoConfirmacaoRouteImport } from './routes/aguardando-confirmacao'
@@ -25,6 +26,11 @@ import { Route as ApiPublicWebhooksSyncpayRouteImport } from './routes/api/publi
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SegurancaRoute = SegurancaRouteImport.update({
+  id: '/seguranca',
+  path: '/seguranca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CriarPersonagemRoute = CriarPersonagemRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/aguardando-confirmacao': typeof AguardandoConfirmacaoRoute
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
+  '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/jogadores': typeof AuthenticatedJogadoresRoute
   '/pagamento': typeof AuthenticatedPagamentoRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/aguardando-confirmacao': typeof AguardandoConfirmacaoRoute
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
+  '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/jogadores': typeof AuthenticatedJogadoresRoute
   '/pagamento': typeof AuthenticatedPagamentoRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/aguardando-confirmacao': typeof AguardandoConfirmacaoRoute
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
+  '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/jogadores': typeof AuthenticatedJogadoresRoute
   '/_authenticated/pagamento': typeof AuthenticatedPagamentoRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/aguardando-confirmacao'
     | '/auth'
     | '/criar-personagem'
+    | '/seguranca'
     | '/sitemap.xml'
     | '/jogadores'
     | '/pagamento'
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/aguardando-confirmacao'
     | '/auth'
     | '/criar-personagem'
+    | '/seguranca'
     | '/sitemap.xml'
     | '/jogadores'
     | '/pagamento'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/aguardando-confirmacao'
     | '/auth'
     | '/criar-personagem'
+    | '/seguranca'
     | '/sitemap.xml'
     | '/_authenticated/jogadores'
     | '/_authenticated/pagamento'
@@ -174,6 +186,7 @@ export interface RootRouteChildren {
   AguardandoConfirmacaoRoute: typeof AguardandoConfirmacaoRoute
   AuthRoute: typeof AuthRoute
   CriarPersonagemRoute: typeof CriarPersonagemRoute
+  SegurancaRoute: typeof SegurancaRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiPublicWebhooksSyncpayRoute: typeof ApiPublicWebhooksSyncpayRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -188,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seguranca': {
+      id: '/seguranca'
+      path: '/seguranca'
+      fullPath: '/seguranca'
+      preLoaderRoute: typeof SegurancaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/criar-personagem': {
@@ -289,6 +309,7 @@ const rootRouteChildren: RootRouteChildren = {
   AguardandoConfirmacaoRoute: AguardandoConfirmacaoRoute,
   AuthRoute: AuthRoute,
   CriarPersonagemRoute: CriarPersonagemRoute,
+  SegurancaRoute: SegurancaRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiPublicWebhooksSyncpayRoute: ApiPublicWebhooksSyncpayRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
@@ -298,13 +319,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -1,18 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 
 // Função pública (sem login) que devolve quantos jogadores existem cadastrados
-// e uma estimativa de quantos estão online agora.
+// e uma estimativa de quantos estão online agora. O cálculo roda 100% no
+// servidor, com a função do banco acessível apenas pela service role.
 export const getPlayerStats = createServerFn({ method: "GET" }).handler(async () => {
   try {
-    const supabasePublic = createClient<Database>(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_PUBLISHABLE_KEY!,
-      { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data, error } = await supabasePublic.rpc("get_player_stats");
+    const { data, error } = await supabaseAdmin.rpc("get_player_stats");
     if (error) throw error;
 
     const row = Array.isArray(data) ? data[0] : data;
