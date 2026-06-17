@@ -48,6 +48,7 @@ interface PlayerRow {
 
 function Dashboard() {
   const navigate = useNavigate();
+  const checkAccess = useServerFn(getMyAccess);
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
@@ -55,6 +56,18 @@ function Dashboard() {
 
   useEffect(() => {
     (async () => {
+      // Bloqueia o acesso de quem não é admin e ainda não pagou.
+      try {
+        const access = await checkAccess({});
+        if (!access.hasAccess) {
+          navigate({ to: "/pagamento" });
+          return;
+        }
+      } catch {
+        navigate({ to: "/pagamento" });
+        return;
+      }
+
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;
       if (user) {
@@ -74,7 +87,9 @@ function Dashboard() {
       setSelectedId(rows[0]?.id ?? null);
       setLoading(false);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
