@@ -31,15 +31,16 @@ import trainingAcademy from "@/assets/training-academy.jpg";
 import scout from "@/assets/scout.jpg";
 import contract from "@/assets/contract.jpg";
 import { PlayerEvolution } from "@/components/PlayerEvolution";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Fut Manager Online — Sua carreira de jogador começa aqui" },
+      { title: "Pro Soccer Online — Sua carreira de jogador começa aqui" },
       {
         name: "description",
         content:
-          "Comece aos 14 anos, treine na base, seja descoberto por olheiros e evolua online contra outros jogadores. O manager de carreira individual de futebol.",
+          "Pro Soccer Online: crie seu jogador, comece aos 14 anos, treine na base, seja descoberto por olheiros e evolua em partidas PvP e cooperativas. Sem downloads.",
       },
     ],
   }),
@@ -87,8 +88,8 @@ const styles = [
 ];
 
 const stats = [
-  { value: "35", label: "Atributos no estilo FIFA" },
-  { value: "Online", label: "Multiplayer cooperativo" },
+  { value: "35", label: "Atributos detalhados" },
+  { value: "PvP", label: "e cooperativo" },
   { value: "14", label: "Anos para começar" },
   { value: "6 em 6", label: "Meses por temporada" },
 ];
@@ -161,16 +162,16 @@ function Landing() {
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <a href="#top" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground">
-              <Trophy className="h-5 w-5" />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight">
-              Fut<span className="text-primary">Manager</span>
-            </span>
+            <Logo />
           </a>
-          <Button variant="hero" size="sm" asChild>
-            <Link to="/criar-personagem">Jogar agora</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/auth">Entrar</Link>
+            </Button>
+            <Button variant="hero" size="sm" asChild>
+              <Link to="/criar-personagem">Jogar agora</Link>
+            </Button>
+          </div>
         </nav>
       </header>
 
@@ -181,14 +182,14 @@ function Landing() {
           <div className="relative z-10 text-center md:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-semibold text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              Manager de carreira individual
+              Manager de carreira individual · PvP e cooperativo
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
               Da escola de base ao <span className="text-gradient">estrelato mundial</span>
             </h1>
             <p className="mx-auto mt-5 max-w-md text-base text-muted-foreground md:mx-0 md:text-lg">
-              Crie seu jogador aos 14 anos, treine, seja descoberto por olheiros e
-              evolua online contra outros craques. Sua carreira, sua história.
+              Pro Soccer Online: crie seu jogador e comece a escrever a sua história
+              rumo ao topo. Sem downloads, jogue de qualquer dispositivo.
             </p>
             <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center md:justify-start">
               <Button variant="hero" size="lg" asChild>
@@ -253,7 +254,7 @@ function Landing() {
             Do garoto ao profissional
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Quatro etapas que definem a sua trajetória dentro do Fut Manager Online.
+            Quatro etapas que definem a sua trajetória dentro do Pro Soccer Online.
           </p>
         </div>
 
@@ -321,7 +322,7 @@ function Landing() {
             ))}
           </div>
 
-          {/* Evolução estilo FIFA modo carreira */}
+          {/* Evolução no modo carreira */}
           <div className="mx-auto mt-16 max-w-2xl text-center">
             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
               Evolua
@@ -454,8 +455,8 @@ function Landing() {
               Sua carreira começa <span className="text-gradient">agora</span>
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Jogue o Fut Manager Online direto do seu navegador, crie seu jogador e comece a escrever a
-              sua história rumo ao topo. Sem downloads, jogue de qualquer dispositivo.
+              Pro Soccer Online, crie seu jogador e comece a escrever a sua história rumo
+              ao topo. Sem downloads, jogue de qualquer dispositivo.
             </p>
             <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row">
               <Button variant="hero" size="lg" className="px-8" asChild>
@@ -471,16 +472,9 @@ function Landing() {
       {/* Footer */}
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <span className="grid h-7 w-7 place-items-center rounded-lg bg-primary text-primary-foreground">
-              <Trophy className="h-4 w-4" />
-            </span>
-            <span className="font-display text-sm font-bold">
-              Fut<span className="text-primary">Manager</span> Online
-            </span>
-          </div>
+          <Logo />
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Fut Manager Online. Todos os direitos reservados.
+            © {new Date().getFullYear()} Pro Soccer Online. Todos os direitos reservados.
           </p>
         </div>
       </footer>

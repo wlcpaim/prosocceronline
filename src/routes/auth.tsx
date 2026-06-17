@@ -1,25 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Trophy, Mail, Lock, Loader2, ArrowLeft } from "lucide-react";
+import { Mail, Lock, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import {
-  computeOverall,
-  computePotential,
-  loadDraft,
-  clearDraft,
-  withStyleBonus,
-} from "@/lib/player";
+import { computeOverall, computePotential, loadDraft, clearDraft, finalAttrs } from "@/lib/player";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — Fut Manager Online" },
-      { name: "description", content: "Crie sua conta e salve sua carreira no Fut Manager Online." },
+      { title: "Entrar — Pro Soccer Online" },
+      { name: "description", content: "Crie sua conta e salve sua carreira no Pro Soccer Online." },
     ],
   }),
   component: AuthPage,
@@ -33,30 +28,31 @@ async function persistDraftAndGo(navigate: ReturnType<typeof useNavigate>) {
 
   const draft = loadDraft();
   if (draft) {
-    const finalAttrs = withStyleBonus(draft.attributes, draft.playStyle);
-    const overall = computeOverall(finalAttrs, draft.position);
+    const attrs = finalAttrs(draft);
+    const overall = computeOverall(attrs, draft.position);
     const potential = computePotential(overall, draft.age);
-    const { error } = await supabase.from("players").upsert(
-      {
-        user_id: userId,
-        name: draft.name,
-        nationality: draft.nationality,
-        position: draft.position,
-        alt_positions: draft.altPositions,
-        preferred_foot: draft.preferredFoot,
-        weak_foot: draft.weakFoot,
-        skill_moves: draft.skillMoves,
-        height_cm: draft.heightCm,
-        weight_kg: draft.weightKg,
-        age: draft.age,
-        play_style: draft.playStyle,
-        overall,
-        potential,
-        attributes: finalAttrs,
-      },
-      { onConflict: "user_id" },
-    );
+    const { error } = await supabase.from("players").insert({
+      user_id: userId,
+      name: draft.name,
+      nationality: draft.nationality,
+      position: draft.position,
+      alt_positions: draft.altPositions,
+      preferred_foot: draft.preferredFoot,
+      weak_foot: draft.weakFoot,
+      skill_moves: draft.skillMoves,
+      height_cm: draft.heightCm,
+      weight_kg: draft.weightKg,
+      age: draft.age,
+      play_style: draft.playStyle,
+      overall,
+      potential,
+      attributes: attrs,
+    });
     if (error) {
+      if (error.code === "23505") {
+        toast.error("Esse nome de jogador já está em uso. Volte e escolha outro.");
+        return false;
+      }
       console.error(error);
       toast.error("Não foi possível salvar seu jogador. Tente novamente.");
       return false;
@@ -76,8 +72,8 @@ function AuthPage() {
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
   const hasDraft = typeof window !== "undefined" && !!loadDraft();
 
-  // Se já estiver logado (ou voltar de um OAuth), segue o fluxo
   useEffect(() => {
+    if (!hasDraft) setMode("login");
     persistDraftAndGo(navigate);
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") persistDraftAndGo(navigate);
@@ -154,14 +150,7 @@ function AuthPage() {
         </Link>
 
         <div className="rounded-3xl border border-border bg-card p-6 shadow-elevated sm:p-8">
-          <div className="flex items-center gap-2">
-            <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground">
-              <Trophy className="h-5 w-5" />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight">
-              Fut<span className="text-primary">Manager</span>
-            </span>
-          </div>
+          <Logo />
 
           <h1 className="mt-6 font-display text-2xl font-bold">
             {mode === "signup" ? "Crie sua conta" : "Bem-vindo de volta"}

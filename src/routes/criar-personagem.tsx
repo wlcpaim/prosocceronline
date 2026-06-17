@@ -1,43 +1,52 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Trophy,
   ChevronRight,
   ChevronLeft,
-  Sparkles,
   Star,
   Check,
+  Minus,
+  Plus,
+  Loader2,
+  CircleCheck,
+  CircleX,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PlayerCard, previewStats } from "@/components/PlayerCard";
+import { PlayerCard } from "@/components/PlayerCard";
+import { Logo } from "@/components/Logo";
+import { supabase } from "@/integrations/supabase/client";
 import {
-  ATTRIBUTES,
+  CATEGORIES,
   ATTR_BASE,
-  ATTR_MAX,
-  ATTR_MIN,
-  ATTR_POOL,
+  ATTR_CAP,
+  FREE_POINTS,
+  OVERALL_CAP,
+  STAR_BASE,
+  STAR_POOL,
   NATIONALITIES,
   PLAY_STYLES,
   POSITIONS,
-  type AttrKey,
   type PlayerDraft,
+  baseAttrs,
+  finalAttrs,
+  spentPoints,
+  computeOverall,
   computePotential,
   defaultDraft,
+  emptyFreePoints,
   saveDraft,
-  subValue,
-  withStyleBonus,
 } from "@/lib/player";
 
 export const Route = createFileRoute("/criar-personagem")({
   head: () => ({
     meta: [
-      { title: "Crie seu jogador — Fut Manager Online" },
+      { title: "Crie seu jogador — Pro Soccer Online" },
       {
         name: "description",
         content:
-          "Monte seu craque no estilo EA SPORTS FC: posição, estilo de jogo e atributos. Comece sua carreira aos 14 anos.",
+          "Monte seu craque no Pro Soccer Online: posição, estilo de jogo, físico e atributos. Tudo afeta o overall ao vivo.",
       },
     ],
   }),
@@ -45,36 +54,6 @@ export const Route = createFileRoute("/criar-personagem")({
 });
 
 const STEPS = ["Identidade", "Atributos", "Resumo"];
-
-function StarPicker({
-  value,
-  onChange,
-  max = 5,
-}: {
-  value: number;
-  onChange: (v: number) => void;
-  max?: number;
-}) {
-  return (
-    <div className="flex gap-1">
-      {Array.from({ length: max }).map((_, i) => (
-        <button
-          key={i}
-          type="button"
-          onClick={() => onChange(i + 1)}
-          className="p-0.5"
-          aria-label={`${i + 1} estrelas`}
-        >
-          <Star
-            className={`h-5 w-5 transition-colors ${
-              i < value ? "fill-accent text-accent" : "text-muted-foreground/40"
-            }`}
-          />
-        </button>
-      ))}
-    </div>
-  );
-}
 
 function CriarPersonagem() {
   const navigate = useNavigate();
@@ -84,35 +63,64 @@ function CriarPersonagem() {
   const update = <K extends keyof PlayerDraft>(key: K, value: PlayerDraft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
 
-  const distributed = useMemo(
-    () =>
-      (Object.keys(draft.attributes) as AttrKey[]).reduce(
-        (acc, k) => acc + (draft.attributes[k] - ATTR_BASE),
-        0,
-      ),
-    [draft.attributes],
-  );
-  const remaining = ATTR_POOL - distributed;
+  // --- Atributos ao vivo ---
+  const base = useMemo(() => baseAttrs(draft), [draft]);
+  const attrs = useMemo(() => finalAttrs(draft), [draft]);
+  const overall = useMemo(() => computeOverall(attrs, draft.position), [attrs, draft.position]);
+  const potential = computePotential(overall, draft.age);
+  const spent = spentPoints(draft.freePoints);
+  const remaining = FREE_POINTS - spent;
 
-  const setAttr = (key: AttrKey, value: number) => {
-    const current = draft.attributes[key];
-    const delta = value - current;
-    if (delta > remaining) value = current + remaining;
-    value = Math.max(ATTR_MIN, Math.min(ATTR_MAX, value));
-    setDraft((d) => ({ ...d, attributes: { ...d.attributes, [key]: value } }));
+  // estrelas (fintas + pé ruim)
+  const starsUsed = draft.weakFoot - STAR_BASE + (draft.skillMoves - STAR_BASE);
+  const starsLeft = STAR_POOL - starsUsed;
+
+  // --- Disponibilidade de nome ---
+  const [nameStatus, setNameStatus] = useState<"idle" | "checking" | "ok" | "taken" | "short">("idle");
+  const checkRef = useRef(0);
+  useEffect(() => {
+    const name = draft.name.trim();
+    if (name.length < 3) {
+      setNameStatus(name.length === 0 ? "idle" : "short");
+      return;
+    }
+    setNameStatus("checking");
+    const id = ++checkRef.current;
+    const t = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("is_player_name_available", { _name: name });
+      if (id !== checkRef.current) return;
+      if (error) setNameStatus("idle");
+      else setNameStatus(data ? "ok" : "taken");
+    }, 450);
+    return () => clearTimeout(t);
+  }, [draft.name]);
+
+  const setFree = (key: string, delta: number) => {
+    setDraft((d) => {
+      const cur = d.freePoints[key] ?? 0;
+      let next = cur + delta;
+      if (next < 0) next = 0;
+      // não pode ultrapassar pontos restantes
+      if (delta > 0 && spentPoints(d.freePoints) >= FREE_POINTS) return d;
+      // não pode ultrapassar o teto do atributo
+      if (base[key] + next > ATTR_CAP) next = ATTR_CAP - base[key];
+      return { ...d, freePoints: { ...d.freePoints, [key]: Math.max(0, next) } };
+    });
   };
 
-  const preview = useMemo(
-    () => previewStats(draft.attributes, draft.position, draft.playStyle),
-    [draft.attributes, draft.position, draft.playStyle],
-  );
-  const potential = computePotential(preview.overall, draft.age);
-  const finalAttrs = useMemo(
-    () => withStyleBonus(draft.attributes, draft.playStyle),
-    [draft.attributes, draft.playStyle],
-  );
+  const setStarFor = (which: "weakFoot" | "skillMoves", delta: number) => {
+    setDraft((d) => {
+      const cur = d[which];
+      let next = cur + delta;
+      next = Math.max(STAR_BASE, Math.min(STAR_BASE + STAR_POOL, next));
+      const otherExtra = (which === "weakFoot" ? d.skillMoves : d.weakFoot) - STAR_BASE;
+      if (next - STAR_BASE + otherExtra > STAR_POOL) return d;
+      return { ...d, [which]: next };
+    });
+  };
 
-  const canNext = step === 0 ? draft.name.trim().length >= 2 : true;
+  const canNext =
+    step === 0 ? nameStatus === "ok" && draft.name.trim().length >= 3 : true;
 
   const toggleAlt = (code: string) => {
     setDraft((d) => {
@@ -124,7 +132,7 @@ function CriarPersonagem() {
   };
 
   const finish = () => {
-    saveDraft({ ...draft, attributes: draft.attributes });
+    saveDraft(draft);
     navigate({ to: "/auth" });
   };
 
@@ -133,16 +141,16 @@ function CriarPersonagem() {
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary text-primary-foreground">
-              <Trophy className="h-5 w-5" />
-            </span>
-            <span className="font-display text-lg font-bold tracking-tight">
-              Fut<span className="text-primary">Manager</span>
-            </span>
+            <Logo />
           </Link>
-          <span className="text-xs text-muted-foreground">
-            Etapa {step + 1} de {STEPS.length}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-xs text-muted-foreground sm:inline">
+              Etapa {step + 1} de {STEPS.length}
+            </span>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/auth">Entrar</Link>
+            </Button>
+          </div>
         </nav>
       </header>
 
@@ -174,7 +182,7 @@ function CriarPersonagem() {
           ))}
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
           {/* Form area */}
           <div>
             {step === 0 && (
@@ -182,21 +190,41 @@ function CriarPersonagem() {
                 <div>
                   <h1 className="font-display text-2xl font-bold">Quem é o seu craque?</h1>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Toda lenda começa aos 14 anos. Defina a identidade do seu jogador.
+                    Toda lenda começa aos 14 anos. Físico, posição e nacionalidade já moldam seus atributos.
                   </p>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="sm:col-span-2">
-                    <Label htmlFor="name">Nome do jogador</Label>
-                    <Input
-                      id="name"
-                      value={draft.name}
-                      maxLength={24}
-                      placeholder="Ex: João Silva"
-                      onChange={(e) => update("name", e.target.value)}
-                      className="mt-1.5"
-                    />
+                    <Label htmlFor="name">Nome do jogador (único)</Label>
+                    <div className="relative mt-1.5">
+                      <Input
+                        id="name"
+                        value={draft.name}
+                        maxLength={24}
+                        placeholder="Ex: João Silva"
+                        onChange={(e) => update("name", e.target.value)}
+                        className="pr-9"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                        {nameStatus === "checking" && (
+                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                        )}
+                        {nameStatus === "ok" && <CircleCheck className="h-4 w-4 text-primary" />}
+                        {(nameStatus === "taken" || nameStatus === "short") && (
+                          <CircleX className="h-4 w-4 text-destructive" />
+                        )}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {nameStatus === "taken" && (
+                        <span className="text-destructive">Esse nome já está em uso. Escolha outro.</span>
+                      )}
+                      {nameStatus === "short" && "O nome precisa ter ao menos 3 letras."}
+                      {nameStatus === "ok" && <span className="text-primary">Nome disponível!</span>}
+                      {(nameStatus === "idle" || nameStatus === "checking") &&
+                        "Nomes de jogador não podem se repetir no Pro Soccer Online."}
+                    </p>
                   </div>
 
                   <div>
@@ -259,7 +287,7 @@ function CriarPersonagem() {
                 </div>
 
                 <div>
-                  <Label>Posições alternativas (até 2)</Label>
+                  <Label>Posições secundárias (até 2)</Label>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {POSITIONS.filter((p) => p.code !== draft.position).map((p) => {
                       const active = draft.altPositions.includes(p.code);
@@ -293,6 +321,9 @@ function CriarPersonagem() {
                       onChange={(e) => update("heightCm", Number(e.target.value))}
                       className="mt-3 w-full accent-[oklch(0.84_0.21_145)]"
                     />
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Mais alto: + força, impulsão e cabeceio · − agilidade e ritmo
+                    </p>
                   </div>
                   <div>
                     <Label htmlFor="weight">Peso: {draft.weightKg} kg</Label>
@@ -305,6 +336,9 @@ function CriarPersonagem() {
                       onChange={(e) => update("weightKg", Number(e.target.value))}
                       className="mt-3 w-full accent-[oklch(0.84_0.21_145)]"
                     />
+                    <p className="mt-1 text-[11px] text-muted-foreground">
+                      Mais pesado: + força e combatividade · − aceleração e fôlego
+                    </p>
                   </div>
                 </div>
               </div>
@@ -315,7 +349,8 @@ function CriarPersonagem() {
                 <div>
                   <h1 className="font-display text-2xl font-bold">Estilo e atributos</h1>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Escolha o DNA do seu jogador e distribua os pontos iniciais.
+                    Cada posição e estilo já dá atributos específicos. Distribua {FREE_POINTS} pontos
+                    extras com inteligência — o overall muda ao vivo (máx. {OVERALL_CAP}).
                   </p>
                 </div>
 
@@ -340,24 +375,39 @@ function CriarPersonagem() {
                   </div>
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-xl border border-border bg-card p-4">
-                    <Label>Fintas (skill moves)</Label>
-                    <div className="mt-2">
-                      <StarPicker value={draft.skillMoves} onChange={(v) => update("skillMoves", v)} />
-                    </div>
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <Label className="text-base">Fintas e pé ruim</Label>
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-bold ${
+                        starsLeft > 0 ? "bg-accent/15 text-accent" : "bg-surface-elevated text-muted-foreground"
+                      }`}
+                    >
+                      {starsLeft} estrela(s) restante(s)
+                    </span>
                   </div>
-                  <div className="rounded-xl border border-border bg-card p-4">
-                    <Label>Pé ruim</Label>
-                    <div className="mt-2">
-                      <StarPicker value={draft.weakFoot} onChange={(v) => update("weakFoot", v)} />
-                    </div>
+                  <p className="mb-3 text-[11px] text-muted-foreground">
+                    Todos começam com 1 estrela em cada — evoluem durante o jogo. Você tem {STAR_POOL} para distribuir agora.
+                  </p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <StarRow
+                      label="Fintas"
+                      value={draft.skillMoves}
+                      onAdd={() => setStarFor("skillMoves", 1)}
+                      onSub={() => setStarFor("skillMoves", -1)}
+                    />
+                    <StarRow
+                      label="Pé ruim"
+                      value={draft.weakFoot}
+                      onAdd={() => setStarFor("weakFoot", 1)}
+                      onSub={() => setStarFor("weakFoot", -1)}
+                    />
                   </div>
                 </div>
 
                 <div className="rounded-xl border border-border bg-card p-4">
                   <div className="mb-3 flex items-center justify-between">
-                    <Label className="text-base">Atributos</Label>
+                    <Label className="text-base">Atributos (35)</Label>
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-bold ${
                         remaining > 0
@@ -368,23 +418,49 @@ function CriarPersonagem() {
                       {remaining} pts restantes
                     </span>
                   </div>
-                  <div className="space-y-4">
-                    {ATTRIBUTES.map((cat) => (
+                  <div className="space-y-5">
+                    {CATEGORIES.map((cat) => (
                       <div key={cat.key}>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="font-semibold">{cat.label}</span>
-                          <span className="font-display font-bold text-primary">
-                            {draft.attributes[cat.key]}
-                          </span>
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-xs font-bold uppercase text-primary">{cat.label}</span>
                         </div>
-                        <input
-                          type="range"
-                          min={ATTR_MIN}
-                          max={ATTR_MAX}
-                          value={draft.attributes[cat.key]}
-                          onChange={(e) => setAttr(cat.key, Number(e.target.value))}
-                          className="mt-1.5 w-full accent-[oklch(0.84_0.21_145)]"
-                        />
+                        <div className="grid gap-2 sm:grid-cols-2">
+                          {cat.attrs.map((a) => {
+                            const free = draft.freePoints[a.key] ?? 0;
+                            const val = attrs[a.key];
+                            return (
+                              <div
+                                key={a.key}
+                                className="flex items-center justify-between gap-2 rounded-lg bg-surface-elevated px-3 py-2"
+                              >
+                                <span className="truncate text-xs text-foreground/90">{a.label}</span>
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => setFree(a.key, -1)}
+                                    disabled={free <= 0}
+                                    className="grid h-6 w-6 place-items-center rounded-md border border-border text-muted-foreground transition-colors hover:border-primary/50 disabled:opacity-30"
+                                    aria-label={`Reduzir ${a.label}`}
+                                  >
+                                    <Minus className="h-3.5 w-3.5" />
+                                  </button>
+                                  <span className="w-7 text-center font-display text-sm font-bold">
+                                    {val}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setFree(a.key, 1)}
+                                    disabled={remaining <= 0 || val >= ATTR_CAP}
+                                    className="grid h-6 w-6 place-items-center rounded-md border border-border text-primary transition-colors hover:border-primary disabled:opacity-30"
+                                    aria-label={`Aumentar ${a.label}`}
+                                  >
+                                    <Plus className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -402,42 +478,34 @@ function CriarPersonagem() {
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <Detail label="Overall" value={String(preview.overall)} highlight />
+                  <Detail label="Overall" value={String(overall)} highlight />
                   <Detail label="Potencial" value={String(potential)} />
                   <Detail label="Posição" value={draft.position} />
-                  <Detail
-                    label="Posições alt."
-                    value={draft.altPositions.join(", ") || "—"}
-                  />
-                  <Detail label="Idade" value={`${draft.age} anos`} />
+                  <Detail label="Posições sec." value={draft.altPositions.join(", ") || "—"} />
+                  <Detail label="Nacionalidade" value={draft.nationality} />
                   <Detail label="Estilo" value={draft.playStyle} />
+                  <Detail label="Idade" value={`${draft.age} anos`} />
                   <Detail label="Altura / Peso" value={`${draft.heightCm}cm · ${draft.weightKg}kg`} />
                   <Detail label="Pé preferido" value={draft.preferredFoot} />
+                  <Detail label="Fintas / Pé ruim" value={`${draft.skillMoves}★ / ${draft.weakFoot}★`} />
                 </div>
 
                 <div className="rounded-xl border border-border bg-card p-4">
                   <h3 className="mb-3 font-display text-sm font-bold">Atributos detalhados</h3>
                   <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
-                    {ATTRIBUTES.map((cat) => (
+                    {CATEGORIES.map((cat) => (
                       <div key={cat.key}>
-                        <div className="mb-1.5 flex items-center justify-between">
-                          <span className="text-xs font-bold uppercase text-primary">
-                            {cat.label}
-                          </span>
-                          <span className="font-display text-sm font-bold">
-                            {finalAttrs[cat.key]}
-                          </span>
+                        <div className="mb-1.5 text-xs font-bold uppercase text-primary">
+                          {cat.label}
                         </div>
                         <div className="space-y-1">
-                          {cat.subs.map((s) => (
+                          {cat.attrs.map((a) => (
                             <div
-                              key={s.key}
+                              key={a.key}
                               className="flex items-center justify-between text-[11px] text-muted-foreground"
                             >
-                              <span>{s.label}</span>
-                              <span className="font-semibold text-foreground/80">
-                                {subValue(finalAttrs[cat.key], s.offset)}
-                              </span>
+                              <span>{a.label}</span>
+                              <span className="font-semibold text-foreground/80">{attrs[a.key]}</span>
                             </div>
                           ))}
                         </div>
@@ -449,47 +517,99 @@ function CriarPersonagem() {
             )}
 
             {/* Nav buttons */}
-            <div className="mt-8 flex items-center justify-between gap-3">
-              {step > 0 ? (
-                <Button variant="outline" onClick={() => setStep((s) => s - 1)}>
-                  <ChevronLeft className="h-4 w-4" /> Voltar
-                </Button>
-              ) : (
-                <Button variant="outline" asChild>
-                  <Link to="/">Cancelar</Link>
-                </Button>
-              )}
-
+            <div className="mt-8 flex items-center justify-between">
+              <Button
+                variant="ghost"
+                onClick={() => setStep((s) => Math.max(0, s - 1))}
+                disabled={step === 0}
+              >
+                <ChevronLeft className="h-4 w-4" /> Voltar
+              </Button>
               {step < STEPS.length - 1 ? (
-                <Button variant="hero" disabled={!canNext} onClick={() => setStep((s) => s + 1)}>
+                <Button variant="hero" onClick={() => setStep((s) => s + 1)} disabled={!canNext}>
                   Continuar <ChevronRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button variant="hero" size="lg" onClick={finish}>
-                  <Sparkles className="h-4 w-4" /> Começar carreira
+                <Button variant="hero" onClick={finish}>
+                  Criar conta e começar <ChevronRight className="h-4 w-4" />
                 </Button>
               )}
             </div>
           </div>
 
-          {/* Live preview card */}
+          {/* Live preview */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             <PlayerCard
               name={draft.name}
               position={draft.position}
               nationality={draft.nationality}
-              overall={preview.overall}
-              attributes={preview.attrs}
+              overall={overall}
+              attributes={attrs}
               weakFoot={draft.weakFoot}
               skillMoves={draft.skillMoves}
               preferredFoot={draft.preferredFoot}
             />
-            <p className="mt-3 text-center text-xs text-muted-foreground">
-              Prévia ao vivo do seu jogador
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-border bg-card p-4 text-center">
+                <div className="text-xs text-muted-foreground">Overall</div>
+                <div className="font-display text-3xl font-bold text-primary">{overall}</div>
+              </div>
+              <div className="rounded-2xl border border-border bg-card p-4 text-center">
+                <div className="text-xs text-muted-foreground">Potencial</div>
+                <div className="font-display text-3xl font-bold">{potential}</div>
+              </div>
+            </div>
+            <p className="mt-3 text-center text-[11px] text-muted-foreground">
+              Base fixa de {ATTR_BASE} por atributo. Quem distribui com inteligência chega a {OVERALL_CAP}.
             </p>
           </aside>
         </div>
       </main>
+    </div>
+  );
+}
+
+function StarRow({
+  label,
+  value,
+  onAdd,
+  onSub,
+}: {
+  label: string;
+  value: number;
+  onAdd: () => void;
+  onSub: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-lg bg-surface-elevated px-3 py-2">
+      <div>
+        <div className="text-xs font-semibold">{label}</div>
+        <div className="mt-0.5 flex">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star
+              key={i}
+              className={`h-3.5 w-3.5 ${i < value ? "fill-accent text-accent" : "text-muted-foreground/40"}`}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={onSub}
+          disabled={value <= STAR_BASE}
+          className="grid h-6 w-6 place-items-center rounded-md border border-border text-muted-foreground transition-colors hover:border-accent/50 disabled:opacity-30"
+        >
+          <Minus className="h-3.5 w-3.5" />
+        </button>
+        <button
+          type="button"
+          onClick={onAdd}
+          className="grid h-6 w-6 place-items-center rounded-md border border-border text-accent transition-colors hover:border-accent disabled:opacity-30"
+        >
+          <Plus className="h-3.5 w-3.5" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -504,13 +624,15 @@ function Detail({
   highlight?: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-3">
-      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
+    <div className="rounded-xl border border-border bg-card p-4">
+      <div className="text-xs text-muted-foreground">{label}</div>
       <div
-        className={`mt-0.5 font-display text-lg font-bold ${highlight ? "text-primary" : "text-foreground"}`}
+        className={`mt-1 font-display text-lg font-bold ${highlight ? "text-primary" : "text-foreground"}`}
       >
         {value}
       </div>
     </div>
   );
 }
+
+void emptyFreePoints;
