@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { computeOverall, computePotential, loadDraft, clearDraft, finalAttrs } from "@/lib/player";
@@ -187,53 +186,51 @@ function AuthPage() {
                   Termos de Uso
                 </DialogTitle>
               </DialogHeader>
-              <ScrollArea className="flex-1 mt-4 pr-1 text-sm text-muted-foreground">
-                <div className="space-y-4">
-                  <p>
-                    <strong>Bem-vindo ao Pro Soccer Online!</strong> Este é um manager
-                    de carreira individual desenvolvido para entretenimento. Ao criar sua
-                    conta ou fazer login, você concorda e aceita integralmente as regras e
-                    termos descritos abaixo.
-                  </p>
+              <div className="flex-1 mt-4 pr-2 text-sm text-muted-foreground overflow-y-auto max-h-[50vh] space-y-4">
+                <p>
+                  <strong>Bem-vindo ao Pro Soccer Online!</strong> Este é um manager
+                  de carreira individual desenvolvido para entretenimento. Ao criar sua
+                  conta ou fazer login, você concorda e aceita integralmente as regras e
+                  termos descritos abaixo.
+                </p>
 
-                  <h3 className="font-semibold text-foreground">1. Cadastro e Contas</h3>
-                  <p>
-                    Para salvar sua carreira, criar personagens e disputar as partidas,
-                    você deve se cadastrar utilizando um método de autenticação válido
-                    (Google ou Apple). É permitida apenas uma conta ativa por jogador.
-                    O uso de bots, scripts de automação ou hacks é expressamente proibido
-                    e resultará na suspensão permanente da conta.
-                  </p>
+                <h3 className="font-semibold text-foreground">1. Cadastro e Contas</h3>
+                <p>
+                  Para salvar sua carreira, criar personagens e disputar as partidas,
+                  você deve se cadastrar utilizando um método de autenticação válido
+                  (Google ou Apple). É permitida apenas uma conta ativa por jogador.
+                  O uso de bots, scripts de automação ou hacks é expressamente proibido
+                  e resultará na suspensão permanente da conta.
+                </p>
 
-                  <h3 className="font-semibold text-foreground">2. Economia do Jogo</h3>
-                  <p>
-                    Todos os salários, bônus por gol, premiações e itens disponíveis na
-                    loja são fictícios e adquiridos exclusivamente por meio da jogabilidade.
-                    Nenhum recurso dentro do jogo possui valor monetário real, e a compra
-                    ou venda de contas e recursos por dinheiro externo é proibida.
-                  </p>
+                <h3 className="font-semibold text-foreground">2. Economia do Jogo</h3>
+                <p>
+                  Todos os salários, bônus por gol, premiações e itens disponíveis na
+                  loja são fictícios e adquiridos exclusivamente por meio da jogabilidade.
+                  Nenhum recurso dentro do jogo possui valor monetário real, e a compra
+                  ou venda de contas e recursos por dinheiro externo é proibida.
+                </p>
 
-                  <h3 className="font-semibold text-foreground">3. Conduta do Jogador</h3>
-                  <p>
-                    Esperamos que todos mantenham um ambiente esportivo e respeitoso.
-                    Comportamentos tóxicos, discursos de ódio no chat global, ofensas no
-                    vestiário ou tentativas de jogar de má-fé estão sujeitos a moderação e banimento.
-                  </p>
+                <h3 className="font-semibold text-foreground">3. Conduta do Jogador</h3>
+                <p>
+                  Esperamos que todos mantenham um ambiente esportivo e respeitoso.
+                  Comportamentos tóxicos, discursos de ódio no chat global, ofensas no
+                  vestiário ou tentativas de jogar de má-fé estão sujeitos a moderação e banimento.
+                </p>
 
-                  <h3 className="font-semibold text-foreground">4. Modificações no Serviço</h3>
-                  <p>
-                    O Pro Soccer Online poderá realizar atualizações, rebalanceamentos de
-                    atributos ou redefinições sazonais de ligas a fim de garantir uma simulação
-                    competitiva e divertida para toda a comunidade.
-                  </p>
+                <h3 className="font-semibold text-foreground">4. Modificações no Serviço</h3>
+                <p>
+                  O Pro Soccer Online poderá realizar atualizações, rebalanceamentos de
+                  atributos ou redefinições sazonais de ligas a fim de garantir uma simulação
+                  competitiva e divertida para toda a comunidade.
+                </p>
 
-                  <h3 className="font-semibold text-foreground">5. Privacidade e Dados</h3>
-                  <p>
-                    Coletamos dados de autenticação exclusivamente para gerenciar seu acesso
-                    e salvar o progresso dos seus jogadores. Seus dados nunca serão compartilhados ou vendidos.
-                  </p>
-                </div>
-              </ScrollArea>
+                <h3 className="font-semibold text-foreground">5. Privacidade e Dados</h3>
+                <p>
+                  Coletamos dados de autenticação exclusivamente para gerenciar seu acesso
+                  e salvar o progresso dos seus jogadores. Seus dados nunca serão compartilhados ou vendidos.
+                </p>
+              </div>
               <div className="mt-6 flex justify-end">
                 <Button onClick={() => setTermsOpen(false)} className="w-full">
                   Entendi e Aceito
