@@ -204,6 +204,7 @@ function Dashboard() {
                 <PlayerCard
                   name={player.name}
                   position={player.position}
+                  altPositions={player.alt_positions ?? undefined}
                   nationality={player.nationality ?? undefined}
                   overall={player.overall}
                   attributes={player.attributes}
