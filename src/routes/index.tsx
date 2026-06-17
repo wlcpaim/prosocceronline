@@ -182,14 +182,14 @@ function Landing() {
           <div className="relative z-10 text-center md:text-left">
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-3 py-1 text-xs font-semibold text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              Manager de carreira individual
+              Manager de carreira individual · PvP e cooperativo
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
               Da escola de base ao <span className="text-gradient">estrelato mundial</span>
             </h1>
             <p className="mx-auto mt-5 max-w-md text-base text-muted-foreground md:mx-0 md:text-lg">
-              Crie seu jogador aos 14 anos, treine, seja descoberto por olheiros e
-              evolua online contra outros craques. Sua carreira, sua história.
+              Pro Soccer Online: crie seu jogador e comece a escrever a sua história
+              rumo ao topo. Sem downloads, jogue de qualquer dispositivo.
             </p>
             <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center md:justify-start">
               <Button variant="hero" size="lg" asChild>
