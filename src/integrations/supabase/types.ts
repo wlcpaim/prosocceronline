@@ -106,7 +106,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_player_name_available: { Args: { _name: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
