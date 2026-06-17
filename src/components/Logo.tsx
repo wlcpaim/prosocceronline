@@ -18,10 +18,10 @@ export function Logo({ className, showText = true }: LogoProps) {
       />
       {showText && (
         <div className="flex flex-col leading-[1.1]">
-          <span className="font-display text-[11px] font-semibold tracking-wider text-foreground/80 uppercase">
+          <span className="font-display text-sm font-bold tracking-tight text-foreground">
             Pro Soccer
           </span>
-          <span className="font-display text-base font-extrabold tracking-tight text-primary">
+          <span className="font-display text-[10px] font-semibold tracking-widest text-primary uppercase">
             Online
           </span>
         </div>
