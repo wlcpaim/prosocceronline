@@ -31,7 +31,7 @@ import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { CATEGORIES, categoryValue, type Attrs } from "@/lib/player";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/_authenticated/jogadores")({
   head: () => ({
     meta: [{ title: "Jogadores — Pro Soccer Online" }],
   }),
