@@ -70,6 +70,23 @@ function CriarPersonagem() {
     if (saved) setDraft(saved);
   }, []);
 
+  // Se o usuário já está logado e já possui um jogador, leva direto ao painel
+  // em vez de mostrar a tela de criação (onde o próprio nome apareceria "em uso").
+  useEffect(() => {
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+      if (!user) return;
+      const { data: existing } = await supabase
+        .from("players")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+      if (existing) navigate({ to: "/dashboard" });
+    })();
+  }, [navigate]);
+
   const update = <K extends keyof PlayerDraft>(key: K, value: PlayerDraft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
 
