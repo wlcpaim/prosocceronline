@@ -44,6 +44,9 @@ export const Route = createFileRoute("/")({
           "Pro Soccer Online: crie seu jogador, comece aos 14 anos, treine na base, seja descoberto por olheiros e evolua em partidas PvP e cooperativas. Sem downloads.",
       },
     ],
+    links: [
+      { rel: "preload", as: "image", href: heroPlayer, fetchpriority: "high" },
+    ],
   }),
   component: Landing,
 });
