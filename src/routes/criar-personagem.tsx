@@ -39,6 +39,7 @@ import {
   emptyFreePoints,
   saveDraft,
   loadDraft,
+  clearDraft,
 } from "@/lib/player";
 
 export const Route = createFileRoute("/criar-personagem")({
@@ -69,23 +70,6 @@ function CriarPersonagem() {
     const saved = loadDraft();
     if (saved) setDraft(saved);
   }, []);
-
-  // Se o usuário já está logado e já possui um jogador, leva direto ao painel
-  // em vez de mostrar a tela de criação (onde o próprio nome apareceria "em uso").
-  useEffect(() => {
-    (async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData.user;
-      if (!user) return;
-      const { data: existing } = await supabase
-        .from("players")
-        .select("id")
-        .eq("user_id", user.id)
-        .limit(1)
-        .maybeSingle();
-      if (existing) navigate({ to: "/dashboard" });
-    })();
-  }, [navigate]);
 
   const update = <K extends keyof PlayerDraft>(key: K, value: PlayerDraft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
@@ -181,6 +165,49 @@ function CriarPersonagem() {
         toast.error("Esse nome de jogador já está em uso. Escolha outro para continuar.");
         return;
       }
+
+      // Se o usuário já está logado (ex.: criando um jogador adicional),
+      // grava direto e vai ao painel, sem passar pela tela de login.
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id;
+      if (userId) {
+        const attrs = finalAttrs(draft);
+        const ovr = computeOverall(attrs, draft.position);
+        const pot = computePotential(ovr, draft.age);
+        const { error: insertError } = await supabase.from("players").insert({
+          user_id: userId,
+          name,
+          nationality: draft.nationality,
+          position: draft.position,
+          alt_positions: draft.altPositions,
+          preferred_foot: draft.preferredFoot,
+          weak_foot: draft.weakFoot,
+          skill_moves: draft.skillMoves,
+          height_cm: draft.heightCm,
+          weight_kg: draft.weightKg,
+          age: draft.age,
+          play_style: draft.playStyle,
+          overall: ovr,
+          potential: pot,
+          attributes: attrs,
+        });
+        if (insertError) {
+          if (insertError.code === "23505") {
+            setNameStatus("taken");
+            setStep(0);
+            toast.error("Esse nome de jogador já está em uso. Escolha outro para continuar.");
+            return;
+          }
+          console.error(insertError);
+          toast.error("Não foi possível salvar seu jogador. Tente novamente.");
+          return;
+        }
+        clearDraft();
+        toast.success("Jogador criado!");
+        navigate({ to: "/dashboard" });
+        return;
+      }
+
       saveDraft(draft);
       navigate({ to: "/auth" });
     } finally {
@@ -618,6 +645,7 @@ function CriarPersonagem() {
             <PlayerCard
               name={draft.name}
               position={draft.position}
+              altPositions={draft.altPositions}
               nationality={draft.nationality}
               overall={overall}
               attributes={attrs}
