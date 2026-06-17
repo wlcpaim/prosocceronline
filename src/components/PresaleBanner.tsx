@@ -102,11 +102,12 @@ export function PresaleBanner() {
               </div>
 
               <div className="mt-8 flex items-end justify-center gap-3 sm:gap-4">
-                <TimeBox value={remaining.days} label="Dias" />
-                <TimeBox value={remaining.hours} label="Horas" />
-                <TimeBox value={remaining.minutes} label="Min" />
-                <TimeBox value={remaining.seconds} label="Seg" />
+                <TimeBox value={mounted ? remaining.days : null} label="Dias" />
+                <TimeBox value={mounted ? remaining.hours : null} label="Horas" />
+                <TimeBox value={mounted ? remaining.minutes : null} label="Min" />
+                <TimeBox value={mounted ? remaining.seconds : null} label="Seg" />
               </div>
+
 
               <div className="mt-8">
                 <Button variant="hero" size="lg" className="px-8" asChild>
