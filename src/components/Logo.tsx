@@ -7,21 +7,21 @@ interface LogoProps {
 
 export function Logo({ className, showText = true }: LogoProps) {
   return (
-    <div className={`flex items-center gap-3 ${className ?? ""}`}>
+    <div className={`flex items-center gap-3.5 ${className ?? ""}`}>
       <img
         src={logoMark}
         width={512}
         height={512}
         alt="Pro Soccer Online Logo"
-        className="h-12 w-auto select-none"
+        className="h-16 w-auto select-none"
         draggable={false}
       />
       {showText && (
         <div className="flex flex-col leading-[1.1]">
-          <span className="font-display text-base font-bold tracking-tight text-foreground">
+          <span className="font-display text-lg font-bold tracking-tight text-foreground">
             Pro Soccer
           </span>
-          <span className="font-display text-[11px] font-semibold tracking-widest text-primary uppercase">
+          <span className="font-display text-xs font-semibold tracking-widest text-primary uppercase">
             Online
           </span>
         </div>
