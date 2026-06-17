@@ -28,6 +28,7 @@ import {
 import { toast } from "sonner";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
+import { AccessGate } from "@/components/AccessGate";
 import { supabase } from "@/integrations/supabase/client";
 import { CATEGORIES, categoryValue, type Attrs } from "@/lib/player";
 
@@ -57,6 +58,14 @@ interface PlayerRow {
 }
 
 function Jogadores() {
+  return (
+    <AccessGate>
+      <JogadoresPanel />
+    </AccessGate>
+  );
+}
+
+function JogadoresPanel() {
   const navigate = useNavigate();
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -68,8 +77,7 @@ function Jogadores() {
 
   useEffect(() => {
     (async () => {
-      // Pagamento desativado por enquanto: todos os usuários acessam o painel.
-      // O bloqueio será reativado quando o sistema for construído.
+      // O acesso ao painel é liberado pelo AccessGate (pagamento confirmado ou Owner/admin).
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;
       if (user) {
@@ -159,6 +167,11 @@ function Jogadores() {
                 </h1>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                <Button variant="hero" size="sm" asChild>
+                  <Link to="/carreira/$playerId" params={{ playerId: player.id }}>
+                    <Trophy className="h-4 w-4" /> Minha Carreira
+                  </Link>
+                </Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/criar-personagem">
                     <Plus className="h-4 w-4" /> Criar outro jogador
