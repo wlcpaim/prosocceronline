@@ -194,6 +194,8 @@ export type Database = {
           amount_cents: number | null
           created_at: string
           external_id: string | null
+          payer_email: string | null
+          pix_code: string | null
           provider: string
           status: string
           updated_at: string
@@ -204,6 +206,8 @@ export type Database = {
           amount_cents?: number | null
           created_at?: string
           external_id?: string | null
+          payer_email?: string | null
+          pix_code?: string | null
           provider?: string
           status?: string
           updated_at?: string
@@ -214,6 +218,8 @@ export type Database = {
           amount_cents?: number | null
           created_at?: string
           external_id?: string | null
+          payer_email?: string | null
+          pix_code?: string | null
           provider?: string
           status?: string
           updated_at?: string
