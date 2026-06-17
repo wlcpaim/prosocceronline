@@ -39,6 +39,7 @@ import {
   emptyFreePoints,
   saveDraft,
   loadDraft,
+  clearDraft,
 } from "@/lib/player";
 
 export const Route = createFileRoute("/criar-personagem")({
