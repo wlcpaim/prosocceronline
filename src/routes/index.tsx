@@ -31,15 +31,16 @@ import trainingAcademy from "@/assets/training-academy.jpg";
 import scout from "@/assets/scout.jpg";
 import contract from "@/assets/contract.jpg";
 import { PlayerEvolution } from "@/components/PlayerEvolution";
+import { Logo } from "@/components/Logo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Fut Manager Online — Sua carreira de jogador começa aqui" },
+      { title: "Pro Soccer Online — Sua carreira de jogador começa aqui" },
       {
         name: "description",
         content:
-          "Comece aos 14 anos, treine na base, seja descoberto por olheiros e evolua online contra outros jogadores. O manager de carreira individual de futebol.",
+          "Pro Soccer Online: crie seu jogador, comece aos 14 anos, treine na base, seja descoberto por olheiros e evolua em partidas PvP e cooperativas. Sem downloads.",
       },
     ],
   }),
