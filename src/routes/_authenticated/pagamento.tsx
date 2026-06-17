@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { QRCodeSVG } from "qrcode.react";
-import { Loader2, Copy, Check, ShieldCheck, ArrowLeft } from "lucide-react";
+import { Loader2, Copy, Check, ShieldCheck, ArrowLeft, QrCode, Smartphone, Apple, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
