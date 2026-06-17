@@ -55,7 +55,7 @@ function PaymentPage() {
       try {
         const a = await access({});
         if (a.hasAccess) {
-          navigate({ to: "/dashboard" });
+          navigate({ to: "/jogadores" });
           return;
         }
         if (a.pixCode) setPixCode(a.pixCode);
@@ -77,7 +77,7 @@ function PaymentPage() {
         if (a.hasAccess) {
           if (pollRef.current) clearInterval(pollRef.current);
           toast.success("Pagamento confirmado! Acesso liberado.");
-          navigate({ to: "/dashboard" });
+          navigate({ to: "/jogadores" });
         }
       } catch {
         /* ignore */
@@ -95,7 +95,7 @@ function PaymentPage() {
     try {
       const res = await charge({ data: { name, cpf, phone } });
       if (res.alreadyActive) {
-        navigate({ to: "/dashboard" });
+        navigate({ to: "/jogadores" });
         return;
       }
       if (res.pixCode) {

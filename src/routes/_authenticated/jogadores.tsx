@@ -31,11 +31,11 @@ import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { CATEGORIES, categoryValue, type Attrs } from "@/lib/player";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/_authenticated/jogadores")({
   head: () => ({
     meta: [{ title: "Jogadores — Pro Soccer Online" }],
   }),
-  component: Dashboard,
+  component: Jogadores,
 });
 
 interface PlayerRow {
@@ -56,7 +56,7 @@ interface PlayerRow {
   attributes: Attrs;
 }
 
-function Dashboard() {
+function Jogadores() {
   const navigate = useNavigate();
   const [players, setPlayers] = useState<PlayerRow[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);

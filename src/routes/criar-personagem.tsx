@@ -204,7 +204,7 @@ function CriarPersonagem() {
         }
         clearDraft();
         toast.success("Jogador criado!");
-        navigate({ to: "/dashboard" });
+        navigate({ to: "/jogadores" });
         return;
       }
 
