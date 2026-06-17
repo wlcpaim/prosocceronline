@@ -167,6 +167,11 @@ function JogadoresPanel() {
                 </h1>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                <Button variant="hero" size="sm" asChild>
+                  <Link to="/carreira/$playerId" params={{ playerId: player.id }}>
+                    <Trophy className="h-4 w-4" /> Minha Carreira
+                  </Link>
+                </Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/criar-personagem">
                     <Plus className="h-4 w-4" /> Criar outro jogador
