@@ -618,6 +618,7 @@ function CriarPersonagem() {
             <PlayerCard
               name={draft.name}
               position={draft.position}
+              altPositions={draft.altPositions}
               nationality={draft.nationality}
               overall={overall}
               attributes={attrs}
