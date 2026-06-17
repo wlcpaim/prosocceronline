@@ -32,6 +32,7 @@ import scout from "@/assets/scout.jpg";
 import contract from "@/assets/contract.jpg";
 import { PlayerEvolution } from "@/components/PlayerEvolution";
 import { Logo } from "@/components/Logo";
+import { PresaleBanner } from "@/components/PresaleBanner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -243,6 +244,9 @@ function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Pré-venda / Comunidade */}
+      <PresaleBanner />
 
       {/* Jornada */}
       <section id="jornada" className="mx-auto max-w-6xl px-5 py-16 md:py-24">
