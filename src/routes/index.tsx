@@ -226,6 +226,8 @@ function Landing() {
                 src={heroPlayer}
                 width={1280}
                 height={1600}
+                fetchPriority="high"
+                decoding="async"
                 alt="Jovem jogador de futebol no estádio iluminado"
                 className="relative w-full rounded-[1.75rem] border border-border object-cover shadow-elevated"
               />
