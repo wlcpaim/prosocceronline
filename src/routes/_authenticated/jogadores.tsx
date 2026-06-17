@@ -77,8 +77,7 @@ function JogadoresPanel() {
 
   useEffect(() => {
     (async () => {
-      // Pagamento desativado por enquanto: todos os usuários acessam o painel.
-      // O bloqueio será reativado quando o sistema for construído.
+      // O acesso ao painel é liberado pelo AccessGate (pagamento confirmado ou Owner/admin).
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;
       if (user) {
