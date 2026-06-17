@@ -141,10 +141,36 @@ function CriarPersonagem() {
     });
   };
 
-  const finish = () => {
-    saveDraft(draft);
-    navigate({ to: "/auth" });
+  const [finishing, setFinishing] = useState(false);
+  const finish = async () => {
+    const name = draft.name.trim();
+    if (name.length < 3) {
+      setStep(0);
+      setNameStatus("short");
+      return;
+    }
+    setFinishing(true);
+    try {
+      // Revalida o nome no banco logo antes de avançar para o login, evitando
+      // que dois jogadores escolham o mesmo nome ao mesmo tempo.
+      const { data, error } = await supabase.rpc("is_player_name_available", { _name: name });
+      if (error) {
+        toast.error("Não foi possível validar o nome. Tente novamente.");
+        return;
+      }
+      if (!data) {
+        setNameStatus("taken");
+        setStep(0);
+        toast.error("Esse nome de jogador já está em uso. Escolha outro para continuar.");
+        return;
+      }
+      saveDraft(draft);
+      navigate({ to: "/auth" });
+    } finally {
+      setFinishing(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
