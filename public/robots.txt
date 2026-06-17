@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://prosoccer.online/sitemap.xml
