@@ -32,6 +32,7 @@ import scout from "@/assets/scout.jpg";
 import contract from "@/assets/contract.jpg";
 import { PlayerEvolution } from "@/components/PlayerEvolution";
 import { Logo } from "@/components/Logo";
+import { PresaleBanner } from "@/components/PresaleBanner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
