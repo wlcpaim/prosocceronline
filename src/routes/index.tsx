@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Trophy,
   Sparkles,
@@ -169,7 +169,7 @@ function Landing() {
             </span>
           </a>
           <Button variant="hero" size="sm" asChild>
-            <a href="#jogar">Jogar agora</a>
+            <Link to="/criar-personagem">Jogar agora</Link>
           </Button>
         </nav>
       </header>
@@ -457,9 +457,11 @@ function Landing() {
               Jogue o Fut Manager Online direto do seu navegador, crie seu jogador e comece a escrever a
               sua história rumo ao topo. Sem downloads, jogue de qualquer dispositivo.
             </p>
-            <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row">
-              <Button variant="hero" size="lg" className="px-8">
-                <Globe2 className="h-5 w-5" /> Jogar no Navegador (Grátis)
+            <div class="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row">
+              <Button variant="hero" size="lg" className="px-8" asChild>
+                <Link to="/criar-personagem">
+                  Criar meu jogador <ChevronRight className="h-5 w-5" />
+                </Link>
               </Button>
             </div>
           </div>
