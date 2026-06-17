@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { computeOverall, computePotential, loadDraft, clearDraft, finalAttrs } from "@/lib/player";
+import { loadDraft, clearDraft } from "@/lib/player";
+import { createPlayer } from "@/lib/players.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
