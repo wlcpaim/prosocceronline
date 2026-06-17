@@ -143,13 +143,14 @@ function AuthPage() {
           </p>
 
           {/* Termos e Segurança */}
-          <div className="mt-6 space-y-4">
-            <div className="flex items-start gap-3 rounded-xl border border-border bg-muted/10 p-4">
+          <div className="mt-6 rounded-2xl border border-border/80 bg-muted/5 p-4.5 space-y-4 shadow-sm">
+            {/* Termos */}
+            <div className="flex items-start gap-3">
               <Checkbox
                 id="terms"
                 checked={acceptedTerms}
                 onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
-                className="mt-0.5"
+                className="mt-0.5 border-muted-foreground/30 data-[state=checked]:border-primary"
               />
               <label
                 htmlFor="terms"
@@ -159,7 +160,7 @@ function AuthPage() {
                 <button
                   type="button"
                   onClick={() => setTermsOpen(true)}
-                  className="text-primary font-semibold hover:opacity-85 cursor-pointer inline inline-block"
+                  className="text-primary font-semibold hover:opacity-85 cursor-pointer inline"
                 >
                   termos de uso
                 </button>{" "}
@@ -167,8 +168,10 @@ function AuthPage() {
               </label>
             </div>
 
+            <div className="h-[1px] bg-border/50" />
+
             {/* Custom CAPTCHA "Não sou robô" */}
-            <div className="flex items-center justify-between rounded-xl border border-border bg-muted/20 p-4 shadow-sm select-none">
+            <div className="flex items-center justify-between select-none">
               <div className="flex items-center gap-3">
                 <button
                   type="button"
@@ -190,12 +193,14 @@ function AuthPage() {
                   {captchaVerifying && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
                   {isNotRobot && <Check className="h-4 w-4 stroke-[3]" />}
                 </button>
-                <span className="text-sm font-medium">Não sou um robô</span>
+                <span className="text-sm font-medium text-foreground/90">Não sou um robô</span>
               </div>
-              <div className="flex flex-col items-end text-[10px] text-muted-foreground/60 leading-none">
-                <ShieldCheck className="h-5 w-5 text-muted-foreground/40 mb-1 animate-pulse" />
-                <span>Pro Soccer</span>
-                <span className="mt-0.5 font-bold tracking-wider uppercase text-[8px]">Security</span>
+              <div className="flex items-center gap-2 text-muted-foreground/60">
+                <div className="flex flex-col items-end text-[9px] leading-none">
+                  <span className="font-medium">Pro Soccer</span>
+                  <span className="mt-0.5 font-bold tracking-wider uppercase text-[7px] text-primary">Security</span>
+                </div>
+                <ShieldCheck className="h-5 w-5 text-primary/60 animate-pulse" />
               </div>
             </div>
           </div>
