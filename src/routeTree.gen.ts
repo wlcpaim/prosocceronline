@@ -18,6 +18,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPagamentoRouteImport } from './routes/_authenticated/pagamento'
 import { Route as AuthenticatedJogadoresRouteImport } from './routes/_authenticated/jogadores'
+import { Route as AuthenticatedCarreiraPlayerIdRouteImport } from './routes/_authenticated/carreira.$playerId'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -67,6 +68,12 @@ const AuthenticatedJogadoresRoute = AuthenticatedJogadoresRouteImport.update({
   path: '/jogadores',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCarreiraPlayerIdRoute =
+  AuthenticatedCarreiraPlayerIdRouteImport.update({
+    id: '/carreira/$playerId',
+    path: '/carreira/$playerId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/jogadores': typeof AuthenticatedJogadoresRoute
   '/pagamento': typeof AuthenticatedPagamentoRoute
+  '/carreira/$playerId': typeof AuthenticatedCarreiraPlayerIdRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/jogadores': typeof AuthenticatedJogadoresRoute
   '/pagamento': typeof AuthenticatedPagamentoRoute
+  '/carreira/$playerId': typeof AuthenticatedCarreiraPlayerIdRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -129,6 +138,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/jogadores': typeof AuthenticatedJogadoresRoute
   '/_authenticated/pagamento': typeof AuthenticatedPagamentoRoute
+  '/_authenticated/carreira/$playerId': typeof AuthenticatedCarreiraPlayerIdRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/jogadores'
     | '/pagamento'
+    | '/carreira/$playerId'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/jogadores'
     | '/pagamento'
+    | '/carreira/$playerId'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -174,6 +186,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/jogadores'
     | '/_authenticated/pagamento'
+    | '/_authenticated/carreira/$playerId'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -259,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJogadoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/carreira/$playerId': {
+      id: '/_authenticated/carreira/$playerId'
+      path: '/carreira/$playerId'
+      fullPath: '/carreira/$playerId'
+      preLoaderRoute: typeof AuthenticatedCarreiraPlayerIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -293,11 +313,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedJogadoresRoute: typeof AuthenticatedJogadoresRoute
   AuthenticatedPagamentoRoute: typeof AuthenticatedPagamentoRoute
+  AuthenticatedCarreiraPlayerIdRoute: typeof AuthenticatedCarreiraPlayerIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedJogadoresRoute: AuthenticatedJogadoresRoute,
   AuthenticatedPagamentoRoute: AuthenticatedPagamentoRoute,
+  AuthenticatedCarreiraPlayerIdRoute: AuthenticatedCarreiraPlayerIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
