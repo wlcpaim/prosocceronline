@@ -74,6 +74,7 @@ async function persistDraftAndGo(navigate: ReturnType<typeof useNavigate>) {
 function AuthPage() {
   const navigate = useNavigate();
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
+  const [termsOpen, setTermsOpen] = useState(false);
   const hasDraft = typeof window !== "undefined" && !!loadDraft();
 
 
