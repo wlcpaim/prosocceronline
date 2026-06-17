@@ -98,47 +98,7 @@ function AuthPage() {
     }
   };
 
-  const handleEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loading) return;
-    setLoading(true);
-    try {
-      if (mode === "signup") {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/aguardando-confirmacao`,
-          },
-        });
-        if (error) {
-          if (error.message.toLowerCase().includes("already")) {
-            toast.error("Este e-mail já está cadastrado. Faça login.");
-            setMode("login");
-          } else {
-            toast.error(error.message);
-          }
-          return;
-        }
-        if (data.session) {
-          await persistDraftAndGo(navigate);
-        } else {
-          localStorage.setItem("pso_pending_email", email);
-          toast.success("Conta criada! Confirme seu e-mail para continuar.");
-          navigate({ to: "/aguardando-confirmacao" });
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          toast.error("E-mail ou senha inválidos.");
-          return;
-        }
-        await persistDraftAndGo(navigate);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-5 py-10 text-foreground">
