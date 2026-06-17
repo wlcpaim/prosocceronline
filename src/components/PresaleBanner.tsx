@@ -21,11 +21,11 @@ function getRemaining(target: Date) {
   return { days, hours, minutes, seconds, ended: diff <= 0 };
 }
 
-function TimeBox({ value, label }: { value: number; label: string }) {
+function TimeBox({ value, label }: { value: number | null; label: string }) {
   return (
     <div className="flex flex-col items-center">
       <span className="grid min-w-[3.5rem] place-items-center rounded-xl border border-border bg-card px-3 py-3 font-display text-3xl font-bold text-foreground tabular-nums sm:min-w-[4.5rem] sm:text-4xl">
-        {String(value).padStart(2, "0")}
+        {value === null ? "--" : String(value).padStart(2, "0")}
       </span>
       <span className="mt-2 text-[11px] uppercase tracking-widest text-muted-foreground">
         {label}
