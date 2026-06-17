@@ -34,8 +34,10 @@ export const createPixCharge = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { userId, claims } = context;
 
-    // Já tem acesso? Não precisa cobrar de novo.
-    const { data: hasAccess } = await context.supabase.rpc("has_access", {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Já tem acesso? Não precisa cobrar de novo. (has_access roda via service role)
+    const { data: hasAccess } = await supabaseAdmin.rpc("has_access", {
       _user_id: userId,
     });
     if (hasAccess) {
