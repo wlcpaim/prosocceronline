@@ -142,69 +142,62 @@ function AuthPage() {
               : "Entre para continuar sua carreira."}
           </p>
 
-          {/* Termos e Segurança */}
-          <div className="mt-6 rounded-2xl border border-border/80 bg-muted/5 p-4.5 space-y-4 shadow-sm">
-            {/* Custom CAPTCHA "Não sou robô" (Topo) */}
-            <div className="flex items-center justify-between select-none">
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  disabled={isNotRobot || captchaVerifying}
-                  onClick={() => {
-                    setCaptchaVerifying(true);
-                    setTimeout(() => {
-                      setIsNotRobot(true);
-                      setCaptchaVerifying(false);
-                      toast.success("Verificação concluída com sucesso!");
-                    }, 1200);
-                  }}
-                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded border transition-all ${
-                    isNotRobot
-                      ? "border-emerald-500 bg-emerald-500 text-white"
-                      : "border-muted-foreground/30 hover:border-primary bg-background"
-                  } cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed`}
-                >
-                  {captchaVerifying && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
-                  {isNotRobot && <Check className="h-4 w-4 stroke-[3]" />}
-                </button>
-                <span className="text-sm font-medium text-foreground/90">Não sou um robô</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground/60">
-                <div className="flex flex-col items-end text-[9px] leading-none">
-                  <span className="font-medium">Pro Soccer</span>
-                  <span className="mt-0.5 font-bold tracking-wider uppercase text-[7px] text-primary">Security</span>
-                </div>
-                <ShieldCheck className="h-5 w-5 text-primary/60 animate-pulse" />
-              </div>
-            </div>
-
-            <div className="h-[1px] bg-border/50" />
-
-            {/* Termos (Meio - entre 2 linhas) */}
-            <div className="flex items-center justify-center gap-2.5 py-1">
-              <Checkbox
-                id="terms"
-                checked={acceptedTerms}
-                onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
-                className="border-muted-foreground/30 data-[state=checked]:border-primary"
-              />
-              <label
-                htmlFor="terms"
-                className="text-xs text-muted-foreground cursor-pointer select-none text-center"
+          {/* Custom CAPTCHA "Não sou robô" */}
+          <div className="mt-6 flex items-center justify-between rounded-2xl border border-border bg-muted/20 p-4.5 shadow-sm select-none">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                disabled={isNotRobot || captchaVerifying}
+                onClick={() => {
+                  setCaptchaVerifying(true);
+                  setTimeout(() => {
+                    setIsNotRobot(true);
+                    setCaptchaVerifying(false);
+                    toast.success("Verificação concluída com sucesso!");
+                  }, 1200);
+                }}
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded border transition-all ${
+                  isNotRobot
+                    ? "border-emerald-500 bg-emerald-500 text-white"
+                    : "border-muted-foreground/30 hover:border-primary bg-background"
+                } cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary disabled:cursor-not-allowed`}
               >
-                Eu li e concordo com os{" "}
-                <button
-                  type="button"
-                  onClick={() => setTermsOpen(true)}
-                  className="text-primary font-semibold hover:opacity-85 cursor-pointer inline"
-                >
-                  termos de uso
-                </button>{" "}
-                do Pro Soccer Online.
-              </label>
+                {captchaVerifying && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
+                {isNotRobot && <Check className="h-4 w-4 stroke-[3]" />}
+              </button>
+              <span className="text-sm font-medium text-foreground/95">Não sou um robô</span>
             </div>
+            <div className="flex items-center gap-2.5 text-muted-foreground/60">
+              <div className="flex flex-col items-end text-[9px] leading-none">
+                <span className="font-medium">Pro Soccer</span>
+                <span className="mt-0.5 font-bold tracking-wider uppercase text-[7px] text-primary">Security</span>
+              </div>
+              <ShieldCheck className="h-5 w-5 text-primary/60 animate-pulse" />
+            </div>
+          </div>
 
-            <div className="h-[1px] bg-border/50" />
+          {/* Termos de Uso (Clicável centralizado e elegante abaixo do CAPTCHA) */}
+          <div className="mt-4 flex items-start gap-2.5 px-1.5 py-1">
+            <Checkbox
+              id="terms"
+              checked={acceptedTerms}
+              onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
+              className="mt-0.5 border-muted-foreground/30 data-[state=checked]:border-primary"
+            />
+            <label
+              htmlFor="terms"
+              className="text-xs text-muted-foreground cursor-pointer select-none leading-normal"
+            >
+              Eu li e concordo com os{" "}
+              <button
+                type="button"
+                onClick={() => setTermsOpen(true)}
+                className="text-primary font-semibold hover:underline cursor-pointer transition-all hover:text-primary-glow"
+              >
+                termos de uso
+              </button>{" "}
+              do Pro Soccer Online.
+            </label>
           </div>
 
           {/* OAuth */}
