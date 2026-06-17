@@ -158,7 +158,7 @@ function Dashboard() {
                   Carreira de <span className="text-gradient">{player.name}</span>
                 </h1>
               </div>
-              <div class="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/criar-personagem">
                     <Plus className="h-4 w-4" /> Criar outro jogador
