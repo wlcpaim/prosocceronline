@@ -40,6 +40,7 @@ const SHORT: Record<CatKey, string> = {
 export function PlayerCard({
   name,
   position,
+  altPositions,
   nationality,
   overall,
   attributes,
@@ -49,6 +50,7 @@ export function PlayerCard({
   className,
 }: PlayerCardProps) {
   const cats = cardCategories(position);
+  const alts = (altPositions ?? []).filter((p) => p && p !== position);
 
   return (
     <div
@@ -60,6 +62,18 @@ export function PlayerCard({
         <div>
           <div className="font-display text-5xl font-bold leading-none text-primary">{overall}</div>
           <div className="mt-1 text-sm font-bold tracking-wide text-foreground/80">{position}</div>
+          {alts.length > 0 && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {alts.map((p) => (
+                <span
+                  key={p}
+                  className="rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary"
+                >
+                  {p}
+                </span>
+              ))}
+            </div>
+          )}
           {nationality && <div className="mt-1 text-xs text-muted-foreground">{nationality}</div>}
         </div>
         <div className="grid h-14 w-14 place-items-center rounded-2xl bg-primary/15 font-display text-2xl font-bold text-primary">
