@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
-const BASE_URL = "";
+const BASE_URL = "https://prosoccer.online";
 
 interface SitemapEntry {
   path: string;
@@ -13,7 +13,14 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const entries: SitemapEntry[] = [{ path: "/", changefreq: "weekly", priority: "1.0" }];
+        // Public, indexable routes only. Authenticated/app routes
+        // (/criar-personagem, /aguardando-confirmacao, /jogadores) are
+        // intentionally excluded — they require a session and shouldn't be indexed.
+        const entries: SitemapEntry[] = [
+          { path: "/", changefreq: "weekly", priority: "1.0" },
+          { path: "/auth", changefreq: "monthly", priority: "0.6" },
+          { path: "/seguranca", changefreq: "monthly", priority: "0.5" },
+        ];
 
         const urls = entries.map((e) =>
           [
