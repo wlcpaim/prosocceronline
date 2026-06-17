@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 interface PlayerCardProps {
   name: string;
   position: string;
+  altPositions?: string[];
   nationality?: string;
   overall: number;
   attributes: Attrs;
