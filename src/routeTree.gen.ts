@@ -16,7 +16,7 @@ import { Route as AguardandoConfirmacaoRouteImport } from './routes/aguardando-c
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPagamentoRouteImport } from './routes/_authenticated/pagamento'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedJogadoresRouteImport } from './routes/_authenticated/jogadores'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -56,9 +56,9 @@ const AuthenticatedPagamentoRoute = AuthenticatedPagamentoRouteImport.update({
   path: '/pagamento',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthenticatedJogadoresRoute = AuthenticatedJogadoresRouteImport.update({
+  id: '/jogadores',
+  path: '/jogadores',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const LovableEmailQueueProcessRoute =
@@ -90,7 +90,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/jogadores': typeof AuthenticatedJogadoresRoute
   '/pagamento': typeof AuthenticatedPagamentoRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -103,7 +103,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/jogadores': typeof AuthenticatedJogadoresRoute
   '/pagamento': typeof AuthenticatedPagamentoRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -118,7 +118,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/criar-personagem': typeof CriarPersonagemRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/jogadores': typeof AuthenticatedJogadoresRoute
   '/_authenticated/pagamento': typeof AuthenticatedPagamentoRoute
   '/api/public/webhooks/syncpay': typeof ApiPublicWebhooksSyncpayRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -133,7 +133,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/criar-personagem'
     | '/sitemap.xml'
-    | '/dashboard'
+    | '/jogadores'
     | '/pagamento'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
@@ -146,7 +146,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/criar-personagem'
     | '/sitemap.xml'
-    | '/dashboard'
+    | '/jogadores'
     | '/pagamento'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
@@ -160,7 +160,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/criar-personagem'
     | '/sitemap.xml'
-    | '/_authenticated/dashboard'
+    | '/_authenticated/jogadores'
     | '/_authenticated/pagamento'
     | '/api/public/webhooks/syncpay'
     | '/lovable/email/auth/preview'
@@ -232,11 +232,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPagamentoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+    '/_authenticated/jogadores': {
+      id: '/_authenticated/jogadores'
+      path: '/jogadores'
+      fullPath: '/jogadores'
+      preLoaderRoute: typeof AuthenticatedJogadoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/lovable/email/queue/process': {
@@ -271,12 +271,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedJogadoresRoute: typeof AuthenticatedJogadoresRoute
   AuthenticatedPagamentoRoute: typeof AuthenticatedPagamentoRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedJogadoresRoute: AuthenticatedJogadoresRoute,
   AuthenticatedPagamentoRoute: AuthenticatedPagamentoRoute,
 }
 
@@ -298,13 +298,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
