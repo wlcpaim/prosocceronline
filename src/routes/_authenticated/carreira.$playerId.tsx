@@ -23,7 +23,6 @@ import {
   categoryValue,
   POSITIONS,
   PLAY_STYLES,
-  computePotential,
   type Attrs,
 } from "@/lib/player";
 
