@@ -161,16 +161,16 @@ function Landing() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Nav */}
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 sm:py-4">
           <a href="#top" className="flex items-center gap-2">
             <Logo />
           </a>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/auth">Entrar</Link>
-            </Button>
-            <Button variant="hero" size="sm" asChild>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 sm:gap-2">
+            <Button variant="hero" size="sm" asChild className="order-1 sm:order-2 text-xs sm:text-sm py-1.5 h-auto sm:h-9">
               <Link to="/criar-personagem">Jogar agora</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild className="order-2 sm:order-1 text-xs sm:text-sm py-1 h-auto sm:h-9">
+              <Link to="/auth">Entrar</Link>
             </Button>
           </div>
         </nav>
