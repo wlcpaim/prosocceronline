@@ -21,11 +21,11 @@ function getRemaining(target: Date) {
   return { days, hours, minutes, seconds, ended: diff <= 0 };
 }
 
-function TimeBox({ value, label }: { value: number; label: string }) {
+function TimeBox({ value, label }: { value: number | null; label: string }) {
   return (
     <div className="flex flex-col items-center">
       <span className="grid min-w-[3.5rem] place-items-center rounded-xl border border-border bg-card px-3 py-3 font-display text-3xl font-bold text-foreground tabular-nums sm:min-w-[4.5rem] sm:text-4xl">
-        {String(value).padStart(2, "0")}
+        {value === null ? "--" : String(value).padStart(2, "0")}
       </span>
       <span className="mt-2 text-[11px] uppercase tracking-widest text-muted-foreground">
         {label}
@@ -36,11 +36,13 @@ function TimeBox({ value, label }: { value: number; label: string }) {
 
 export function PresaleBanner() {
   const fetchStats = useServerFn(getPlayerStats);
+  const [mounted, setMounted] = useState(false);
   const [remaining, setRemaining] = useState(() => getRemaining(PRESALE_END));
   const [active, setActive] = useState(() => isPresaleActive());
   const [stats, setStats] = useState<{ online: number; registered: number } | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     const id = setInterval(() => {
       const r = getRemaining(PRESALE_END);
       setRemaining(r);
@@ -100,11 +102,12 @@ export function PresaleBanner() {
               </div>
 
               <div className="mt-8 flex items-end justify-center gap-3 sm:gap-4">
-                <TimeBox value={remaining.days} label="Dias" />
-                <TimeBox value={remaining.hours} label="Horas" />
-                <TimeBox value={remaining.minutes} label="Min" />
-                <TimeBox value={remaining.seconds} label="Seg" />
+                <TimeBox value={mounted ? remaining.days : null} label="Dias" />
+                <TimeBox value={mounted ? remaining.hours : null} label="Horas" />
+                <TimeBox value={mounted ? remaining.minutes : null} label="Min" />
+                <TimeBox value={mounted ? remaining.seconds : null} label="Seg" />
               </div>
+
 
               <div className="mt-8">
                 <Button variant="hero" size="lg" className="px-8" asChild>

@@ -48,7 +48,10 @@ async function persistDraftAndGo(navigate: ReturnType<typeof useNavigate>) {
     });
     if (error) {
       if (error.code === "23505") {
-        toast.error("Esse nome de jogador já está em uso. Volte e escolha outro.");
+        // Nome já usado por outra pessoa enquanto o jogador fazia login.
+        // Mantém o rascunho e volta para a criação para trocar o nome.
+        toast.error("Esse nome de jogador já está em uso. Escolha outro para continuar.");
+        navigate({ to: "/criar-personagem" });
         return false;
       }
       console.error(error);

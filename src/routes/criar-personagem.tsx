@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
   CATEGORIES,
@@ -37,6 +38,7 @@ import {
   defaultDraft,
   emptyFreePoints,
   saveDraft,
+  loadDraft,
 } from "@/lib/player";
 
 export const Route = createFileRoute("/criar-personagem")({
@@ -59,6 +61,14 @@ function CriarPersonagem() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<PlayerDraft>(() => defaultDraft());
+
+  // Restaura um rascunho salvo (ex.: quando o nome escolhido já foi usado e o
+  // jogador voltou para escolher outro). Feito após montar para não quebrar a
+  // hidratação do SSR.
+  useEffect(() => {
+    const saved = loadDraft();
+    if (saved) setDraft(saved);
+  }, []);
 
   const update = <K extends keyof PlayerDraft>(key: K, value: PlayerDraft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
@@ -131,10 +141,36 @@ function CriarPersonagem() {
     });
   };
 
-  const finish = () => {
-    saveDraft(draft);
-    navigate({ to: "/auth" });
+  const [finishing, setFinishing] = useState(false);
+  const finish = async () => {
+    const name = draft.name.trim();
+    if (name.length < 3) {
+      setStep(0);
+      setNameStatus("short");
+      return;
+    }
+    setFinishing(true);
+    try {
+      // Revalida o nome no banco logo antes de avançar para o login, evitando
+      // que dois jogadores escolham o mesmo nome ao mesmo tempo.
+      const { data, error } = await supabase.rpc("is_player_name_available", { _name: name });
+      if (error) {
+        toast.error("Não foi possível validar o nome. Tente novamente.");
+        return;
+      }
+      if (!data) {
+        setNameStatus("taken");
+        setStep(0);
+        toast.error("Esse nome de jogador já está em uso. Escolha outro para continuar.");
+        return;
+      }
+      saveDraft(draft);
+      navigate({ to: "/auth" });
+    } finally {
+      setFinishing(false);
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -530,8 +566,14 @@ function CriarPersonagem() {
                   Continuar <ChevronRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Button variant="hero" onClick={finish}>
-                  Criar conta e começar <ChevronRight className="h-4 w-4" />
+                <Button variant="hero" onClick={finish} disabled={finishing}>
+                  {finishing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      Criar conta e começar <ChevronRight className="h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               )}
             </div>
