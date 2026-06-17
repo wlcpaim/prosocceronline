@@ -158,12 +158,26 @@ function Dashboard() {
                   Carreira de <span className="text-gradient">{player.name}</span>
                 </h1>
               </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/criar-personagem">
-                  <Plus className="h-4 w-4" /> Criar outro jogador
-                </Link>
-              </Button>
+              <div class="flex flex-wrap items-center gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/criar-personagem">
+                    <Plus className="h-4 w-4" /> Criar outro jogador
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  onClick={() => {
+                    setConfirmText("");
+                    setDeleteOpen(true);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" /> Excluir jogador
+                </Button>
+              </div>
             </div>
+
 
             {players.length > 1 && (
               <div className="mb-6 flex flex-wrap gap-2">
