@@ -254,7 +254,7 @@ function Landing() {
             Do garoto ao profissional
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Quatro etapas que definem a sua trajetória dentro do Fut Manager Online.
+            Quatro etapas que definem a sua trajetória dentro do Pro Soccer Online.
           </p>
         </div>
 
@@ -322,7 +322,7 @@ function Landing() {
             ))}
           </div>
 
-          {/* Evolução estilo FIFA modo carreira */}
+          {/* Evolução no modo carreira */}
           <div className="mx-auto mt-16 max-w-2xl text-center">
             <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
               Evolua
