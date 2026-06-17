@@ -83,9 +83,11 @@ export const getMyAccess = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { userId } = context;
 
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     const [{ data: hasAccess }, { data: isAdmin }, { data: sub }] = await Promise.all([
-      context.supabase.rpc("has_access", { _user_id: userId }),
-      context.supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
+      supabaseAdmin.rpc("has_access", { _user_id: userId }),
+      supabaseAdmin.rpc("has_role", { _user_id: userId, _role: "admin" }),
       context.supabase
         .from("subscriptions")
         .select("status, pix_code, amount_cents")
