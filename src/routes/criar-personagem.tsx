@@ -41,6 +41,7 @@ import {
   loadDraft,
   clearDraft,
 } from "@/lib/player";
+import { createPlayer } from "@/lib/players.functions";
 
 export const Route = createFileRoute("/criar-personagem")({
   head: () => ({
