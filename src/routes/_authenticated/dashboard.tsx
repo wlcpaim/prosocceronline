@@ -1,6 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import {
   Trophy,
   LogOut,
@@ -19,7 +18,6 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { CATEGORIES, categoryValue, type Attrs } from "@/lib/player";
-import { getMyAccess } from "@/lib/payment.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
