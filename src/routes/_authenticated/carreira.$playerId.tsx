@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
-import { AccessGate } from "@/components/AccessGate";
 import { supabase } from "@/integrations/supabase/client";
 import {
   CATEGORIES,
@@ -61,11 +60,7 @@ function playStyleDesc(name: string | null) {
 }
 
 function CarreiraPage() {
-  return (
-    <AccessGate>
-      <CarreiraInner />
-    </AccessGate>
-  );
+  return <CarreiraInner />;
 }
 
 function CarreiraInner() {
