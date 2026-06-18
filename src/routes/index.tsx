@@ -57,7 +57,7 @@ const onlineIcons = [Users, Vote, Globe2, MessageCircle];
 const systemIcons = [BarChart3, CalendarClock, Coins, ShoppingBag, Medal, Flame];
 
 function Landing() {
-  const { t } = useI18n();
+  const { t, lang, styleName, styleDesc } = useI18n();
   const L = t.landing;
 
   return (
@@ -216,10 +216,10 @@ function Landing() {
 
           <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3">
             {styleIcons.map((Icon, i) => {
-              const name = t.styleName(["Velocista", "Artilheiro", "Maestro", "Muralha", "Goleiro", "Box-to-box"][i]);
+              const name = styleName(["Velocista", "Artilheiro", "Maestro", "Muralha", "Goleiro", "Box-to-box"][i]);
               const desc =
-                t.lang === "en"
-                  ? t.styleDesc(["Velocista", "Artilheiro", "Maestro", "Muralha", "Goleiro", "Box-to-box"][i])
+                lang === "en"
+                  ? styleDesc(["Velocista", "Artilheiro", "Maestro", "Muralha", "Goleiro", "Box-to-box"][i])
                   : [
                       "Explosão e drible nas pontas",
                       "Faro de gol dentro da área",
