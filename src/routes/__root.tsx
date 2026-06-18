@@ -153,7 +153,7 @@ function RootComponent() {
       <I18nProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
-        <LanguageSwitcher className="fixed bottom-4 left-4 z-[100] shadow-elevated" />
+        <LanguageSwitcher className="absolute top-[68px] sm:top-[80px] left-4 z-40" />
         <Toaster theme="dark" position="top-center" richColors />
       </I18nProvider>
     </QueryClientProvider>
