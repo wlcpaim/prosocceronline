@@ -14,7 +14,6 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import logoMark from "../assets/logo-mark.png";
 import { I18nProvider } from "@/lib/i18n";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 function NotFoundComponent() {
   return (
@@ -104,8 +103,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Crie seu jogador, treine na base e evolua em partidas PvP e cooperativas no Pro Soccer Online.",
       },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a04f67ae-cb24-4ca2-a888-f0cf9dd70773/id-preview-427e8e79--8d5dfa4b-f4b3-473f-b0ed-a599b3f5385e.lovable.app-1781662124762.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a04f67ae-cb24-4ca2-a888-f0cf9dd70773/id-preview-427e8e79--8d5dfa4b-f4b3-473f-b0ed-a599b3f5385e.lovable.app-1781662124762.png" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a04f67ae-cb24-4ca2-a888-f0cf9dd70773/id-preview-427e8e79--8d5dfa4b-f4b3-473f-b0ed-a599b3f5385e.lovable.[...]" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a04f67ae-cb24-4ca2-a888-f0cf9dd70773/id-preview-427e8e79--8d5dfa4b-f4b3-473f-b0ed-a599b3f5385e.lovable[...]" },
     ],
     links: [
       {
@@ -133,7 +132,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <head>
         <HeadContent />
       </head>
@@ -153,7 +152,6 @@ function RootComponent() {
       <I18nProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
-        <LanguageSwitcher className="absolute top-[100px] sm:top-[120px] left-1/2 -translate-x-1/2 z-40" />
         <Toaster theme="dark" position="top-center" richColors />
       </I18nProvider>
     </QueryClientProvider>
