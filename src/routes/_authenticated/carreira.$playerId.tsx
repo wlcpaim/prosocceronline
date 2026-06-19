@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import {
   ArrowLeft,
   Loader2,
@@ -12,11 +13,25 @@ import {
   Flag,
   Footprints,
   Sparkles,
+  Menu,
+  X,
+  User,
+  Table2,
+  GraduationCap,
+  BarChart3,
+  Lock,
+  Wallet,
+  Mail,
+  Award,
+  CalendarDays,
+  Info,
+  Medal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
+import { getCareerRanking, type CareerRanking } from "@/lib/career.functions";
 import {
   CATEGORIES,
   categoryValue,
@@ -26,14 +41,14 @@ import {
   type Attrs,
 } from "@/lib/player";
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export const Route = createFileRoute("/_authenticated/carreira/$playerId")({
   head: () => ({
     meta: [{ title: "Minha Carreira — Pro Soccer Online" }],
   }),
   component: CarreiraPage,
 });
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface PlayerRow {
   id: string;
@@ -54,12 +69,21 @@ interface PlayerRow {
   created_at: string;
 }
 
+type TabKey = "jogador" | "tabelas" | "escola" | "ranking" | "hallda";
+
 function positionLabel(code: string) {
   return POSITIONS.find((p) => p.code === code)?.label ?? code;
 }
 
 function playStyleDesc(name: string | null) {
   return PLAY_STYLES.find((s) => s.name === name)?.desc ?? "";
+}
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
 function CarreiraPage() {
@@ -71,11 +95,11 @@ function CarreiraInner() {
   const navigate = useNavigate();
   const [player, setPlayer] = useState<PlayerRow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<TabKey>("jogador");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
-      // O parâmetro pode ser o slug do nome (ex.: "joao-silva") ou, por
-      // compatibilidade, o ID antigo (UUID). Buscamos de acordo.
       if (UUID_RE.test(playerId)) {
         const { data } = await supabase
           .from("players")
@@ -118,133 +142,722 @@ function CarreiraInner() {
     );
   }
 
-  const memberSince = new Date(player.created_at).toLocaleDateString("pt-BR", {
+  const today = new Date().toLocaleDateString("pt-BR", {
+    weekday: "long",
     day: "2-digit",
     month: "long",
-    year: "numeric",
   });
+
+  const navItems: { key: TabKey; label: string; icon: typeof User }[] = [
+    { key: "jogador", label: "Jogador", icon: User },
+    { key: "tabelas", label: "Tabelas", icon: Table2 },
+    { key: "escola", label: "Escola", icon: GraduationCap },
+    { key: "ranking", label: "Ranking", icon: BarChart3 },
+    { key: "hallda", label: "Hall da Fama", icon: Trophy },
+  ];
+
+  const go = (key: TabKey) => {
+    setTab(key);
+    setSidebarOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <Logo />
-          </Link>
-          <Button variant="outline" size="sm" onClick={() => navigate({ to: "/jogadores" })}>
-            <ArrowLeft className="h-4 w-4" /> Jogadores
-          </Button>
-        </nav>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-5 py-8">
-        <div className="mb-8">
-          <p className="text-sm text-muted-foreground">Minha Carreira</p>
-          <h1 className="font-display text-3xl font-bold">
-            <span className="text-gradient">{player.name}</span>
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Carreira individual — esta evolução pertence apenas a este jogador.
-          </p>
+      {/* Mobile topbar */}
+      <div className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-card/80 px-4 py-3 backdrop-blur-xl lg:hidden">
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(true)}
+          className="grid h-9 w-9 place-items-center rounded-lg border border-border bg-surface-elevated text-foreground"
+          aria-label="Abrir menu"
+        >
+          <Menu className="h-4 w-4" />
+        </button>
+        <div>
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+            Minha Carreira
+          </div>
+          <div className="font-display text-sm font-bold">Pro Soccer Online</div>
         </div>
+      </div>
 
-        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-          <div className="space-y-6">
-            <PlayerCard
-              name={player.name}
-              position={player.position}
-              altPositions={player.alt_positions ?? undefined}
-              nationality={player.nationality ?? undefined}
-              overall={player.overall}
-              attributes={player.attributes}
-              weakFoot={player.weak_foot}
-              skillMoves={player.skill_moves}
-              preferredFoot={player.preferred_foot ?? undefined}
-            />
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-            <div className="rounded-2xl border border-border bg-card p-5">
-              <h2 className="mb-4 font-display text-sm font-bold">Ficha do jogador</h2>
-              <dl className="space-y-3 text-sm">
-                <Info icon={Flag} label="Nacionalidade" value={player.nationality ?? "—"} />
-                <Info icon={Trophy} label="Posição" value={positionLabel(player.position)} />
-                <Info
-                  icon={Footprints}
-                  label="Pé preferido"
-                  value={player.preferred_foot ?? "—"}
-                />
-                <Info icon={Ruler} label="Altura" value={`${player.height_cm} cm`} />
-                <Info icon={Weight} label="Peso" value={`${player.weight_kg} kg`} />
-                <Info icon={Sparkles} label="Estilo" value={player.play_style ?? "—"} />
-                <Info icon={TrendingUp} label="Na base desde" value={memberSince} />
-              </dl>
-            </div>
+      <div className="mx-auto flex max-w-7xl">
+        {/* Sidebar */}
+        <aside
+          className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-shrink-0 flex-col border-r border-border bg-card transition-transform duration-200 lg:sticky lg:top-0 lg:z-0 lg:h-screen lg:translate-x-0 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="flex items-center justify-between border-b border-border px-5 py-5">
+            <Link to="/" className="flex items-center">
+              <Logo />
+            </Link>
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(false)}
+              className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground lg:hidden"
+              aria-label="Fechar menu"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
 
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <Stat icon={Star} label="Overall" value={player.overall} highlight />
-              <Stat icon={Crown} label="Potencial" value={player.potential} />
-              <Stat icon={TrendingUp} label="Idade" value={`${player.age} anos`} />
-              <Stat
-                icon={Crown}
-                label="Margem"
-                value={`+${Math.max(0, player.potential - player.overall)}`}
-              />
-            </div>
+          <nav className="flex-1 overflow-y-auto py-4">
+            <p className="px-5 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Navegação
+            </p>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = tab === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => go(item.key)}
+                  className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
+                    active
+                      ? "border-primary bg-surface-elevated font-semibold text-foreground"
+                      : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+                  {item.label}
+                </button>
+              );
+            })}
 
-            <div className="rounded-2xl border border-border bg-card p-5">
-              <h2 className="mb-4 font-display text-sm font-bold">Atributos completos</h2>
-              <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-                {CATEGORIES.map((cat) => {
-                  const catVal = categoryValue(player.attributes, cat.key);
-                  return (
-                    <div key={cat.key}>
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase text-primary">{cat.label}</span>
-                        <span className="font-display text-base font-bold">{catVal}</span>
-                      </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-surface-elevated">
-                        <div
-                          className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
-                          style={{ width: `${catVal}%` }}
-                        />
-                      </div>
-                      <div className="mt-2 space-y-1">
-                        {cat.attrs.map((a) => (
-                          <div
-                            key={a.key}
-                            className="flex items-center justify-between text-[11px] text-muted-foreground"
-                          >
-                            <span>{a.label}</span>
-                            <span className="font-semibold text-foreground/80">
-                              {player.attributes[a.key]}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
+            <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Em breve
+            </p>
+            {["Time", "Loja"].map((label) => (
+              <div
+                key={label}
+                className="flex w-full cursor-not-allowed items-center gap-3 px-5 py-2.5 text-sm text-muted-foreground/50"
+              >
+                <Lock className="h-4 w-4" />
+                <span className="flex-1 text-left">{label}</span>
+                <span className="rounded border border-border px-1.5 py-0.5 text-[9px] uppercase tracking-wide">
+                  Bloq.
+                </span>
+              </div>
+            ))}
+          </nav>
+
+          <div className="border-t border-border px-5 py-4">
+            <div className="flex items-center gap-3">
+              <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full border border-border bg-surface-elevated text-xs font-bold text-primary">
+                {initials(player.name)}
+              </span>
+              <div className="min-w-0">
+                <div className="truncate text-sm font-semibold">{player.name}</div>
+                <div className="text-[11px] text-muted-foreground">
+                  {positionLabel(player.position)} · {player.age} anos
+                </div>
               </div>
             </div>
-
-            {playStyleDesc(player.play_style) && (
-              <div className="rounded-2xl border border-border bg-card p-5">
-                <h2 className="mb-2 font-display text-sm font-bold">Estilo de jogo</h2>
-                <p className="text-sm text-muted-foreground">
-                  <strong className="text-foreground">{player.play_style}</strong> —{" "}
-                  {playStyleDesc(player.play_style)}
-                </p>
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={() => navigate({ to: "/jogadores" })}
+              className="mt-3 flex w-full items-center gap-2 border-t border-border pt-3 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> Voltar aos jogadores
+            </button>
           </div>
-        </div>
-      </main>
+        </aside>
+
+        {/* Main */}
+        <main className="min-w-0 flex-1 px-5 py-7 sm:px-8">
+          <div className="mb-7 flex flex-wrap items-baseline justify-between gap-2">
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                {tab === "jogador" && "Visão Geral"}
+                {tab === "tabelas" && "Competições"}
+                {tab === "escola" && "Desenvolvimento"}
+                {tab === "ranking" && "Competição"}
+                {tab === "hallda" && "Lendas"}
+              </div>
+              <h1 className="font-display text-2xl font-bold sm:text-3xl">
+                {navItems.find((n) => n.key === tab)?.label}
+              </h1>
+            </div>
+            <div className="text-xs capitalize text-muted-foreground">{today}</div>
+          </div>
+
+          {tab === "jogador" && <JogadorSection player={player} />}
+          {tab === "tabelas" && <TabelasSection />}
+          {tab === "escola" && <EscolaSection player={player} />}
+          {tab === "ranking" && <RankingSection player={player} />}
+          {tab === "hallda" && <HallSection />}
+        </main>
+      </div>
     </div>
   );
 }
 
-function Info({
+/* ---------------------------------------------------------------- Panels --- */
+
+function Panel({
+  title,
+  icon: Icon,
+  action,
+  children,
+}: {
+  title: string;
+  icon?: typeof Star;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="flex items-center justify-between border-b border-border px-5 py-4">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide">
+          {Icon && <Icon className="h-4 w-4 text-primary" />}
+          {title}
+        </div>
+        {action}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function EmptyState({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="px-5 py-8 text-center text-sm text-muted-foreground">{children}</div>
+  );
+}
+
+/* ------------------------------------------------------------- Jogador ----- */
+
+function JogadorSection({ player }: { player: PlayerRow }) {
+  const margin = Math.max(0, player.potential - player.overall);
+  const progress = Math.min(100, Math.round((player.overall / player.potential) * 100));
+
+  const badges = [
+    { label: "Jogador Criado", icon: User, unlocked: true },
+    { label: "Olheiro Observou", icon: Mail, unlocked: false },
+    { label: "1º Contrato", icon: Award, unlocked: false },
+    { label: "1º Título", icon: Trophy, unlocked: false },
+  ];
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-[1.25fr_1fr]">
+      {/* Left column */}
+      <div className="flex flex-col gap-5">
+        <Panel
+          title="Perfil do Jogador"
+          icon={User}
+          action={
+            <Link
+              to="/carreira/$playerId"
+              params={{ playerId: playerSlug(player.name) }}
+              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Ver completo →
+            </Link>
+          }
+        >
+          <div className="flex items-center gap-4 p-5">
+            <span className="grid h-16 w-16 flex-shrink-0 place-items-center rounded-full border-2 border-border bg-surface-elevated font-display text-xl font-bold text-primary">
+              {initials(player.name)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="truncate font-display text-lg font-bold">{player.name}</div>
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                <span>{positionLabel(player.position)}</span>
+                <span>·</span>
+                <span>{player.age} anos</span>
+                <span>·</span>
+                <span>{player.nationality ?? "—"}</span>
+              </div>
+            </div>
+            <div className="flex-shrink-0 border-l border-border pl-4 text-center">
+              <div className="font-display text-3xl font-bold text-primary">{player.overall}</div>
+              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                Overall
+              </div>
+            </div>
+          </div>
+          <div className="px-5 pb-5">
+            <div className="flex justify-between text-[11px] text-muted-foreground">
+              <span>Progresso até o potencial</span>
+              <span>
+                {player.overall} / {player.potential}
+              </span>
+            </div>
+            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-elevated">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 border-t border-border px-5 py-4">
+            <Wallet className="h-4 w-4 text-muted-foreground" />
+            <span className="flex-1 text-xs text-muted-foreground">Saldo da Carreira</span>
+            <span className="rounded border border-border px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+              Em breve
+            </span>
+          </div>
+        </Panel>
+
+        <Panel title="E-mail" icon={Mail}>
+          <EmptyState>
+            Sua caixa de entrada está vazia.
+            <br />
+            Mensagens de olheiros e clubes vão aparecer aqui.
+          </EmptyState>
+        </Panel>
+
+        <Panel title="Conquistas" icon={Award}>
+          <div className="grid grid-cols-4 gap-3 p-5">
+            {badges.map((b) => {
+              const Icon = b.icon;
+              return (
+                <div key={b.label} className="flex flex-col items-center gap-2 text-center">
+                  <span
+                    className={`grid h-12 w-12 place-items-center rounded-full border ${
+                      b.unlocked
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border bg-surface-elevated text-muted-foreground/60"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span
+                    className={`text-[10.5px] leading-tight ${
+                      b.unlocked ? "font-semibold text-foreground" : "text-muted-foreground"
+                    }`}
+                  >
+                    {b.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </Panel>
+      </div>
+
+      {/* Right column */}
+      <div className="flex flex-col gap-5">
+        <div className="grid grid-cols-2 gap-3">
+          <Stat icon={Star} label="Overall" value={player.overall} highlight />
+          <Stat icon={Crown} label="Potencial" value={player.potential} />
+          <Stat icon={TrendingUp} label="Idade" value={`${player.age} anos`} />
+          <Stat icon={Crown} label="Margem" value={`+${margin}`} />
+        </div>
+
+        <Panel title="Atributos" icon={BarChart3}>
+          <div className="grid gap-x-5 gap-y-4 p-5 sm:grid-cols-2">
+            {CATEGORIES.map((cat) => {
+              const catVal = categoryValue(player.attributes, cat.key);
+              return (
+                <div key={cat.key}>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase text-primary">{cat.label}</span>
+                    <span className="font-display text-base font-bold">{catVal}</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-surface-elevated">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                      style={{ width: `${catVal}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Panel>
+
+        <Panel title="Próximo na Escolinha" icon={CalendarDays}>
+          <EmptyState>
+            Nenhum jogo agendado.
+            <br />
+            Continue treinando para evoluir.
+          </EmptyState>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- Escola ------ */
+
+function EscolaSection({ player }: { player: PlayerRow }) {
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+        <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+        Você está na base aos {player.age} anos. Treine para evoluir seus atributos, fintas e pé
+        ruim — o módulo de treinos completo chega em breve.
+      </div>
+
+      <Panel title="Ficha do Jogador" icon={User}>
+        <dl className="space-y-3 p-5 text-sm">
+          <Info2 icon={Flag} label="Nacionalidade" value={player.nationality ?? "—"} />
+          <Info2 icon={Trophy} label="Posição" value={positionLabel(player.position)} />
+          <Info2 icon={Footprints} label="Pé preferido" value={player.preferred_foot ?? "—"} />
+          <Info2 icon={Ruler} label="Altura" value={`${player.height_cm} cm`} />
+          <Info2 icon={Weight} label="Peso" value={`${player.weight_kg} kg`} />
+          <Info2 icon={Sparkles} label="Estilo" value={player.play_style ?? "—"} />
+        </dl>
+      </Panel>
+
+      {playStyleDesc(player.play_style) && (
+        <Panel title="Estilo de Jogo" icon={Sparkles}>
+          <p className="p-5 text-sm text-muted-foreground">
+            <strong className="text-foreground">{player.play_style}</strong> —{" "}
+            {playStyleDesc(player.play_style)}
+          </p>
+        </Panel>
+      )}
+
+      <div className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="flex items-center justify-center gap-2 p-5">
+          <PlayerCard
+            name={player.name}
+            position={player.position}
+            altPositions={player.alt_positions ?? undefined}
+            nationality={player.nationality ?? undefined}
+            overall={player.overall}
+            attributes={player.attributes}
+            weakFoot={player.weak_foot}
+            skillMoves={player.skill_moves}
+            preferredFoot={player.preferred_foot ?? undefined}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- Ranking ----- */
+
+function RankingSection({ player }: { player: PlayerRow }) {
+  const fetchRanking = useServerFn(getCareerRanking);
+  const [data, setData] = useState<CareerRanking | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      setLoading(true);
+      try {
+        const res = await fetchRanking({ data: { playerId: player.id } });
+        if (active) setData(res);
+      } catch {
+        if (active) setData({ top: [], me: null });
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [player.id]);
+
+  return (
+    <div className="space-y-5">
+      <Panel
+        title="Top Jogadores — Escolinha"
+        icon={BarChart3}
+        action={<span className="text-xs text-muted-foreground">Atualizado agora</span>}
+      >
+        {loading ? (
+          <div className="flex items-center justify-center py-10 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+          </div>
+        ) : data && data.top.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2.5 text-center font-semibold">#</th>
+                  <th className="px-4 py-2.5 text-left font-semibold">Jogador</th>
+                  <th className="px-4 py-2.5 text-center font-semibold">OVR</th>
+                  <th className="px-4 py-2.5 text-center font-semibold">Idade</th>
+                  <th className="px-4 py-2.5 text-center font-semibold">Títulos</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.top.map((row) => (
+                  <tr
+                    key={`${row.rank}-${row.name}`}
+                    className={`border-t border-border ${row.isMe ? "bg-primary/5" : ""}`}
+                  >
+                    <td
+                      className={`px-4 py-3 text-center font-display text-sm font-bold ${
+                        row.rank === 1
+                          ? "text-yellow-400"
+                          : row.rank === 2
+                            ? "text-slate-300"
+                            : row.rank === 3
+                              ? "text-amber-600"
+                              : "text-muted-foreground"
+                      }`}
+                    >
+                      {row.rank}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-full border text-[11px] font-bold ${
+                            row.isMe
+                              ? "border-primary text-primary"
+                              : "border-border bg-surface-elevated text-muted-foreground"
+                          }`}
+                        >
+                          {initials(row.name)}
+                        </span>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                            <span className="truncate">{row.name}</span>
+                            {row.isMe && (
+                              <span className="rounded border border-primary px-1.5 py-0.5 text-[9px] uppercase text-primary">
+                                Você
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-[11px] text-muted-foreground">
+                            {positionLabel(row.position)}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center font-display text-base font-bold">
+                      {row.overall}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-muted-foreground">
+                      {row.age}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-muted-foreground">
+                      {row.titles}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <EmptyState>Ranking indisponível no momento.</EmptyState>
+        )}
+      </Panel>
+
+      {data?.me && (
+        <Panel title="Sua Posição" icon={Info}>
+          <div className="flex flex-wrap items-center gap-6 p-5">
+            <div className="min-w-[80px] flex-1 text-center">
+              <div className="font-display text-3xl font-bold">#{data.me.rank}</div>
+              <div className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                Posição Geral
+              </div>
+            </div>
+            <div className="min-w-[80px] flex-1 text-center">
+              <div className="font-display text-3xl font-bold">#{data.me.positionRank}</div>
+              <div className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                {positionLabel(data.me.position)}
+              </div>
+            </div>
+            <div className="min-w-[80px] flex-1 text-center">
+              <div className="font-display text-3xl font-bold">{data.me.total}</div>
+              <div className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+                Total na Escola
+              </div>
+            </div>
+          </div>
+        </Panel>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- Tabelas ----- */
+
+const STANDINGS = [
+  { pos: 1, club: "Palmeiras", p: 28, j: 12, v: 9, e: 1, d: 2, sg: "+18" },
+  { pos: 2, club: "Flamengo", p: 26, j: 12, v: 8, e: 2, d: 2, sg: "+15" },
+  { pos: 3, club: "Corinthians", p: 22, j: 12, v: 6, e: 4, d: 2, sg: "+8" },
+  { pos: 4, club: "São Paulo", p: 20, j: 12, v: 6, e: 2, d: 4, sg: "+5" },
+  { pos: 5, club: "Santos", p: 17, j: 12, v: 4, e: 5, d: 3, sg: "-1" },
+];
+
+const MATCHES = [
+  { date: "Sáb · 20/06", home: "Corinthians", away: "Santos", comp: "Brasileirão" },
+  { date: "Dom · 21/06", home: "Flamengo", away: "Palmeiras", comp: "Brasileirão" },
+  { date: "Ter · 23/06", home: "São Paulo", away: "Botafogo", comp: "Copa do Brasil" },
+];
+
+function TabelasSection() {
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+        <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+        Você ainda não está em um clube. Acompanhe as competições enquanto evolui na escolinha.
+      </div>
+
+      <Panel
+        title="Classificação"
+        icon={Table2}
+        action={<span className="text-xs text-muted-foreground">Rodada 12</span>}
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2.5 text-center font-semibold">#</th>
+                <th className="px-4 py-2.5 text-left font-semibold">Clube</th>
+                <th className="px-4 py-2.5 text-center font-semibold">P</th>
+                <th className="px-4 py-2.5 text-center font-semibold">J</th>
+                <th className="px-4 py-2.5 text-center font-semibold">V</th>
+                <th className="px-4 py-2.5 text-center font-semibold">E</th>
+                <th className="px-4 py-2.5 text-center font-semibold">D</th>
+                <th className="px-4 py-2.5 text-center font-semibold">SG</th>
+              </tr>
+            </thead>
+            <tbody>
+              {STANDINGS.map((r) => (
+                <tr key={r.pos} className="border-t border-border text-sm text-muted-foreground">
+                  <td className="px-4 py-2.5 text-center font-semibold text-foreground">{r.pos}</td>
+                  <td className="px-4 py-2.5 font-semibold text-foreground">{r.club}</td>
+                  <td className="px-4 py-2.5 text-center">{r.p}</td>
+                  <td className="px-4 py-2.5 text-center">{r.j}</td>
+                  <td className="px-4 py-2.5 text-center">{r.v}</td>
+                  <td className="px-4 py-2.5 text-center">{r.e}</td>
+                  <td className="px-4 py-2.5 text-center">{r.d}</td>
+                  <td className="px-4 py-2.5 text-center">{r.sg}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+
+      <Panel title="Próximas Partidas" icon={CalendarDays}>
+        <div>
+          {MATCHES.map((m, i) => (
+            <div
+              key={i}
+              className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border px-5 py-3.5 first:border-t-0"
+            >
+              <div className="w-24 flex-shrink-0 text-[11px] text-muted-foreground">{m.date}</div>
+              <div className="flex flex-1 items-center justify-center gap-3 text-sm font-semibold">
+                {m.home} <span className="text-xs font-normal text-muted-foreground">vs</span>{" "}
+                {m.away}
+              </div>
+              <div className="w-28 flex-shrink-0 text-right text-[11px] text-muted-foreground">
+                {m.comp}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- Hall -------- */
+
+const RECORDS = [
+  { medal: "🏆", title: "Maior Overall", value: "97", holder: "Felipe Rocha", sub: "Atacante" },
+  { medal: "⚡", title: "Evolução Recorde", value: "+61", holder: "Ana Beatriz", sub: "32 → 93" },
+  { medal: "🎖", title: "Mais Títulos", value: "12", holder: "Diego Nunes", sub: "Meia" },
+];
+
+const LEGENDS = [
+  { pos: 1, name: "Felipe Rocha", meta: "Atacante · Maior Overall", sv: "97", sl: "OVR Máx." },
+  { pos: 2, name: "Diego Nunes", meta: "Meia · Mais Títulos", sv: "12", sl: "Títulos" },
+  { pos: 3, name: "Ana Beatriz", meta: "Ponta · Evolução Recorde", sv: "+61", sl: "Evolução" },
+];
+
+function HallSection() {
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col items-center gap-5 rounded-2xl border border-border bg-card p-7 text-center sm:flex-row sm:text-left">
+        <span className="grid h-16 w-16 flex-shrink-0 place-items-center rounded-full border border-border bg-surface-elevated text-yellow-400">
+          <Trophy className="h-8 w-8" />
+        </span>
+        <div>
+          <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
+            Pro Soccer Online · Escolinha
+          </div>
+          <div className="mt-1 font-display text-xl font-bold">Os Maiores da História</div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Jogadores que deixaram sua marca. Entre para este grupo: chegue ao OVR 90 ou conquiste
+            um título nacional.
+          </p>
+        </div>
+      </div>
+
+      <Panel title="Recordes Históricos" icon={Medal}>
+        <div className="grid gap-4 p-5 sm:grid-cols-3">
+          {RECORDS.map((r) => (
+            <div
+              key={r.title}
+              className="flex flex-col items-center gap-1.5 rounded-xl border border-border bg-surface-elevated/40 p-4 text-center"
+            >
+              <div className="text-2xl">{r.medal}</div>
+              <div className="text-xs font-bold text-foreground">{r.title}</div>
+              <div className="font-display text-2xl font-bold text-primary">{r.value}</div>
+              <div className="text-xs text-muted-foreground">{r.holder}</div>
+              <div className="text-[11px] text-muted-foreground/70">{r.sub}</div>
+            </div>
+          ))}
+        </div>
+      </Panel>
+
+      <Panel
+        title="Lendas Imortalizadas"
+        icon={Trophy}
+        action={<span className="text-xs text-muted-foreground">3 jogadores</span>}
+      >
+        <div>
+          {LEGENDS.map((l) => (
+            <div
+              key={l.pos}
+              className="flex items-center gap-4 border-t border-border px-5 py-3.5 first:border-t-0"
+            >
+              <div className="w-7 flex-shrink-0 text-center font-display text-lg font-bold text-muted-foreground">
+                {l.pos}
+              </div>
+              <span
+                className={`grid h-11 w-11 flex-shrink-0 place-items-center rounded-full border text-sm font-bold ${
+                  l.pos === 1
+                    ? "border-yellow-400 text-yellow-400"
+                    : "border-border bg-surface-elevated text-muted-foreground"
+                }`}
+              >
+                {initials(l.name)}
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-bold text-foreground">{l.name}</div>
+                <div className="text-[11px] text-muted-foreground">{l.meta}</div>
+              </div>
+              <div className="flex-shrink-0 text-right">
+                <div className="font-display text-lg font-bold">{l.sv}</div>
+                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                  {l.sl}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------- Small bits ---- */
+
+function Info2({
   icon: Icon,
   label,
   value,
@@ -282,7 +895,9 @@ function Stat({
         {label}
       </div>
       <div
-        className={`mt-1 font-display text-2xl font-bold ${highlight ? "text-primary" : "text-foreground"}`}
+        className={`mt-1 font-display text-2xl font-bold ${
+          highlight ? "text-primary" : "text-foreground"
+        }`}
       >
         {value}
       </div>
