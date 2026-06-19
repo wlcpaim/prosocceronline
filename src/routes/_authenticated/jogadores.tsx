@@ -30,7 +30,7 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
 import { AccessGate } from "@/components/AccessGate";
 import { supabase } from "@/integrations/supabase/client";
-import { CATEGORIES, categoryValue, type Attrs } from "@/lib/player";
+import { CATEGORIES, categoryValue, playerSlug, type Attrs } from "@/lib/player";
 
 export const Route = createFileRoute("/_authenticated/jogadores")({
   head: () => ({
@@ -168,7 +168,7 @@ function JogadoresPanel() {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Button variant="hero" size="sm" asChild>
-                  <Link to="/carreira/$playerId" params={{ playerId: player.id }}>
+                  <Link to="/carreira/$playerId" params={{ playerId: playerSlug(player.name) }}>
                     <Trophy className="h-4 w-4" /> Minha Carreira
                   </Link>
                 </Button>
