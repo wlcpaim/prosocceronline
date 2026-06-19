@@ -168,7 +168,7 @@ function JogadoresPanel() {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Button variant="hero" size="sm" asChild>
-                  <Link to="/carreira/$playerId" params={{ playerId: player.id }}>
+                  <Link to="/carreira/$playerId" params={{ playerId: playerSlug(player.name) }}>
                     <Trophy className="h-4 w-4" /> Minha Carreira
                   </Link>
                 </Button>
