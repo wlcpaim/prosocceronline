@@ -26,7 +26,6 @@ import {
   Newspaper,
   CalendarDays,
   Info,
-  ChevronRight,
   Medal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
