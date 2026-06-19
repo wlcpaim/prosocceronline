@@ -23,7 +23,6 @@ import {
   Wallet,
   Mail,
   Award,
-  Newspaper,
   CalendarDays,
   Info,
   Medal,
