@@ -74,12 +74,21 @@ function CarreiraInner() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("players")
-        .select("*")
-        .eq("id", playerId)
-        .maybeSingle();
-      setPlayer((data as PlayerRow | null) ?? null);
+      // O parâmetro pode ser o slug do nome (ex.: "joao-silva") ou, por
+      // compatibilidade, o ID antigo (UUID). Buscamos de acordo.
+      if (UUID_RE.test(playerId)) {
+        const { data } = await supabase
+          .from("players")
+          .select("*")
+          .eq("id", playerId)
+          .maybeSingle();
+        setPlayer((data as PlayerRow | null) ?? null);
+      } else {
+        const { data } = await supabase.from("players").select("*");
+        const rows = (data as PlayerRow[] | null) ?? [];
+        const match = rows.find((p) => playerSlug(p.name) === playerId) ?? null;
+        setPlayer(match);
+      }
       setLoading(false);
     })();
   }, [playerId]);
