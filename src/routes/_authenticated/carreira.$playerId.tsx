@@ -20,10 +20,13 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   CATEGORIES,
   categoryValue,
+  playerSlug,
   POSITIONS,
   PLAY_STYLES,
   type Attrs,
 } from "@/lib/player";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const Route = createFileRoute("/_authenticated/carreira/$playerId")({
   head: () => ({
