@@ -28,7 +28,7 @@ import {
 import { toast } from "sonner";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
-import { AccessGate } from "@/components/AccessGate";
+
 import { supabase } from "@/integrations/supabase/client";
 import { CATEGORIES, categoryValue, playerSlug, type Attrs } from "@/lib/player";
 
