@@ -37,6 +37,10 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { getCareerRanking, type CareerRanking } from "@/lib/career.functions";
+import { getShop, buyItem } from "@/lib/shop.functions";
+import { getGolRanking, type GolRankingRow } from "@/lib/golagol.functions";
+import { SHOP_ITEMS, type ShopItem } from "@/lib/shop-items";
+import { toast } from "sonner";
 import {
   CATEGORIES,
   categoryValue,
