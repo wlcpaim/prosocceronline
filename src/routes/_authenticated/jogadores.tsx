@@ -28,7 +28,7 @@ import {
 import { toast } from "sonner";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
-import { AccessGate } from "@/components/AccessGate";
+
 import { supabase } from "@/integrations/supabase/client";
 import { CATEGORIES, categoryValue, playerSlug, type Attrs } from "@/lib/player";
 
@@ -58,11 +58,8 @@ interface PlayerRow {
 }
 
 function Jogadores() {
-  return (
-    <AccessGate>
-      <JogadoresPanel />
-    </AccessGate>
-  );
+  // Checkout temporariamente desativado — acesso liberado para testes.
+  return <JogadoresPanel />;
 }
 
 function JogadoresPanel() {

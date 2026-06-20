@@ -23,7 +23,7 @@ export interface CareerRanking {
   } | null;
 }
 
-// Ranking global da escolinha. O cálculo roda 100% no servidor com a service
+// Ranking global da escola. O cálculo roda 100% no servidor com a service
 // role — o cliente nunca recebe IDs de usuário, apenas dados públicos do
 // ranking (nome do craque, posição, idade e overall).
 export const getCareerRanking = createServerFn({ method: "GET" })
