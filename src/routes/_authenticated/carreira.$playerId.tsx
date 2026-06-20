@@ -378,15 +378,9 @@ function CarreiraInner() {
           <div className="mb-7 flex flex-wrap items-baseline justify-between gap-2">
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                {tab === "jogador" && "Visão Geral"}
-                {tab === "tabelas" && "Competições"}
-                {tab === "escola" && "Desenvolvimento"}
-                {tab === "ranking" && "Competição"}
-                {tab === "hallda" && "Lendas"}
+                {TAB_SUBTITLE[tab]}
               </div>
-              <h1 className="font-display text-2xl font-bold sm:text-3xl">
-                {navItems.find((n) => n.key === tab)?.label}
-              </h1>
+              <h1 className="font-display text-2xl font-bold sm:text-3xl">{TAB_LABELS[tab]}</h1>
             </div>
             <div className="text-xs capitalize text-muted-foreground">{today}</div>
           </div>
@@ -395,6 +389,8 @@ function CarreiraInner() {
           {tab === "tabelas" && <TabelasSection />}
           {tab === "escola" && <EscolaSection player={player} />}
           {tab === "ranking" && <RankingSection player={player} />}
+          {tab === "rankingGol" && <GolRankingSection />}
+          {tab === "loja" && <LojaSection />}
           {tab === "hallda" && <HallSection />}
         </main>
       </div>
