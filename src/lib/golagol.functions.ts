@@ -187,7 +187,7 @@ export const joinGolQueue = createServerFn({ method: "POST" })
             status: "finished",
             p1_score: sim.s1,
             p2_score: sim.s2,
-            rounds: sim.rounds,
+            rounds: sim.rounds as unknown as Record<string, unknown>[],
             winner_user_id: winnerUserId,
           })
           .eq("id", claimed.id)
