@@ -477,7 +477,7 @@ function JogadorSection({ player }: { player: PlayerRow }) {
           </div>
         </Panel>
 
-        <Panel title="Próximo na Escolinha" icon={CalendarDays}>
+        <Panel title="Próximo na Escola" icon={CalendarDays}>
           <EmptyState>
             Nenhum jogo agendado.
             <br />
@@ -568,7 +568,7 @@ function RankingSection({ player }: { player: PlayerRow }) {
   return (
     <div className="space-y-5">
       <Panel
-        title="Top Jogadores — Escolinha"
+        title="Top Jogadores — Escola"
         icon={BarChart3}
         action={<span className="text-xs text-muted-foreground">Atualizado agora</span>}
       >
@@ -701,7 +701,7 @@ function TabelasSection() {
     <div className="space-y-5">
       <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
         <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
-        Você ainda não está em um clube. Acompanhe as competições enquanto evolui na escolinha.
+        Você ainda não está em um clube. Acompanhe as competições enquanto evolui na escola.
       </div>
 
       <Panel
@@ -787,7 +787,7 @@ function HallSection() {
         </span>
         <div>
           <div className="text-[11px] uppercase tracking-widest text-muted-foreground">
-            Pro Soccer Online · Escolinha
+            Pro Soccer Online · Escola
           </div>
           <div className="mt-1 font-display text-xl font-bold">Os Maiores da História</div>
           <p className="mt-1 text-sm text-muted-foreground">
