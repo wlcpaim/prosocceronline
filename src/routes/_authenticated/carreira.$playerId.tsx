@@ -244,7 +244,7 @@ function CarreiraInner() {
             <p className="px-5 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               Navegação
             </p>
-            {navItems.map((item) => {
+            {mainItems.map((item) => {
               const Icon = item.icon;
               const active = tab === item.key;
               return (
@@ -264,10 +264,80 @@ function CarreiraInner() {
               );
             })}
 
+            {/* Loja */}
+            <button
+              type="button"
+              onClick={() => go("loja")}
+              className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
+                tab === "loja"
+                  ? "border-primary bg-surface-elevated font-semibold text-foreground"
+                  : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
+              }`}
+            >
+              <ShoppingBag className={`h-4 w-4 ${tab === "loja" ? "text-primary" : ""}`} />
+              Loja
+            </button>
+
+            {/* Jogos */}
+            <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Jogos
+            </p>
+            <Link
+              to="/gol-a-gol"
+              onClick={() => setSidebarOpen(false)}
+              className="flex w-full items-center gap-3 border-l-[3px] border-transparent px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-surface-elevated/60 hover:text-foreground"
+            >
+              <Swords className="h-4 w-4" />
+              <span className="flex-1 text-left">Gol a Gol</span>
+              <span className="rounded border border-primary/50 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-primary">
+                x1
+              </span>
+            </Link>
+
+            {/* Ranking */}
+            <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Ranking
+            </p>
+            {rankingItems.map((item) => {
+              const active = tab === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => go(item.key)}
+                  className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
+                    active
+                      ? "border-primary bg-surface-elevated font-semibold text-foreground"
+                      : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
+                  }`}
+                >
+                  <BarChart3 className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+                  {item.label}
+                </button>
+              );
+            })}
+
+            {/* Hall */}
+            <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Glória
+            </p>
+            <button
+              type="button"
+              onClick={() => go("hallda")}
+              className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
+                tab === "hallda"
+                  ? "border-primary bg-surface-elevated font-semibold text-foreground"
+                  : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
+              }`}
+            >
+              <Trophy className={`h-4 w-4 ${tab === "hallda" ? "text-primary" : ""}`} />
+              Hall da Fama
+            </button>
+
             <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               Em breve
             </p>
-            {["Time", "Loja"].map((label) => (
+            {["Time"].map((label) => (
               <div
                 key={label}
                 className="flex w-full cursor-not-allowed items-center gap-3 px-5 py-2.5 text-sm text-muted-foreground/50"
