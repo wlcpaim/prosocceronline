@@ -29,7 +29,7 @@ import {
   Swords,
   ShoppingBag,
   Coins,
-  Gamepad2,
+  Target,
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
