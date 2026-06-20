@@ -58,11 +58,8 @@ interface PlayerRow {
 }
 
 function Jogadores() {
-  return (
-    <AccessGate>
-      <JogadoresPanel />
-    </AccessGate>
-  );
+  // Checkout temporariamente desativado — acesso liberado para testes.
+  return <JogadoresPanel />;
 }
 
 function JogadoresPanel() {
