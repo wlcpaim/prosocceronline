@@ -776,6 +776,251 @@ function RankingSection({ player }: { player: PlayerRow }) {
   );
 }
 
+/* --------------------------------------------------------- Ranking Gol ----- */
+
+function GolRankingSection() {
+  const fetchRanking = useServerFn(getGolRanking);
+  const [rows, setRows] = useState<GolRankingRow[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetchRanking({});
+        if (active) setRows(res.top);
+      } catch {
+        if (active) setRows([]);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+        <Swords className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+        Ranking dos duelos x1 de Gol a Gol. Vença partidas para subir na tabela.
+      </div>
+
+      <Panel
+        title="Melhores do Gol a Gol"
+        icon={Swords}
+        action={
+          <Link
+            to="/gol-a-gol"
+            className="text-xs text-primary transition-colors hover:underline"
+          >
+            Jogar →
+          </Link>
+        }
+      >
+        {loading ? (
+          <div className="flex items-center justify-center py-10 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+          </div>
+        ) : rows && rows.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2.5 text-center font-semibold">#</th>
+                  <th className="px-4 py-2.5 text-left font-semibold">Jogador</th>
+                  <th className="px-4 py-2.5 text-center font-semibold">Vitórias</th>
+                  <th className="px-4 py-2.5 text-center font-semibold">Partidas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr
+                    key={`${row.rank}-${row.name}`}
+                    className={`border-t border-border ${row.isMe ? "bg-primary/5" : ""}`}
+                  >
+                    <td
+                      className={`px-4 py-3 text-center font-display text-sm font-bold ${
+                        row.rank === 1
+                          ? "text-yellow-400"
+                          : row.rank === 2
+                            ? "text-slate-300"
+                            : row.rank === 3
+                              ? "text-amber-600"
+                              : "text-muted-foreground"
+                      }`}
+                    >
+                      {row.rank}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                        <span className="truncate">{row.name}</span>
+                        {row.isMe && (
+                          <span className="rounded border border-primary px-1.5 py-0.5 text-[9px] uppercase text-primary">
+                            Você
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center font-display text-base font-bold text-primary">
+                      {row.wins}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-muted-foreground">
+                      {row.played}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <EmptyState>
+            Nenhum duelo disputado ainda.
+            <br />
+            Seja o primeiro a entrar no Gol a Gol!
+          </EmptyState>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- Loja -------- */
+
+const SHOP_ICONS: Record<ShopItem["icon"], typeof Star> = {
+  boots: Footprints,
+  ball: Target,
+  shirt: Award,
+  energy: Sparkles,
+  badge: Medal,
+  star: Star,
+};
+
+function LojaSection() {
+  const fetchShop = useServerFn(getShop);
+  const buy = useServerFn(buyItem);
+  const [coins, setCoins] = useState<number | null>(null);
+  const [owned, setOwned] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetchShop({});
+        if (active) {
+          setCoins(res.coins);
+          setOwned(res.owned);
+        }
+      } catch {
+        if (active) setCoins(0);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleBuy = async (item: ShopItem) => {
+    setBusy(item.id);
+    try {
+      const res = await buy({ data: { itemId: item.id } });
+      setCoins(res.coins);
+      if (res.ok) {
+        setOwned((o) => [...o, item.id]);
+        toast.success(`${item.name} comprado!`);
+      } else if (res.reason === "insufficient") {
+        toast.error("Moedas insuficientes.");
+      } else if (res.reason === "owned") {
+        toast.info("Você já tem este item.");
+        setOwned((o) => (o.includes(item.id) ? o : [...o, item.id]));
+      }
+    } catch {
+      toast.error("Não foi possível concluir a compra.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-5 py-4">
+        <div className="flex items-start gap-3 text-sm text-muted-foreground">
+          <ShoppingBag className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+          Loja em fase de testes. Ganhe moedas vencendo no Gol a Gol e gaste aqui.
+        </div>
+        <div className="flex flex-shrink-0 items-center gap-2 rounded-full border border-border bg-surface-elevated px-3 py-1.5">
+          <Coins className="h-4 w-4 text-yellow-400" />
+          <span className="font-display text-base font-bold tabular-nums">
+            {coins === null ? "—" : coins.toLocaleString("pt-BR")}
+          </span>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-12 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {SHOP_ITEMS.map((item) => {
+            const Icon = SHOP_ICONS[item.icon];
+            const isOwned = owned.includes(item.id);
+            const canAfford = (coins ?? 0) >= item.price;
+            return (
+              <div
+                key={item.id}
+                className="flex flex-col rounded-2xl border border-border bg-card p-5"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="truncate font-display text-base font-bold">{item.name}</div>
+                    <div className="flex items-center gap-1 text-sm font-semibold text-yellow-400">
+                      <Coins className="h-3.5 w-3.5" />
+                      {item.price.toLocaleString("pt-BR")}
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-3 flex-1 text-sm text-muted-foreground">{item.desc}</p>
+                <Button
+                  variant={isOwned ? "outline" : "hero"}
+                  className="mt-4 w-full"
+                  disabled={isOwned || busy === item.id || (!isOwned && !canAfford)}
+                  onClick={() => handleBuy(item)}
+                >
+                  {busy === item.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : isOwned ? (
+                    <>
+                      <Check className="h-4 w-4" /> Adquirido
+                    </>
+                  ) : !canAfford ? (
+                    "Moedas insuficientes"
+                  ) : (
+                    <>
+                      <ShoppingBag className="h-4 w-4" /> Comprar
+                    </>
+                  )}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 /* ------------------------------------------------------------- Tabelas ----- */
 
 const STANDINGS = [
