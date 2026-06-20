@@ -74,7 +74,7 @@ function JogadoresPanel() {
 
   useEffect(() => {
     (async () => {
-      // O acesso ao painel é liberado pelo AccessGate (pagamento confirmado ou Owner/admin).
+      // Checkout desativado por enquanto — acesso liberado para testes.
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;
       if (user) {
