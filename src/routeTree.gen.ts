@@ -18,6 +18,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPagamentoRouteImport } from './routes/_authenticated/pagamento'
 import { Route as AuthenticatedJogadoresRouteImport } from './routes/_authenticated/jogadores'
+import { Route as AuthenticatedGolAGolRouteImport } from './routes/_authenticated/gol-a-gol'
 import { Route as AuthenticatedCarreiraPlayerIdRouteImport } from './routes/_authenticated/carreira.$playerId'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -68,6 +69,11 @@ const AuthenticatedJogadoresRoute = AuthenticatedJogadoresRouteImport.update({
   path: '/jogadores',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedGolAGolRoute = AuthenticatedGolAGolRouteImport.update({
+  id: '/gol-a-gol',
+  path: '/gol-a-gol',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCarreiraPlayerIdRoute =
   AuthenticatedCarreiraPlayerIdRouteImport.update({
     id: '/carreira/$playerId',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/criar-personagem': typeof CriarPersonagemRoute
   '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/gol-a-gol': typeof AuthenticatedGolAGolRoute
   '/jogadores': typeof AuthenticatedJogadoresRoute
   '/pagamento': typeof AuthenticatedPagamentoRoute
   '/carreira/$playerId': typeof AuthenticatedCarreiraPlayerIdRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/criar-personagem': typeof CriarPersonagemRoute
   '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/gol-a-gol': typeof AuthenticatedGolAGolRoute
   '/jogadores': typeof AuthenticatedJogadoresRoute
   '/pagamento': typeof AuthenticatedPagamentoRoute
   '/carreira/$playerId': typeof AuthenticatedCarreiraPlayerIdRoute
@@ -136,6 +144,7 @@ export interface FileRoutesById {
   '/criar-personagem': typeof CriarPersonagemRoute
   '/seguranca': typeof SegurancaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/gol-a-gol': typeof AuthenticatedGolAGolRoute
   '/_authenticated/jogadores': typeof AuthenticatedJogadoresRoute
   '/_authenticated/pagamento': typeof AuthenticatedPagamentoRoute
   '/_authenticated/carreira/$playerId': typeof AuthenticatedCarreiraPlayerIdRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/criar-personagem'
     | '/seguranca'
     | '/sitemap.xml'
+    | '/gol-a-gol'
     | '/jogadores'
     | '/pagamento'
     | '/carreira/$playerId'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/criar-personagem'
     | '/seguranca'
     | '/sitemap.xml'
+    | '/gol-a-gol'
     | '/jogadores'
     | '/pagamento'
     | '/carreira/$playerId'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/criar-personagem'
     | '/seguranca'
     | '/sitemap.xml'
+    | '/_authenticated/gol-a-gol'
     | '/_authenticated/jogadores'
     | '/_authenticated/pagamento'
     | '/_authenticated/carreira/$playerId'
@@ -272,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedJogadoresRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/gol-a-gol': {
+      id: '/_authenticated/gol-a-gol'
+      path: '/gol-a-gol'
+      fullPath: '/gol-a-gol'
+      preLoaderRoute: typeof AuthenticatedGolAGolRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/carreira/$playerId': {
       id: '/_authenticated/carreira/$playerId'
       path: '/carreira/$playerId'
@@ -311,12 +330,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedGolAGolRoute: typeof AuthenticatedGolAGolRoute
   AuthenticatedJogadoresRoute: typeof AuthenticatedJogadoresRoute
   AuthenticatedPagamentoRoute: typeof AuthenticatedPagamentoRoute
   AuthenticatedCarreiraPlayerIdRoute: typeof AuthenticatedCarreiraPlayerIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedGolAGolRoute: AuthenticatedGolAGolRoute,
   AuthenticatedJogadoresRoute: AuthenticatedJogadoresRoute,
   AuthenticatedPagamentoRoute: AuthenticatedPagamentoRoute,
   AuthenticatedCarreiraPlayerIdRoute: AuthenticatedCarreiraPlayerIdRoute,

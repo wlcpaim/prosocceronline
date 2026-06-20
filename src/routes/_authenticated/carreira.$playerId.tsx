@@ -26,6 +26,11 @@ import {
   CalendarDays,
   Info,
   Medal,
+  Swords,
+  ShoppingBag,
+  Coins,
+  Gamepad2,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlayerCard } from "@/components/PlayerCard";
@@ -69,7 +74,7 @@ interface PlayerRow {
   created_at: string;
 }
 
-type TabKey = "jogador" | "tabelas" | "escola" | "ranking" | "hallda";
+type TabKey = "jogador" | "tabelas" | "escola" | "ranking" | "rankingGol" | "loja" | "hallda";
 
 function positionLabel(code: string) {
   return POSITIONS.find((p) => p.code === code)?.label ?? code;
