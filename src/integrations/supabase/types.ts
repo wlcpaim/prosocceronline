@@ -101,6 +101,63 @@ export type Database = {
         }
         Relationships: []
       }
+      gol_matches: {
+        Row: {
+          created_at: string
+          id: string
+          p1_name: string
+          p1_overall: number
+          p1_player_id: string
+          p1_score: number
+          p1_user_id: string
+          p2_name: string | null
+          p2_overall: number | null
+          p2_player_id: string | null
+          p2_score: number
+          p2_user_id: string | null
+          rounds: Json | null
+          status: string
+          updated_at: string
+          winner_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          p1_name: string
+          p1_overall: number
+          p1_player_id: string
+          p1_score?: number
+          p1_user_id: string
+          p2_name?: string | null
+          p2_overall?: number | null
+          p2_player_id?: string | null
+          p2_score?: number
+          p2_user_id?: string | null
+          rounds?: Json | null
+          status?: string
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          p1_name?: string
+          p1_overall?: number
+          p1_player_id?: string
+          p1_score?: number
+          p1_user_id?: string
+          p2_name?: string | null
+          p2_overall?: number | null
+          p2_player_id?: string | null
+          p2_score?: number
+          p2_user_id?: string | null
+          rounds?: Json | null
+          status?: string
+          updated_at?: string
+          winner_user_id?: string | null
+        }
+        Relationships: []
+      }
       players: {
         Row: {
           age: number
@@ -188,6 +245,33 @@ export type Database = {
         }
         Relationships: []
       }
+      purchases: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          item_name: string
+          price: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          item_name: string
+          price: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          item_name?: string
+          price?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           activated_at: string | null
@@ -268,6 +352,27 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wallets: {
+        Row: {
+          coins: number
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          coins?: number
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          coins?: number
+          created_at?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

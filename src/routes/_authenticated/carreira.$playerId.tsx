@@ -26,12 +26,21 @@ import {
   CalendarDays,
   Info,
   Medal,
+  Swords,
+  ShoppingBag,
+  Coins,
+  Target,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { getCareerRanking, type CareerRanking } from "@/lib/career.functions";
+import { getShop, buyItem } from "@/lib/shop.functions";
+import { getGolRanking, type GolRankingRow } from "@/lib/golagol.functions";
+import { SHOP_ITEMS, type ShopItem } from "@/lib/shop-items";
+import { toast } from "sonner";
 import {
   CATEGORIES,
   categoryValue,
@@ -69,7 +78,7 @@ interface PlayerRow {
   created_at: string;
 }
 
-type TabKey = "jogador" | "tabelas" | "escola" | "ranking" | "hallda";
+type TabKey = "jogador" | "tabelas" | "escola" | "ranking" | "rankingGol" | "loja" | "hallda";
 
 function positionLabel(code: string) {
   return POSITIONS.find((p) => p.code === code)?.label ?? code;
@@ -148,12 +157,33 @@ function CarreiraInner() {
     month: "long",
   });
 
-  const navItems: { key: TabKey; label: string; icon: typeof User }[] = [
+  const TAB_LABELS: Record<TabKey, string> = {
+    jogador: "Jogador",
+    tabelas: "Tabelas",
+    escola: "Escola",
+    ranking: "Ranking Geral",
+    rankingGol: "Ranking Gol a Gol",
+    loja: "Loja",
+    hallda: "Hall da Fama",
+  };
+  const TAB_SUBTITLE: Record<TabKey, string> = {
+    jogador: "Visão Geral",
+    tabelas: "Competições",
+    escola: "Desenvolvimento",
+    ranking: "Competição",
+    rankingGol: "PvP · x1",
+    loja: "Moedas do jogo",
+    hallda: "Lendas",
+  };
+
+  const mainItems: { key: TabKey; label: string; icon: typeof User }[] = [
     { key: "jogador", label: "Jogador", icon: User },
     { key: "tabelas", label: "Tabelas", icon: Table2 },
     { key: "escola", label: "Escola", icon: GraduationCap },
-    { key: "ranking", label: "Ranking", icon: BarChart3 },
-    { key: "hallda", label: "Hall da Fama", icon: Trophy },
+  ];
+  const rankingItems: { key: TabKey; label: string }[] = [
+    { key: "ranking", label: "Geral" },
+    { key: "rankingGol", label: "Gol a Gol" },
   ];
 
   const go = (key: TabKey) => {
@@ -214,7 +244,7 @@ function CarreiraInner() {
             <p className="px-5 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               Navegação
             </p>
-            {navItems.map((item) => {
+            {mainItems.map((item) => {
               const Icon = item.icon;
               const active = tab === item.key;
               return (
@@ -234,10 +264,80 @@ function CarreiraInner() {
               );
             })}
 
+            {/* Loja */}
+            <button
+              type="button"
+              onClick={() => go("loja")}
+              className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
+                tab === "loja"
+                  ? "border-primary bg-surface-elevated font-semibold text-foreground"
+                  : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
+              }`}
+            >
+              <ShoppingBag className={`h-4 w-4 ${tab === "loja" ? "text-primary" : ""}`} />
+              Loja
+            </button>
+
+            {/* Jogos */}
+            <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Jogos
+            </p>
+            <Link
+              to="/gol-a-gol"
+              onClick={() => setSidebarOpen(false)}
+              className="flex w-full items-center gap-3 border-l-[3px] border-transparent px-5 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-surface-elevated/60 hover:text-foreground"
+            >
+              <Swords className="h-4 w-4" />
+              <span className="flex-1 text-left">Gol a Gol</span>
+              <span className="rounded border border-primary/50 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-primary">
+                x1
+              </span>
+            </Link>
+
+            {/* Ranking */}
+            <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Ranking
+            </p>
+            {rankingItems.map((item) => {
+              const active = tab === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => go(item.key)}
+                  className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
+                    active
+                      ? "border-primary bg-surface-elevated font-semibold text-foreground"
+                      : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
+                  }`}
+                >
+                  <BarChart3 className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+                  {item.label}
+                </button>
+              );
+            })}
+
+            {/* Hall */}
+            <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Glória
+            </p>
+            <button
+              type="button"
+              onClick={() => go("hallda")}
+              className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
+                tab === "hallda"
+                  ? "border-primary bg-surface-elevated font-semibold text-foreground"
+                  : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
+              }`}
+            >
+              <Trophy className={`h-4 w-4 ${tab === "hallda" ? "text-primary" : ""}`} />
+              Hall da Fama
+            </button>
+
             <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               Em breve
             </p>
-            {["Time", "Loja"].map((label) => (
+            {["Time"].map((label) => (
               <div
                 key={label}
                 className="flex w-full cursor-not-allowed items-center gap-3 px-5 py-2.5 text-sm text-muted-foreground/50"
@@ -278,15 +378,9 @@ function CarreiraInner() {
           <div className="mb-7 flex flex-wrap items-baseline justify-between gap-2">
             <div>
               <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                {tab === "jogador" && "Visão Geral"}
-                {tab === "tabelas" && "Competições"}
-                {tab === "escola" && "Desenvolvimento"}
-                {tab === "ranking" && "Competição"}
-                {tab === "hallda" && "Lendas"}
+                {TAB_SUBTITLE[tab]}
               </div>
-              <h1 className="font-display text-2xl font-bold sm:text-3xl">
-                {navItems.find((n) => n.key === tab)?.label}
-              </h1>
+              <h1 className="font-display text-2xl font-bold sm:text-3xl">{TAB_LABELS[tab]}</h1>
             </div>
             <div className="text-xs capitalize text-muted-foreground">{today}</div>
           </div>
@@ -295,6 +389,8 @@ function CarreiraInner() {
           {tab === "tabelas" && <TabelasSection />}
           {tab === "escola" && <EscolaSection player={player} />}
           {tab === "ranking" && <RankingSection player={player} />}
+          {tab === "rankingGol" && <GolRankingSection />}
+          {tab === "loja" && <LojaSection />}
           {tab === "hallda" && <HallSection />}
         </main>
       </div>
@@ -679,6 +775,251 @@ function RankingSection({ player }: { player: PlayerRow }) {
     </div>
   );
 }
+
+/* --------------------------------------------------------- Ranking Gol ----- */
+
+function GolRankingSection() {
+  const fetchRanking = useServerFn(getGolRanking);
+  const [rows, setRows] = useState<GolRankingRow[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetchRanking({});
+        if (active) setRows(res.top);
+      } catch {
+        if (active) setRows([]);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+        <Swords className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+        Ranking dos duelos x1 de Gol a Gol. Vença partidas para subir na tabela.
+      </div>
+
+      <Panel
+        title="Melhores do Gol a Gol"
+        icon={Swords}
+        action={
+          <Link
+            to="/gol-a-gol"
+            className="text-xs text-primary transition-colors hover:underline"
+          >
+            Jogar →
+          </Link>
+        }
+      >
+        {loading ? (
+          <div className="flex items-center justify-center py-10 text-muted-foreground">
+            <Loader2 className="h-5 w-5 animate-spin" />
+          </div>
+        ) : rows && rows.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2.5 text-center font-semibold">#</th>
+                  <th className="px-4 py-2.5 text-left font-semibold">Jogador</th>
+                  <th className="px-4 py-2.5 text-center font-semibold">Vitórias</th>
+                  <th className="px-4 py-2.5 text-center font-semibold">Partidas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr
+                    key={`${row.rank}-${row.name}`}
+                    className={`border-t border-border ${row.isMe ? "bg-primary/5" : ""}`}
+                  >
+                    <td
+                      className={`px-4 py-3 text-center font-display text-sm font-bold ${
+                        row.rank === 1
+                          ? "text-yellow-400"
+                          : row.rank === 2
+                            ? "text-slate-300"
+                            : row.rank === 3
+                              ? "text-amber-600"
+                              : "text-muted-foreground"
+                      }`}
+                    >
+                      {row.rank}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                        <span className="truncate">{row.name}</span>
+                        {row.isMe && (
+                          <span className="rounded border border-primary px-1.5 py-0.5 text-[9px] uppercase text-primary">
+                            Você
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center font-display text-base font-bold text-primary">
+                      {row.wins}
+                    </td>
+                    <td className="px-4 py-3 text-center text-sm text-muted-foreground">
+                      {row.played}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <EmptyState>
+            Nenhum duelo disputado ainda.
+            <br />
+            Seja o primeiro a entrar no Gol a Gol!
+          </EmptyState>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- Loja -------- */
+
+const SHOP_ICONS: Record<ShopItem["icon"], typeof Star> = {
+  boots: Footprints,
+  ball: Target,
+  shirt: Award,
+  energy: Sparkles,
+  badge: Medal,
+  star: Star,
+};
+
+function LojaSection() {
+  const fetchShop = useServerFn(getShop);
+  const buy = useServerFn(buyItem);
+  const [coins, setCoins] = useState<number | null>(null);
+  const [owned, setOwned] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetchShop({});
+        if (active) {
+          setCoins(res.coins);
+          setOwned(res.owned);
+        }
+      } catch {
+        if (active) setCoins(0);
+      } finally {
+        if (active) setLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleBuy = async (item: ShopItem) => {
+    setBusy(item.id);
+    try {
+      const res = await buy({ data: { itemId: item.id } });
+      setCoins(res.coins);
+      if (res.ok) {
+        setOwned((o) => [...o, item.id]);
+        toast.success(`${item.name} comprado!`);
+      } else if (res.reason === "insufficient") {
+        toast.error("Moedas insuficientes.");
+      } else if (res.reason === "owned") {
+        toast.info("Você já tem este item.");
+        setOwned((o) => (o.includes(item.id) ? o : [...o, item.id]));
+      }
+    } catch {
+      toast.error("Não foi possível concluir a compra.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-5 py-4">
+        <div className="flex items-start gap-3 text-sm text-muted-foreground">
+          <ShoppingBag className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+          Loja em fase de testes. Ganhe moedas vencendo no Gol a Gol e gaste aqui.
+        </div>
+        <div className="flex flex-shrink-0 items-center gap-2 rounded-full border border-border bg-surface-elevated px-3 py-1.5">
+          <Coins className="h-4 w-4 text-yellow-400" />
+          <span className="font-display text-base font-bold tabular-nums">
+            {coins === null ? "—" : coins.toLocaleString("pt-BR")}
+          </span>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-12 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {SHOP_ITEMS.map((item) => {
+            const Icon = SHOP_ICONS[item.icon];
+            const isOwned = owned.includes(item.id);
+            const canAfford = (coins ?? 0) >= item.price;
+            return (
+              <div
+                key={item.id}
+                className="flex flex-col rounded-2xl border border-border bg-card p-5"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="truncate font-display text-base font-bold">{item.name}</div>
+                    <div className="flex items-center gap-1 text-sm font-semibold text-yellow-400">
+                      <Coins className="h-3.5 w-3.5" />
+                      {item.price.toLocaleString("pt-BR")}
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-3 flex-1 text-sm text-muted-foreground">{item.desc}</p>
+                <Button
+                  variant={isOwned ? "outline" : "hero"}
+                  className="mt-4 w-full"
+                  disabled={isOwned || busy === item.id || (!isOwned && !canAfford)}
+                  onClick={() => handleBuy(item)}
+                >
+                  {busy === item.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : isOwned ? (
+                    <>
+                      <Check className="h-4 w-4" /> Adquirido
+                    </>
+                  ) : !canAfford ? (
+                    "Moedas insuficientes"
+                  ) : (
+                    <>
+                      <ShoppingBag className="h-4 w-4" /> Comprar
+                    </>
+                  )}
+                </Button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 /* ------------------------------------------------------------- Tabelas ----- */
 
