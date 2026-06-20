@@ -157,12 +157,33 @@ function CarreiraInner() {
     month: "long",
   });
 
-  const navItems: { key: TabKey; label: string; icon: typeof User }[] = [
+  const TAB_LABELS: Record<TabKey, string> = {
+    jogador: "Jogador",
+    tabelas: "Tabelas",
+    escola: "Escola",
+    ranking: "Ranking Geral",
+    rankingGol: "Ranking Gol a Gol",
+    loja: "Loja",
+    hallda: "Hall da Fama",
+  };
+  const TAB_SUBTITLE: Record<TabKey, string> = {
+    jogador: "Visão Geral",
+    tabelas: "Competições",
+    escola: "Desenvolvimento",
+    ranking: "Competição",
+    rankingGol: "PvP · x1",
+    loja: "Moedas do jogo",
+    hallda: "Lendas",
+  };
+
+  const mainItems: { key: TabKey; label: string; icon: typeof User }[] = [
     { key: "jogador", label: "Jogador", icon: User },
     { key: "tabelas", label: "Tabelas", icon: Table2 },
     { key: "escola", label: "Escola", icon: GraduationCap },
-    { key: "ranking", label: "Ranking", icon: BarChart3 },
-    { key: "hallda", label: "Hall da Fama", icon: Trophy },
+  ];
+  const rankingItems: { key: TabKey; label: string }[] = [
+    { key: "ranking", label: "Geral" },
+    { key: "rankingGol", label: "Gol a Gol" },
   ];
 
   const go = (key: TabKey) => {
