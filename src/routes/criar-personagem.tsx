@@ -52,7 +52,15 @@ export const Route = createFileRoute("/criar-personagem")({
         content:
           "Monte seu craque no Pro Soccer Online: posição, estilo de jogo, físico e atributos. Tudo afeta o overall ao vivo.",
       },
+      { property: "og:title", content: "Crie seu jogador — Pro Soccer Online" },
+      {
+        property: "og:description",
+        content:
+          "Monte seu craque no Pro Soccer Online: posição, estilo de jogo, físico e atributos. Tudo afeta o overall ao vivo.",
+      },
+      { property: "og:url", content: "https://prosoccer.online/criar-personagem" },
     ],
+    links: [{ rel: "canonical", href: "https://prosoccer.online/criar-personagem" }],
   }),
   component: CriarPersonagem,
 });
