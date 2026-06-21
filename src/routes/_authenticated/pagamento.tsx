@@ -12,7 +12,21 @@ import { createPixCharge, getMyAccess } from "@/lib/payment.functions";
 
 export const Route = createFileRoute("/_authenticated/pagamento")({
   head: () => ({
-    meta: [{ title: "Liberar acesso — Pro Soccer Online" }],
+    meta: [
+      { title: "Liberar acesso — Pro Soccer Online" },
+      {
+        name: "description",
+        content:
+          "Libere sua carreira no Pro Soccer Online pagando via Pix. Pagamento rápido e seguro para começar a treinar, evoluir e competir em partidas PvP.",
+      },
+      { property: "og:title", content: "Liberar acesso — Pro Soccer Online" },
+      {
+        property: "og:description",
+        content:
+          "Libere sua carreira no Pro Soccer Online pagando via Pix. Pagamento rápido e seguro para começar a jogar.",
+      },
+      { property: "og:url", content: "https://prosoccer.online/pagamento" },
+    ],
   }),
   component: PaymentPage,
 });
@@ -249,7 +263,7 @@ function PaymentPage() {
                   <code className="flex-1 truncate rounded-lg border border-border bg-surface-elevated px-3 py-2 text-xs">
                     {pixCode}
                   </code>
-                  <Button type="button" variant="outline" size="icon" onClick={handleCopy}>
+                  <Button type="button" variant="outline" size="icon" aria-label="Copiar código Pix" onClick={handleCopy}>
                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </Button>
                 </div>

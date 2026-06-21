@@ -128,6 +128,7 @@ function AuthPage() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
+                aria-label="Confirmar que não sou um robô"
                 disabled={isNotRobot || captchaVerifying}
                 onClick={() => {
                   setCaptchaVerifying(true);

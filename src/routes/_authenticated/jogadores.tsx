@@ -34,7 +34,21 @@ import { CATEGORIES, categoryValue, playerSlug, type Attrs } from "@/lib/player"
 
 export const Route = createFileRoute("/_authenticated/jogadores")({
   head: () => ({
-    meta: [{ title: "Jogadores — Pro Soccer Online" }],
+    meta: [
+      { title: "Jogadores — Pro Soccer Online" },
+      {
+        name: "description",
+        content:
+          "Explore os jogadores do Pro Soccer Online: posições, estilos de jogo, atributos e overall de cada craque criado pela comunidade.",
+      },
+      { property: "og:title", content: "Jogadores — Pro Soccer Online" },
+      {
+        property: "og:description",
+        content:
+          "Explore os jogadores do Pro Soccer Online: posições, estilos de jogo, atributos e overall da comunidade.",
+      },
+      { property: "og:url", content: "https://prosoccer.online/jogadores" },
+    ],
   }),
   component: Jogadores,
 });

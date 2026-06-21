@@ -52,7 +52,15 @@ export const Route = createFileRoute("/criar-personagem")({
         content:
           "Monte seu craque no Pro Soccer Online: posição, estilo de jogo, físico e atributos. Tudo afeta o overall ao vivo.",
       },
+      { property: "og:title", content: "Crie seu jogador — Pro Soccer Online" },
+      {
+        property: "og:description",
+        content:
+          "Monte seu craque no Pro Soccer Online: posição, estilo de jogo, físico e atributos. Tudo afeta o overall ao vivo.",
+      },
+      { property: "og:url", content: "https://prosoccer.online/criar-personagem" },
     ],
+    links: [{ rel: "canonical", href: "https://prosoccer.online/criar-personagem" }],
   }),
   component: CriarPersonagem,
 });
@@ -570,7 +578,7 @@ function CriarPersonagem() {
                 </div>
 
                 <div className="rounded-xl border border-border bg-card p-4">
-                  <h3 className="mb-3 font-display text-sm font-bold">Atributos detalhados</h3>
+                  <h2 className="mb-3 font-display text-sm font-bold">Atributos detalhados</h2>
                   <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
                     {CATEGORIES.map((cat) => (
                       <div key={cat.key}>

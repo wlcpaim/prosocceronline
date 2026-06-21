@@ -23,7 +23,15 @@ export const Route = createFileRoute("/seguranca")({
           "Como o Pro Soccer Online protege sua conta e seus dados: autenticação, banco de dados com regras de acesso, cálculos no servidor (anti-trapaça) e pagamentos Pix processados por parceiro.",
       },
       { name: "robots", content: "index,follow" },
+      { property: "og:title", content: "Segurança e Privacidade — Pro Soccer Online" },
+      {
+        property: "og:description",
+        content:
+          "Como o Pro Soccer Online protege sua conta e seus dados: autenticação, regras de acesso, cálculos no servidor (anti-trapaça) e pagamentos Pix.",
+      },
+      { property: "og:url", content: "https://prosoccer.online/seguranca" },
     ],
+    links: [{ rel: "canonical", href: "https://prosoccer.online/seguranca" }],
   }),
   component: SecurityPage,
 });
