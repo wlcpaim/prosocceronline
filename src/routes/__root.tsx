@@ -123,6 +123,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Pro Soccer Online",
+          url: "https://prosoccer.online/",
+          logo: "https://prosoccer.online/favicon.png",
+          sameAs: ["https://twitter.com/ProSoccerOnline"],
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
