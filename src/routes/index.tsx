@@ -36,15 +36,39 @@ import { useI18n } from "@/lib/i18n";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Pro Soccer Online — Sua carreira de jogador começa aqui" },
       {
         name: "description",
         content:
           "Pro Soccer Online: crie seu jogador, comece aos 14 anos, treine na base, seja descoberto por olheiros e evolua em partidas PvP e cooperativas. Sem downloads.",
       },
+      { property: "og:url", content: "https://prosoccer.online/" },
     ],
     links: [
+      { rel: "canonical", href: "https://prosoccer.online/" },
       { rel: "preload", as: "image", href: heroPlayer, fetchpriority: "high" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "VideoGame",
+          name: "Pro Soccer Online",
+          url: "https://prosoccer.online/",
+          applicationCategory: "Game",
+          genre: "Sports",
+          gamePlatform: "Web Browser",
+          operatingSystem: "Any (navegador web)",
+          inLanguage: "pt-BR",
+          description:
+            "Manager de carreira individual de futebol. Crie seu jogador, treine na base e evolua em partidas PvP e cooperativas, direto no navegador.",
+          publisher: {
+            "@type": "Organization",
+            name: "Pro Soccer Online",
+            url: "https://prosoccer.online/",
+          },
+        }),
+      },
     ],
   }),
   component: Landing,
