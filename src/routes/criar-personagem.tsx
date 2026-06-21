@@ -570,7 +570,7 @@ function CriarPersonagem() {
                 </div>
 
                 <div className="rounded-xl border border-border bg-card p-4">
-                  <h3 className="mb-3 font-display text-sm font-bold">Atributos detalhados</h3>
+                  <h2 className="mb-3 font-display text-sm font-bold">Atributos detalhados</h2>
                   <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
                     {CATEGORIES.map((cat) => (
                       <div key={cat.key}>
