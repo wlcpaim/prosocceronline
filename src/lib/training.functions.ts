@@ -243,7 +243,7 @@ export const startTraining = createServerFn({ method: "POST" })
     };
     update[tierKeyCol] = catKey;
     update[tierUntilCol] = new Date(now + TIERS[tier].cooldownMs).toISOString();
-    await supabaseAdmin.from("player_training").update(update).eq("player_id", player.id);
+    await supabaseAdmin.from("player_training").update(update as never).eq("player_id", player.id);
 
     player.attributes = attrs;
     player.overall = overall;
