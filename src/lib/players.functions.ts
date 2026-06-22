@@ -99,7 +99,10 @@ function sanitizeDraft(input: RawDraft): PlayerDraft {
     throw new ValidationError("Você distribuiu mais pontos do que o permitido.");
   }
 
+  const serverId = typeof input.serverId === "string" ? input.serverId : "";
+
   return {
+    serverId,
     name,
     nationality,
     position,
@@ -160,10 +163,32 @@ export const createPlayer = createServerFn({ method: "POST" })
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+    // Resolve o servidor escolhido; se inválido, usa o servidor inicial.
+    let serverId: string | null = null;
+    const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (UUID.test(draft.serverId)) {
+      const { data: srv } = await supabaseAdmin
+        .from("servers")
+        .select("id")
+        .eq("id", draft.serverId)
+        .eq("status", "open")
+        .maybeSingle();
+      serverId = srv?.id ?? null;
+    }
+    if (!serverId) {
+      const { data: fallback } = await supabaseAdmin
+        .from("servers")
+        .select("id")
+        .eq("code", "CATANDUVA-SP-S01")
+        .maybeSingle();
+      serverId = fallback?.id ?? null;
+    }
+
     const { data: inserted, error } = await supabaseAdmin
       .from("players")
       .insert({
         user_id: context.userId,
+        server_id: serverId,
         name: draft.name,
         nationality: draft.nationality,
         position: draft.position,

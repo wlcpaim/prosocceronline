@@ -206,6 +206,11 @@ function CriarPersonagem() {
   };
 
 
+  // Antes de iniciar a carreira o jogador escolhe um servidor.
+  if (!draft.serverId) {
+    return <ServerSelect onSelect={(id) => update("serverId", id)} />;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
@@ -730,3 +735,111 @@ function Detail({
 }
 
 void emptyFreePoints;
+
+/* ----------------------------------------------------- Server selection --- */
+
+interface ServerRow {
+  id: string;
+  code: string;
+  name: string;
+  season: string;
+  region: string | null;
+  status: string;
+}
+
+function ServerSelect({ onSelect }: { onSelect: (id: string) => void }) {
+  const [servers, setServers] = useState<ServerRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [picked, setPicked] = useState<string>("");
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("servers")
+        .select("id, code, name, season, region, status")
+        .order("sort_order", { ascending: true });
+      const rows = (data as ServerRow[] | null) ?? [];
+      setServers(rows);
+      const open = rows.find((s) => s.status === "open");
+      if (open) setPicked(open.id);
+      setLoading(false);
+    })();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+        <nav className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
+          <Link to="/" className="flex items-center gap-2">
+            <Logo />
+          </Link>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/auth">Entrar</Link>
+          </Button>
+        </nav>
+      </header>
+
+      <main className="mx-auto max-w-2xl px-5 py-10">
+        <div className="mb-8 text-center">
+          <span className="grid mx-auto h-14 w-14 place-items-center rounded-2xl border border-primary/40 bg-primary/10 text-primary">
+            <Star className="h-7 w-7" />
+          </span>
+          <h1 className="mt-4 font-display text-2xl font-bold sm:text-3xl">Escolha seu servidor</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Cada servidor tem seu próprio mundo, ranking e economia. Selecione onde sua carreira vai
+            começar.
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-16 text-muted-foreground">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {servers.map((s) => {
+              const open = s.status === "open";
+              const active = picked === s.id;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  disabled={!open}
+                  onClick={() => setPicked(s.id)}
+                  className={`flex w-full items-center gap-4 rounded-2xl border p-5 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                    active
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card hover:border-primary/40"
+                  }`}
+                >
+                  <span className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-xl border border-primary/30 bg-surface-elevated font-display text-sm font-bold text-primary">
+                    {s.season}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-display text-base font-bold">
+                      {s.name} · {s.season}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {s.region ?? "—"} · {open ? "Aberto" : "Em breve"}
+                    </div>
+                  </div>
+                  {active && <Check className="h-5 w-5 flex-shrink-0 text-primary" />}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <Button
+          variant="hero"
+          size="lg"
+          className="mt-8 w-full"
+          disabled={!picked}
+          onClick={() => picked && onSelect(picked)}
+        >
+          Continuar <ChevronRight className="h-5 w-5" />
+        </Button>
+      </main>
+    </div>
+  );
+}

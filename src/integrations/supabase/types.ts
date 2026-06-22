@@ -158,6 +158,59 @@ export type Database = {
         }
         Relationships: []
       }
+      player_training: {
+        Row: {
+          avancado_key: string | null
+          avancado_until: string | null
+          basico_key: string | null
+          basico_until: string | null
+          created_at: string
+          global_lock_until: string | null
+          player_id: string
+          profissional_key: string | null
+          profissional_until: string | null
+          skill_key: string | null
+          skill_until: string | null
+          updated_at: string
+        }
+        Insert: {
+          avancado_key?: string | null
+          avancado_until?: string | null
+          basico_key?: string | null
+          basico_until?: string | null
+          created_at?: string
+          global_lock_until?: string | null
+          player_id: string
+          profissional_key?: string | null
+          profissional_until?: string | null
+          skill_key?: string | null
+          skill_until?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avancado_key?: string | null
+          avancado_until?: string | null
+          basico_key?: string | null
+          basico_until?: string | null
+          created_at?: string
+          global_lock_until?: string | null
+          player_id?: string
+          profissional_key?: string | null
+          profissional_until?: string | null
+          skill_key?: string | null
+          skill_until?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_training_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: true
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           age: number
@@ -173,6 +226,7 @@ export type Database = {
           position: string
           potential: number
           preferred_foot: string | null
+          server_id: string | null
           skill_moves: number
           updated_at: string
           user_id: string
@@ -193,6 +247,7 @@ export type Database = {
           position: string
           potential?: number
           preferred_foot?: string | null
+          server_id?: string | null
           skill_moves?: number
           updated_at?: string
           user_id: string
@@ -213,13 +268,22 @@ export type Database = {
           position?: string
           potential?: number
           preferred_foot?: string | null
+          server_id?: string | null
           skill_moves?: number
           updated_at?: string
           user_id?: string
           weak_foot?: number
           weight_kg?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "players_server_id_fkey"
+            columns: ["server_id"]
+            isOneToOne: false
+            referencedRelation: "servers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -269,6 +333,42 @@ export type Database = {
           item_name?: string
           price?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      servers: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string
+          region: string | null
+          season: string
+          sort_order: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+          region?: string | null
+          season: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
+          region?: string | null
+          season?: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
