@@ -99,7 +99,10 @@ function sanitizeDraft(input: RawDraft): PlayerDraft {
     throw new ValidationError("Você distribuiu mais pontos do que o permitido.");
   }
 
+  const serverId = typeof input.serverId === "string" ? input.serverId : "";
+
   return {
+    serverId,
     name,
     nationality,
     position,
