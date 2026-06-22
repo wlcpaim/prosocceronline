@@ -379,7 +379,8 @@ export function categoryValues(attrs: Attrs): Record<CatKey, number> {
   return o;
 }
 
-export function computeOverall(attrs: Attrs, position: string): number {
+// Overall ponderado por posição, com teto configurável.
+export function computeOverallCap(attrs: Attrs, position: string, cap: number): number {
   const cats = categoryValues(attrs);
   const w = WEIGHTS[positionGroup(position)];
   let sum = 0;
@@ -390,7 +391,17 @@ export function computeOverall(attrs: Attrs, position: string): number {
     wsum += weight;
   });
   const raw = wsum > 0 ? sum / wsum : ATTR_BASE;
-  return clamp(Math.round(raw), 1, OVERALL_CAP);
+  return clamp(Math.round(raw), 1, cap);
+}
+
+export function computeOverall(attrs: Attrs, position: string): number {
+  return computeOverallCap(attrs, position, OVERALL_CAP);
+}
+
+// Após a criação, treinos podem elevar o overall até 99 (teto real do jogo).
+export const OVERALL_MAX = 99;
+export function computeTrainedOverall(attrs: Attrs, position: string): number {
+  return computeOverallCap(attrs, position, OVERALL_MAX);
 }
 
 export function computePotential(overall: number, age: number): number {

@@ -156,7 +156,7 @@ function GolAGolPage() {
         </Link>
         <Button variant="outline" size="sm" asChild>
           <Link to="/jogadores">
-            <ArrowLeft className="h-4 w-4" /> Jogadores
+            <ArrowLeft className="h-4 w-4" /> Voltar
           </Link>
         </Button>
       </header>
