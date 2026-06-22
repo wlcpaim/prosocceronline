@@ -294,6 +294,17 @@ function MatchView({
 
   return (
     <div className="space-y-6">
+      <NarrationFeed
+        rounds={rounds}
+        revealCount={revealCount}
+        youName={youName}
+        oppName={oppName}
+        youSide={youSide}
+        oppSide={oppSide}
+        phase={phase}
+        outcome={match.outcome ?? null}
+      />
+
       <div className="overflow-hidden rounded-3xl border border-border bg-card">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 p-6">
           <div className="text-center">
