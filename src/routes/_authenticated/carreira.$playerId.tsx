@@ -184,6 +184,7 @@ function CarreiraInner() {
   const rankingItems: { key: TabKey; label: string }[] = [
     { key: "ranking", label: "Geral" },
     { key: "rankingGol", label: "Gol a Gol" },
+    { key: "hallda", label: "Hall da Fama" },
   ];
 
   const go = (key: TabKey) => {
@@ -316,23 +317,6 @@ function CarreiraInner() {
                 </button>
               );
             })}
-
-            {/* Hall */}
-            <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-              Glória
-            </p>
-            <button
-              type="button"
-              onClick={() => go("hallda")}
-              className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
-                tab === "hallda"
-                  ? "border-primary bg-surface-elevated font-semibold text-foreground"
-                  : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
-              }`}
-            >
-              <Trophy className={`h-4 w-4 ${tab === "hallda" ? "text-primary" : ""}`} />
-              Hall da Fama
-            </button>
 
             <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               Em breve
