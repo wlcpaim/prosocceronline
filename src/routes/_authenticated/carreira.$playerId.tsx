@@ -572,49 +572,84 @@ function JogadorSection({ player }: { player: PlayerRow }) {
 /* ------------------------------------------------------------- Escola ------ */
 
 function EscolaSection({ player }: { player: PlayerRow }) {
+  const [view, setView] = useState<"ficha" | "treino">("treino");
+
   return (
     <div className="space-y-5">
-      <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
-        <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
-        Você está na base aos {player.age} anos. Treine para evoluir seus atributos, fintas e pé
-        ruim — o módulo de treinos completo chega em breve.
+      <div className="inline-flex rounded-xl border border-border bg-card p-1">
+        {(
+          [
+            { key: "treino", label: "Treino", icon: Dumbbell },
+            { key: "ficha", label: "Ficha", icon: User },
+          ] as const
+        ).map((t) => {
+          const Icon = t.icon;
+          const active = view === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setView(t.key)}
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
-      <Panel title="Ficha do Jogador" icon={User}>
-        <dl className="space-y-3 p-5 text-sm">
-          <Info2 icon={Flag} label="Nacionalidade" value={player.nationality ?? "—"} />
-          <Info2 icon={Trophy} label="Posição" value={positionLabel(player.position)} />
-          <Info2 icon={Footprints} label="Pé preferido" value={player.preferred_foot ?? "—"} />
-          <Info2 icon={Ruler} label="Altura" value={`${player.height_cm} cm`} />
-          <Info2 icon={Weight} label="Peso" value={`${player.weight_kg} kg`} />
-          <Info2 icon={Sparkles} label="Estilo" value={player.play_style ?? "—"} />
-        </dl>
-      </Panel>
+      {view === "treino" ? (
+        <TrainingTab playerId={player.id} />
+      ) : (
+        <div className="space-y-5">
+          <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+            <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+            Você está na base aos {player.age} anos. Use o Treino para evoluir seus atributos, fintas
+            e pé ruim.
+          </div>
 
-      {playStyleDesc(player.play_style) && (
-        <Panel title="Estilo de Jogo" icon={Sparkles}>
-          <p className="p-5 text-sm text-muted-foreground">
-            <strong className="text-foreground">{player.play_style}</strong> —{" "}
-            {playStyleDesc(player.play_style)}
-          </p>
-        </Panel>
-      )}
+          <Panel title="Ficha do Jogador" icon={User}>
+            <dl className="space-y-3 p-5 text-sm">
+              <Info2 icon={Flag} label="Nacionalidade" value={player.nationality ?? "—"} />
+              <Info2 icon={Trophy} label="Posição" value={positionLabel(player.position)} />
+              <Info2 icon={Footprints} label="Pé preferido" value={player.preferred_foot ?? "—"} />
+              <Info2 icon={Ruler} label="Altura" value={`${player.height_cm} cm`} />
+              <Info2 icon={Weight} label="Peso" value={`${player.weight_kg} kg`} />
+              <Info2 icon={Sparkles} label="Estilo" value={player.play_style ?? "—"} />
+            </dl>
+          </Panel>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="flex items-center justify-center gap-2 p-5">
-          <PlayerCard
-            name={player.name}
-            position={player.position}
-            altPositions={player.alt_positions ?? undefined}
-            nationality={player.nationality ?? undefined}
-            overall={player.overall}
-            attributes={player.attributes}
-            weakFoot={player.weak_foot}
-            skillMoves={player.skill_moves}
-            preferredFoot={player.preferred_foot ?? undefined}
-          />
+          {playStyleDesc(player.play_style) && (
+            <Panel title="Estilo de Jogo" icon={Sparkles}>
+              <p className="p-5 text-sm text-muted-foreground">
+                <strong className="text-foreground">{player.play_style}</strong> —{" "}
+                {playStyleDesc(player.play_style)}
+              </p>
+            </Panel>
+          )}
+
+          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+            <div className="flex items-center justify-center gap-2 p-5">
+              <PlayerCard
+                name={player.name}
+                position={player.position}
+                altPositions={player.alt_positions ?? undefined}
+                nationality={player.nationality ?? undefined}
+                overall={player.overall}
+                attributes={player.attributes}
+                weakFoot={player.weak_foot}
+                skillMoves={player.skill_moves}
+                preferredFoot={player.preferred_foot ?? undefined}
+              />
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
