@@ -206,6 +206,11 @@ function CriarPersonagem() {
   };
 
 
+  // Antes de iniciar a carreira o jogador escolhe um servidor.
+  if (!draft.serverId) {
+    return <ServerSelect onSelect={(id) => update("serverId", id)} />;
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
