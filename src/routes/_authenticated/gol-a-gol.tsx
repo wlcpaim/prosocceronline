@@ -417,3 +417,97 @@ function MatchView({
     </div>
   );
 }
+
+/* ---------------------------------------------------- Narração ao vivo ----- */
+
+const GOAL_PHRASES = [
+  "pega no canto e BALANÇA A REDE! ⚽",
+  "cobra com categoria e MARCA! 🔥",
+  "desloca o goleiro e faz um GOLAÇO! 💥",
+  "no contrapé do goleiro — É GOL! ⚽",
+  "com frieza, manda pra dentro! ✅",
+];
+const MISS_PHRASES = [
+  "manda por cima da trave! 😱",
+  "o goleiro DEFENDE! 🧤",
+  "isola a bola, que desperdício! ❌",
+  "carimba a trave e perde! 😖",
+  "para na defesa do goleiro! 🚫",
+];
+
+function shotLine(name: string, scored: boolean, idx: number) {
+  const arr = scored ? GOAL_PHRASES : MISS_PHRASES;
+  return `${name} ${arr[idx % arr.length]}`;
+}
+
+function NarrationFeed({
+  rounds,
+  revealCount,
+  youName,
+  oppName,
+  youSide,
+  oppSide,
+  phase,
+  outcome,
+}: {
+  rounds: GolRound[];
+  revealCount: number;
+  youName: string;
+  oppName: string;
+  youSide: "p1" | "p2";
+  oppSide: "p1" | "p2";
+  phase: Phase;
+  outcome: "win" | "loss" | "draw" | null;
+}) {
+  const endRef = useRef<HTMLDivElement | null>(null);
+
+  const lines: { id: string; text: string; good: boolean }[] = [];
+  lines.push({ id: "kick", text: "🏟️ A torcida lota o estádio. Começa o Gol a Gol!", good: true });
+  rounds.slice(0, revealCount).forEach((r, i) => {
+    lines.push({ id: `y${i}`, text: `Cobrança ${i + 1} — ${shotLine(youName, r[youSide], i)}`, good: r[youSide] });
+    lines.push({ id: `o${i}`, text: `Resposta — ${shotLine(oppName, r[oppSide], i + 2)}`, good: !r[oppSide] });
+  });
+  if (phase === "result" && outcome) {
+    lines.push({
+      id: "end",
+      text:
+        outcome === "win"
+          ? "🎉 APITO FINAL! Vitória suada — a torcida vai ao delírio!"
+          : outcome === "loss"
+            ? "😔 APITO FINAL! Dessa vez não rolou. Cabeça erguida e bola pra frente."
+            : "🤝 APITO FINAL! Empate eletrizante de tirar o fôlego!",
+      good: outcome !== "loss",
+    });
+  }
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [revealCount, phase]);
+
+  return (
+    <div className="overflow-hidden rounded-3xl border border-border bg-card">
+      <div className="flex items-center gap-2 border-b border-border px-5 py-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+        </span>
+        Narração ao vivo
+      </div>
+      <div className="max-h-48 space-y-1.5 overflow-y-auto px-5 py-4">
+        {lines.map((l, i) => (
+          <div
+            key={l.id}
+            className={`text-sm transition-opacity ${
+              i === lines.length - 1
+                ? "font-semibold text-foreground"
+                : "text-muted-foreground"
+            }`}
+          >
+            <span className={l.good ? "text-primary" : "text-foreground"}>{l.text}</span>
+          </div>
+        ))}
+        <div ref={endRef} />
+      </div>
+    </div>
+  );
+}
