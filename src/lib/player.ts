@@ -299,6 +299,7 @@ export function clamp(v: number, min: number, max: number) {
 }
 
 export interface PlayerDraft {
+  serverId: string; // servidor escolhido antes de iniciar a carreira
   name: string;
   nationality: string;
   position: string;
