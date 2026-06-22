@@ -322,6 +322,7 @@ export function emptyFreePoints(): Record<string, number> {
 
 export function defaultDraft(): PlayerDraft {
   return {
+    serverId: "",
     name: "",
     nationality: NATIONALITIES[3], // Brasil
     position: "MEI",
