@@ -951,24 +951,75 @@ function GolRankingSection() {
   );
 }
 
+/* ------------------------------------------------------- Carteira / $ ----- */
+
+function fmtMoney(n: number) {
+  return `R$ ${n.toLocaleString("pt-BR")}`;
+}
+
+function WalletStrip({
+  coins,
+  xp,
+  level,
+}: {
+  coins: number | null;
+  xp: number;
+  level: number;
+}) {
+  const p = progress(xp);
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card px-5 py-4">
+      <div className="flex items-center gap-2 rounded-full border border-border bg-surface-elevated px-3 py-1.5">
+        <Coins className="h-4 w-4 text-yellow-400" />
+        <span className="font-display text-base font-bold tabular-nums">
+          {coins === null ? "—" : fmtMoney(coins)}
+        </span>
+      </div>
+      <div className="flex min-w-[180px] flex-1 items-center gap-3">
+        <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full border-2 border-primary/50 bg-primary/10 font-display text-sm font-bold text-primary">
+          {level}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+            <span className="font-semibold uppercase tracking-wide">Nível {level}</span>
+            <span className="tabular-nums">
+              {p.xpIntoLevel}/{p.xpForLevel} XP
+            </span>
+          </div>
+          <div className="mt-1 h-2 overflow-hidden rounded-full bg-surface-elevated">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all"
+              style={{ width: `${p.pct}%` }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------- Loja -------- */
 
-const SHOP_ICONS: Record<ShopItem["icon"], typeof Star> = {
-  boots: Footprints,
-  ball: Target,
-  shirt: Award,
-  energy: Sparkles,
-  badge: Medal,
-  star: Star,
+const CATEGORY_ICON: Record<ShopCategory, typeof Star> = {
+  apple: Smartphone,
+  chuteiras: Footprints,
+  consumiveis: Zap,
 };
+
+function ownedQty(owned: OwnedItem[], id: string) {
+  return owned.find((o) => o.itemId === id)?.quantity ?? 0;
+}
 
 function LojaSection() {
   const fetchShop = useServerFn(getShop);
   const buy = useServerFn(buyItem);
   const [coins, setCoins] = useState<number | null>(null);
-  const [owned, setOwned] = useState<string[]>([]);
+  const [xp, setXp] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [owned, setOwned] = useState<OwnedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [cat, setCat] = useState<ShopCategory>("apple");
 
   useEffect(() => {
     let active = true;
@@ -977,6 +1028,8 @@ function LojaSection() {
         const res = await fetchShop({});
         if (active) {
           setCoins(res.coins);
+          setXp(res.xp);
+          setLevel(res.level);
           setOwned(res.owned);
         }
       } catch {
@@ -997,13 +1050,20 @@ function LojaSection() {
       const res = await buy({ data: { itemId: item.id } });
       setCoins(res.coins);
       if (res.ok) {
-        setOwned((o) => [...o, item.id]);
+        setOwned((o) => {
+          const exists = o.find((x) => x.itemId === item.id);
+          if (exists) {
+            return o.map((x) =>
+              x.itemId === item.id ? { ...x, quantity: x.quantity + 1 } : x,
+            );
+          }
+          return [...o, { itemId: item.id, quantity: 1 }];
+        });
         toast.success(`${item.name} comprado!`);
       } else if (res.reason === "insufficient") {
-        toast.error("Moedas insuficientes.");
+        toast.error("Saldo insuficiente.");
       } else if (res.reason === "owned") {
         toast.info("Você já tem este item.");
-        setOwned((o) => (o.includes(item.id) ? o : [...o, item.id]));
       }
     } catch {
       toast.error("Não foi possível concluir a compra.");
@@ -1012,19 +1072,33 @@ function LojaSection() {
     }
   };
 
+  const items = SHOP_ITEMS.filter((i) => i.category === cat);
+
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card px-5 py-4">
-        <div className="flex items-start gap-3 text-sm text-muted-foreground">
-          <ShoppingBag className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
-          Loja em fase de testes. Ganhe moedas vencendo no Gol a Gol e gaste aqui.
-        </div>
-        <div className="flex flex-shrink-0 items-center gap-2 rounded-full border border-border bg-surface-elevated px-3 py-1.5">
-          <Coins className="h-4 w-4 text-yellow-400" />
-          <span className="font-display text-base font-bold tabular-nums">
-            {coins === null ? "—" : coins.toLocaleString("pt-BR")}
-          </span>
-        </div>
+      <WalletStrip coins={coins} xp={xp} level={level} />
+
+      {/* Categorias estilo marketplace */}
+      <div className="flex flex-wrap gap-2">
+        {SHOP_CATEGORIES.map((c) => {
+          const Icon = CATEGORY_ICON[c.key];
+          const active = cat === c.key;
+          return (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => setCat(c.key)}
+              className={`flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all ${
+                active
+                  ? "border-primary bg-primary/15 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:border-primary/40"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {c.label}
+            </button>
+          );
+        })}
       </div>
 
       {loading ? (
@@ -1032,54 +1106,390 @@ function LojaSection() {
           <Loader2 className="h-5 w-5 animate-spin" />
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {SHOP_ITEMS.map((item) => {
-            const Icon = SHOP_ICONS[item.icon];
-            const isOwned = owned.includes(item.id);
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((item) => {
+            const qty = ownedQty(owned, item.id);
+            const isOwnedPermanent = item.kind === "permanent" && qty > 0;
             const canAfford = (coins ?? 0) >= item.price;
             return (
               <div
                 key={item.id}
-                className="flex flex-col rounded-2xl border border-border bg-card p-5"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-colors hover:border-primary/40"
               >
-                <div className="flex items-center gap-3">
-                  <span className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0">
-                    <div className="truncate font-display text-base font-bold">{item.name}</div>
-                    <div className="flex items-center gap-1 text-sm font-semibold text-yellow-400">
-                      <Coins className="h-3.5 w-3.5" />
-                      {item.price.toLocaleString("pt-BR")}
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-3 flex-1 text-sm text-muted-foreground">{item.desc}</p>
-                <Button
-                  variant={isOwned ? "outline" : "hero"}
-                  className="mt-4 w-full"
-                  disabled={isOwned || busy === item.id || (!isOwned && !canAfford)}
-                  onClick={() => handleBuy(item)}
-                >
-                  {busy === item.id ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : isOwned ? (
-                    <>
-                      <Check className="h-4 w-4" /> Adquirido
-                    </>
-                  ) : !canAfford ? (
-                    "Moedas insuficientes"
-                  ) : (
-                    <>
-                      <ShoppingBag className="h-4 w-4" /> Comprar
-                    </>
+                <div className="relative aspect-square overflow-hidden bg-white">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    loading="lazy"
+                    width={768}
+                    height={768}
+                    className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+                  />
+                  {item.kind === "consumable" && qty > 0 && (
+                    <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground">
+                      x{qty}
+                    </span>
                   )}
-                </Button>
+                </div>
+                <div className="flex flex-1 flex-col p-4">
+                  <div className="font-display text-sm font-bold leading-tight">{item.name}</div>
+                  <p className="mt-1.5 flex-1 text-xs text-muted-foreground">{item.desc}</p>
+
+                  {item.cleat && (
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {item.cleat.perks.map((perk) => (
+                        <span
+                          key={perk.label}
+                          className="rounded-full border border-primary/30 bg-primary/5 px-2 py-0.5 text-[10px] font-semibold text-primary"
+                        >
+                          {perk.label} {perk.value}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-3 flex items-center gap-1.5 text-base font-bold text-foreground">
+                    <Coins className="h-4 w-4 text-yellow-400" />
+                    {fmtMoney(item.price)}
+                  </div>
+
+                  <Button
+                    variant={isOwnedPermanent ? "outline" : "hero"}
+                    size="sm"
+                    className="mt-3 w-full"
+                    disabled={
+                      isOwnedPermanent || busy === item.id || (!isOwnedPermanent && !canAfford)
+                    }
+                    onClick={() => handleBuy(item)}
+                  >
+                    {busy === item.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : isOwnedPermanent ? (
+                      <>
+                        <Check className="h-4 w-4" /> Adquirido
+                      </>
+                    ) : !canAfford ? (
+                      "Saldo insuficiente"
+                    ) : (
+                      <>
+                        <ShoppingBag className="h-4 w-4" /> Comprar
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             );
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------- Missões ------- */
+
+function MissoesSection() {
+  const fetch = useServerFn(getMissions);
+  const claim = useServerFn(claimMission);
+  const [data, setData] = useState<Awaited<ReturnType<typeof getMissions>> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const load = async () => {
+    try {
+      const res = await fetch({});
+      setData(res);
+    } catch {
+      /* ignore */
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleClaim = async (id: string) => {
+    setBusy(id);
+    try {
+      const res = await claim({ data: { missionId: id } });
+      if (res.ok) {
+        toast.success(`Recompensa: ${fmtMoney(res.rewardCoins)} + ${res.rewardXp} XP`);
+        await load();
+      } else {
+        toast.error("Não foi possível resgatar agora.");
+      }
+    } catch {
+      toast.error("Não foi possível resgatar agora.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12 text-muted-foreground">
+        <Loader2 className="h-5 w-5 animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <WalletStrip coins={data?.coins ?? null} xp={data?.xp ?? 0} level={data?.level ?? 1} />
+
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+        <ListChecks className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+        Complete as missões jogando e resgate dinheiro e XP para subir de nível.
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        {(data?.missions ?? []).map((m) => {
+          const pct = Math.min(100, Math.round((m.current / m.target) * 100));
+          return (
+            <div key={m.id} className="flex flex-col rounded-2xl border border-border bg-card p-5">
+              <div className="flex items-start gap-3">
+                <span
+                  className={`grid h-10 w-10 flex-shrink-0 place-items-center rounded-xl border ${
+                    m.claimed
+                      ? "border-border bg-surface-elevated text-muted-foreground"
+                      : m.claimable
+                        ? "border-primary/40 bg-primary/10 text-primary"
+                        : "border-border bg-surface-elevated text-muted-foreground"
+                  }`}
+                >
+                  {m.claimed ? <Check className="h-5 w-5" /> : <Target className="h-5 w-5" />}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-display text-sm font-bold">{m.title}</div>
+                  <p className="text-xs text-muted-foreground">{m.desc}</p>
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                  <span className="tabular-nums">
+                    {m.current}/{m.target}
+                  </span>
+                  <span className="flex items-center gap-2 font-semibold text-foreground">
+                    <span className="flex items-center gap-1 text-yellow-400">
+                      <Coins className="h-3 w-3" />
+                      {fmtMoney(m.coins)}
+                    </span>
+                    {m.xp > 0 && <span className="text-primary">+{m.xp} XP</span>}
+                  </span>
+                </div>
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-elevated">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </div>
+
+              <Button
+                variant={m.claimed ? "outline" : "hero"}
+                size="sm"
+                className="mt-3 w-full"
+                disabled={m.claimed || !m.claimable || busy === m.id}
+                onClick={() => handleClaim(m.id)}
+              >
+                {busy === m.id ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : m.claimed ? (
+                  <>
+                    <Check className="h-4 w-4" /> Resgatada
+                  </>
+                ) : m.claimable ? (
+                  <>
+                    <Gift className="h-4 w-4" /> Resgatar
+                  </>
+                ) : (
+                  "Em progresso"
+                )}
+              </Button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------------------------------- Inventário ------ */
+
+function InventarioSection({ player }: { player: PlayerRow }) {
+  const fetchShop = useServerFn(getShop);
+  const consume = useServerFn(useConsumable);
+  const equip = useServerFn(equipCleat);
+  const [owned, setOwned] = useState<OwnedItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [equipped, setEquipped] = useState<string | null>(player.equipped_cleat);
+
+  const load = async () => {
+    try {
+      const res = await fetchShop({});
+      setOwned(res.owned);
+    } catch {
+      /* ignore */
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleUse = async (item: ShopItem) => {
+    setBusy(item.id);
+    try {
+      const res = await consume({ data: { itemId: item.id, playerId: player.id } });
+      if (res.ok) {
+        toast.success("Treino liberado por 1 minuto! Corra para a Escola 🏃");
+        await load();
+      } else {
+        toast.error("Não foi possível usar o item.");
+      }
+    } catch {
+      toast.error("Não foi possível usar o item.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handleEquip = async (item: ShopItem, on: boolean) => {
+    setBusy(item.id);
+    try {
+      const res = await equip({ data: { playerId: player.id, itemId: on ? item.id : null } });
+      if (res.ok) {
+        setEquipped(res.equippedCleat);
+        toast.success(on ? `${item.name} equipada!` : "Chuteira removida.");
+      } else {
+        toast.error("Não foi possível equipar.");
+      }
+    } catch {
+      toast.error("Não foi possível equipar.");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12 text-muted-foreground">
+        <Loader2 className="h-5 w-5 animate-spin" />
+      </div>
+    );
+  }
+
+  const ownedItems = owned
+    .map((o) => ({ ...o, item: getShopItem(o.itemId) }))
+    .filter((o): o is OwnedItem & { item: ShopItem } => !!o.item && o.quantity > 0);
+
+  if (ownedItems.length === 0) {
+    return (
+      <div className="mx-auto max-w-md rounded-3xl border border-border bg-card p-8 text-center">
+        <Package className="mx-auto h-8 w-8 text-primary" />
+        <h2 className="mt-4 font-display text-lg font-bold">Inventário vazio</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Compre itens na Loja e eles aparecerão aqui.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start gap-3 rounded-2xl border border-border bg-card px-5 py-4 text-sm text-muted-foreground">
+        <Sparkle className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
+        Equipe uma chuteira para ganhar bônus de overall no Gol a Gol e use consumíveis quando
+        quiser.
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {ownedItems.map(({ item, quantity }) => {
+          const isCleat = !!item.cleat;
+          const isEquipped = equipped === item.id;
+          return (
+            <div
+              key={item.id}
+              className={`flex flex-col overflow-hidden rounded-2xl border bg-card ${
+                isEquipped ? "border-primary" : "border-border"
+              }`}
+            >
+              <div className="relative aspect-square bg-white">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  loading="lazy"
+                  width={768}
+                  height={768}
+                  className="h-full w-full object-contain p-4"
+                />
+                {item.kind === "consumable" && (
+                  <span className="absolute right-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground">
+                    x{quantity}
+                  </span>
+                )}
+                {isEquipped && (
+                  <span className="absolute left-2 top-2 rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground">
+                    Equipada
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-1 flex-col p-4">
+                <div className="font-display text-sm font-bold leading-tight">{item.name}</div>
+                <p className="mt-1 flex-1 text-xs text-muted-foreground">{item.desc}</p>
+
+                {isCleat ? (
+                  <Button
+                    variant={isEquipped ? "outline" : "hero"}
+                    size="sm"
+                    className="mt-3 w-full"
+                    disabled={busy === item.id}
+                    onClick={() => handleEquip(item, !isEquipped)}
+                  >
+                    {busy === item.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : isEquipped ? (
+                      "Remover"
+                    ) : (
+                      <>
+                        <Footprints className="h-4 w-4" /> Equipar
+                      </>
+                    )}
+                  </Button>
+                ) : item.kind === "consumable" ? (
+                  <Button
+                    variant="hero"
+                    size="sm"
+                    className="mt-3 w-full"
+                    disabled={busy === item.id}
+                    onClick={() => handleUse(item)}
+                  >
+                    {busy === item.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <Zap className="h-4 w-4" /> Usar
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <div className="mt-3 rounded-lg border border-border bg-surface-elevated px-3 py-2 text-center text-xs text-muted-foreground">
+                    Item de coleção
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
