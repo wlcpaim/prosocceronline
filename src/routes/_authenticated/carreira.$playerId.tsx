@@ -95,7 +95,7 @@ interface PlayerRow {
   created_at: string;
 }
 
-type CareerTabKey =
+type TabKey =
   | "jogador"
   | "tabelas"
   | "escola"
@@ -105,8 +105,6 @@ type CareerTabKey =
   | "missoes"
   | "inventario"
   | "hallda";
-
-type TabKey = "jogador" | "tabelas" | "escola" | "ranking" | "rankingGol" | "loja" | "hallda";
 
 function positionLabel(code: string) {
   return POSITIONS.find((p) => p.code === code)?.label ?? code;
