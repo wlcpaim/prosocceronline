@@ -91,8 +91,20 @@ interface PlayerRow {
   overall: number;
   potential: number;
   attributes: Attrs;
+  equipped_cleat: string | null;
   created_at: string;
 }
+
+type CareerTabKey =
+  | "jogador"
+  | "tabelas"
+  | "escola"
+  | "ranking"
+  | "rankingGol"
+  | "loja"
+  | "missoes"
+  | "inventario"
+  | "hallda";
 
 type TabKey = "jogador" | "tabelas" | "escola" | "ranking" | "rankingGol" | "loja" | "hallda";
 
