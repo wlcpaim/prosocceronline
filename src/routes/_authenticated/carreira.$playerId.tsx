@@ -295,19 +295,32 @@ function CarreiraInner() {
               );
             })}
 
-            {/* Loja */}
-            <button
-              type="button"
-              onClick={() => go("loja")}
-              className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
-                tab === "loja"
-                  ? "border-primary bg-surface-elevated font-semibold text-foreground"
-                  : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
-              }`}
-            >
-              <ShoppingBag className={`h-4 w-4 ${tab === "loja" ? "text-primary" : ""}`} />
-              Loja
-            </button>
+            {/* Loja / Missões / Inventário */}
+            {(
+              [
+                { key: "loja" as TabKey, label: "Loja", icon: ShoppingBag },
+                { key: "missoes" as TabKey, label: "Missões", icon: ListChecks },
+                { key: "inventario" as TabKey, label: "Inventário", icon: Package },
+              ]
+            ).map((item) => {
+              const Icon = item.icon;
+              const active = tab === item.key;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  onClick={() => go(item.key)}
+                  className={`flex w-full items-center gap-3 border-l-[3px] px-5 py-2.5 text-sm transition-colors ${
+                    active
+                      ? "border-primary bg-surface-elevated font-semibold text-foreground"
+                      : "border-transparent text-muted-foreground hover:bg-surface-elevated/60 hover:text-foreground"
+                  }`}
+                >
+                  <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+                  {item.label}
+                </button>
+              );
+            })}
 
             {/* Jogos */}
             <p className="px-5 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
