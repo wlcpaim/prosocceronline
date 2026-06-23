@@ -80,6 +80,7 @@ interface TrainingRow {
   global_lock_until: string | null;
   skill_key: string | null;
   skill_until: string | null;
+  boost_until: string | null;
 }
 
 function toState(row: TrainingRow): TrainingState {
@@ -89,6 +90,7 @@ function toState(row: TrainingRow): TrainingState {
     profissional: { key: row.profissional_key, until: row.profissional_until },
     globalLockUntil: row.global_lock_until,
     skill: { key: row.skill_key, until: row.skill_until },
+    boostUntil: row.boost_until ?? null,
   };
 }
 
