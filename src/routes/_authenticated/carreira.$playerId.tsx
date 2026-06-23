@@ -190,6 +190,8 @@ function CarreiraInner() {
     ranking: "Ranking Geral",
     rankingGol: "Ranking Gol a Gol",
     loja: "Loja",
+    missoes: "Missões",
+    inventario: "Inventário",
     hallda: "Hall da Fama",
   };
   const TAB_SUBTITLE: Record<TabKey, string> = {
@@ -198,7 +200,9 @@ function CarreiraInner() {
     escola: "Desenvolvimento",
     ranking: "Competição",
     rankingGol: "PvP · x1",
-    loja: "Moedas do jogo",
+    loja: "Apple · Chuteiras · Consumíveis",
+    missoes: "Recompensas",
+    inventario: "Seus itens",
     hallda: "Lendas",
   };
 
