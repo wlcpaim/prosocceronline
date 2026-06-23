@@ -32,6 +32,12 @@ import {
   Target,
   Check,
   Dumbbell,
+  Smartphone,
+  Package,
+  Zap,
+  Gift,
+  ListChecks,
+  Sparkle,
 } from "lucide-react";
 import { TrainingTab } from "@/components/TrainingTab";
 import { Button } from "@/components/ui/button";
@@ -39,9 +45,17 @@ import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import { getCareerRanking, type CareerRanking } from "@/lib/career.functions";
-import { getShop, buyItem } from "@/lib/shop.functions";
+import { getShop, buyItem, useConsumable, equipCleat, type OwnedItem } from "@/lib/shop.functions";
+import { getMissions, claimMission } from "@/lib/missions.functions";
 import { getGolRanking, type GolRankingRow } from "@/lib/golagol.functions";
-import { SHOP_ITEMS, type ShopItem } from "@/lib/shop-items";
+import {
+  SHOP_ITEMS,
+  SHOP_CATEGORIES,
+  getShopItem,
+  type ShopItem,
+  type ShopCategory,
+} from "@/lib/shop-items";
+import { progress } from "@/lib/progression";
 import { toast } from "sonner";
 import {
   CATEGORIES,
