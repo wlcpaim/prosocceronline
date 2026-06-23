@@ -1,5 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { cleatOverallBonus } from "@/lib/shop-items";
+import { positionGroup } from "@/lib/player";
+import { levelFromXp } from "@/lib/progression";
 
 export interface GolRound {
   p1: boolean;
@@ -20,6 +23,7 @@ export interface GolMatch {
   youAreP1: boolean;
   outcome: "win" | "loss" | "draw" | null;
   coinsAwarded: number | null;
+  xpAwarded: number | null;
 }
 
 export interface GolRankingRow {
@@ -30,8 +34,10 @@ export interface GolRankingRow {
   isMe: boolean;
 }
 
-const COINS_WIN = 50;
-const COINS_LOSS = 15;
+const COINS_WIN = 5;
+const COINS_LOSS = 1;
+const XP_WIN = 10;
+const XP_LOSS = 2;
 
 // Probabilidade de gol por chute, derivada do overall (entre 25% e 90%).
 function shotChance(overall: number): number {
@@ -74,16 +80,20 @@ function toSnapshot(row: any, userId: string): GolMatch {
   const youAreP1 = row.p1_user_id === userId;
   let outcome: GolMatch["outcome"] = null;
   let coinsAwarded: number | null = null;
+  let xpAwarded: number | null = null;
   if (row.status === "finished") {
     if (row.winner_user_id === userId) {
       outcome = "win";
       coinsAwarded = COINS_WIN;
+      xpAwarded = XP_WIN;
     } else if (row.winner_user_id) {
       outcome = "loss";
       coinsAwarded = COINS_LOSS;
+      xpAwarded = XP_LOSS;
     } else {
       outcome = "draw";
       coinsAwarded = COINS_LOSS;
+      xpAwarded = XP_LOSS;
     }
   }
   return {
@@ -99,23 +109,28 @@ function toSnapshot(row: any, userId: string): GolMatch {
     youAreP1,
     outcome,
     coinsAwarded,
+    xpAwarded,
   };
 }
 
-async function award(userId: string, amount: number) {
+// Credita coins e XP na carteira e recalcula o nível (server-authoritative).
+async function reward(userId: string, coins: number, xp: number) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin
     .from("wallets")
-    .select("coins")
+    .select("coins, xp")
     .eq("user_id", userId)
     .maybeSingle();
   if (data) {
+    const newXp = ((data.xp as number | null) ?? 0) + xp;
     await supabaseAdmin
       .from("wallets")
-      .update({ coins: (data.coins as number) + amount })
+      .update({ coins: (data.coins as number) + coins, xp: newXp, level: levelFromXp(newXp) })
       .eq("user_id", userId);
   } else {
-    await supabaseAdmin.from("wallets").insert({ user_id: userId, coins: 1000 + amount });
+    await supabaseAdmin
+      .from("wallets")
+      .insert({ user_id: userId, coins: 1000 + coins, xp, level: levelFromXp(xp) });
   }
 }
 
@@ -135,10 +150,18 @@ export const joinGolQueue = createServerFn({ method: "POST" })
     // Carrega o jogador e confirma que pertence ao usuário.
     const { data: player } = await supabaseAdmin
       .from("players")
-      .select("id, user_id, name, overall")
+      .select("id, user_id, name, overall, position, equipped_cleat")
       .eq("id", data.playerId)
       .maybeSingle();
     if (!player || player.user_id !== userId) throw new Error("Jogador inválido");
+
+    // Overall efetivo = base + bônus da chuteira equipada (conforme a posição).
+    const playerOverall =
+      (player.overall as number) +
+      cleatOverallBonus(
+        player.equipped_cleat as string | null,
+        positionGroup(player.position as string),
+      );
 
     // Já está numa partida em aberto?
     const { data: existing } = await supabaseAdmin
@@ -170,7 +193,7 @@ export const joinGolQueue = createServerFn({ method: "POST" })
           p2_user_id: userId,
           p2_player_id: player.id,
           p2_name: player.name,
-          p2_overall: player.overall,
+          p2_overall: playerOverall,
         })
         .eq("id", candidate.id)
         .eq("status", "waiting")
@@ -178,7 +201,7 @@ export const joinGolQueue = createServerFn({ method: "POST" })
         .maybeSingle();
 
       if (claimed) {
-        const sim = simulate(claimed.p1_overall as number, player.overall as number);
+        const sim = simulate(claimed.p1_overall as number, playerOverall);
         const winnerUserId =
           sim.winner === 1 ? (claimed.p1_user_id as string) : userId;
         const { data: finished } = await supabaseAdmin
@@ -194,10 +217,10 @@ export const joinGolQueue = createServerFn({ method: "POST" })
           .select()
           .maybeSingle();
 
-        // Premia ambos os jogadores.
+        // Premia ambos os jogadores (vitória: +5 R$ e +10 XP).
         const loserUserId = sim.winner === 1 ? userId : (claimed.p1_user_id as string);
-        await award(winnerUserId, COINS_WIN);
-        await award(loserUserId, COINS_LOSS);
+        await reward(winnerUserId, COINS_WIN, XP_WIN);
+        await reward(loserUserId, COINS_LOSS, XP_LOSS);
 
         return toSnapshot(finished ?? claimed, userId);
       }
@@ -211,7 +234,7 @@ export const joinGolQueue = createServerFn({ method: "POST" })
         p1_user_id: userId,
         p1_player_id: player.id,
         p1_name: player.name,
-        p1_overall: player.overall,
+        p1_overall: playerOverall,
       })
       .select()
       .maybeSingle();

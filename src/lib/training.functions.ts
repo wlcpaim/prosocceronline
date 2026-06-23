@@ -43,6 +43,7 @@ export interface TrainingState {
   profissional: { key: string | null; until: string | null };
   globalLockUntil: string | null;
   skill: { key: string | null; until: string | null };
+  boostUntil: string | null;
 }
 
 export interface TrainingSnapshot {
@@ -79,6 +80,7 @@ interface TrainingRow {
   global_lock_until: string | null;
   skill_key: string | null;
   skill_until: string | null;
+  boost_until: string | null;
 }
 
 function toState(row: TrainingRow): TrainingState {
@@ -88,6 +90,7 @@ function toState(row: TrainingRow): TrainingState {
     profissional: { key: row.profissional_key, until: row.profissional_until },
     globalLockUntil: row.global_lock_until,
     skill: { key: row.skill_key, until: row.skill_until },
+    boostUntil: row.boost_until ?? null,
   };
 }
 
@@ -208,11 +211,16 @@ export const startTraining = createServerFn({ method: "POST" })
     const tierUntilCol = `${tier}_until` as const;
     const tierKeyCol = `${tier}_key` as const;
     const tierUntil = training[tierUntilCol];
-    if (isActive(tierUntil)) {
-      return { ok: false as const, error: `Treino ${TIERS[tier].label} já em andamento.` };
-    }
-    if (isActive(training.global_lock_until)) {
-      return { ok: false as const, error: "Aguarde para treinar outra categoria." };
+
+    // Consumível ativo (energético): ignora todos os cooldowns por 1 minuto.
+    const boosted = isActive(training.boost_until);
+    if (!boosted) {
+      if (isActive(tierUntil)) {
+        return { ok: false as const, error: `Treino ${TIERS[tier].label} já em andamento.` };
+      }
+      if (isActive(training.global_lock_until)) {
+        return { ok: false as const, error: "Aguarde para treinar outra categoria." };
+      }
     }
 
     const def = CATEGORIES.find((c) => c.key === catKey);
@@ -238,11 +246,13 @@ export const startTraining = createServerFn({ method: "POST" })
       .eq("id", player.id);
 
     const now = Date.now();
-    const update: Record<string, string | null> = {
-      global_lock_until: new Date(now + GLOBAL_LOCK_MS).toISOString(),
-    };
+    const update: Record<string, string | null> = {};
     update[tierKeyCol] = catKey;
-    update[tierUntilCol] = new Date(now + TIERS[tier].cooldownMs).toISOString();
+    // Durante o impulso, não grava novos cooldowns (treino livre).
+    if (!boosted) {
+      update.global_lock_until = new Date(now + GLOBAL_LOCK_MS).toISOString();
+      update[tierUntilCol] = new Date(now + TIERS[tier].cooldownMs).toISOString();
+    }
     await supabaseAdmin.from("player_training").update(update as never).eq("player_id", player.id);
 
     player.attributes = attrs;
