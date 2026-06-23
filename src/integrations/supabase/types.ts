@@ -158,12 +158,46 @@ export type Database = {
         }
         Relationships: []
       }
+      inventory: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          item_id: string
+          item_name: string
+          quantity: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          item_id: string
+          item_name: string
+          quantity?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          item_name?: string
+          quantity?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       player_training: {
         Row: {
           avancado_key: string | null
           avancado_until: string | null
           basico_key: string | null
           basico_until: string | null
+          boost_until: string | null
           created_at: string
           global_lock_until: string | null
           player_id: string
@@ -178,6 +212,7 @@ export type Database = {
           avancado_until?: string | null
           basico_key?: string | null
           basico_until?: string | null
+          boost_until?: string | null
           created_at?: string
           global_lock_until?: string | null
           player_id: string
@@ -192,6 +227,7 @@ export type Database = {
           avancado_until?: string | null
           basico_key?: string | null
           basico_until?: string | null
+          boost_until?: string | null
           created_at?: string
           global_lock_until?: string | null
           player_id?: string
@@ -217,6 +253,7 @@ export type Database = {
           alt_positions: string[] | null
           attributes: Json
           created_at: string
+          equipped_cleat: string | null
           height_cm: number
           id: string
           name: string
@@ -238,6 +275,7 @@ export type Database = {
           alt_positions?: string[] | null
           attributes?: Json
           created_at?: string
+          equipped_cleat?: string | null
           height_cm?: number
           id?: string
           name: string
@@ -259,6 +297,7 @@ export type Database = {
           alt_positions?: string[] | null
           attributes?: Json
           created_at?: string
+          equipped_cleat?: string | null
           height_cm?: number
           id?: string
           name?: string
@@ -435,6 +474,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_missions: {
+        Row: {
+          claimed_at: string
+          id: string
+          mission_id: string
+          user_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          id?: string
+          mission_id: string
+          user_id: string
+        }
+        Update: {
+          claimed_at?: string
+          id?: string
+          mission_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -460,20 +520,26 @@ export type Database = {
         Row: {
           coins: number
           created_at: string
+          level: number
           updated_at: string
           user_id: string
+          xp: number
         }
         Insert: {
           coins?: number
           created_at?: string
+          level?: number
           updated_at?: string
           user_id: string
+          xp?: number
         }
         Update: {
           coins?: number
           created_at?: string
+          level?: number
           updated_at?: string
           user_id?: string
+          xp?: number
         }
         Relationships: []
       }
