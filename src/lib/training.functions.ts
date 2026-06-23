@@ -43,6 +43,7 @@ export interface TrainingState {
   profissional: { key: string | null; until: string | null };
   globalLockUntil: string | null;
   skill: { key: string | null; until: string | null };
+  boostUntil: string | null;
 }
 
 export interface TrainingSnapshot {
