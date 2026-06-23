@@ -401,7 +401,12 @@ function MatchView({
           {match.coinsAwarded != null && (
             <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-border bg-surface-elevated px-4 py-1.5 text-sm">
               <Coins className="h-4 w-4 text-yellow-400" />
-              <span className="font-semibold text-foreground">+{match.coinsAwarded} moedas</span>
+              <span className="font-semibold text-foreground">
+                +R${match.coinsAwarded}
+                {match.xpAwarded != null && (
+                  <span className="text-primary"> · +{match.xpAwarded} XP</span>
+                )}
+              </span>
             </div>
           )}
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
