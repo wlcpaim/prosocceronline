@@ -1,5 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { cleatOverallBonus } from "@/lib/shop-items";
+import { positionGroup } from "@/lib/player";
+import { levelFromXp } from "@/lib/progression";
 
 export interface GolRound {
   p1: boolean;
@@ -20,6 +23,7 @@ export interface GolMatch {
   youAreP1: boolean;
   outcome: "win" | "loss" | "draw" | null;
   coinsAwarded: number | null;
+  xpAwarded: number | null;
 }
 
 export interface GolRankingRow {
@@ -30,8 +34,10 @@ export interface GolRankingRow {
   isMe: boolean;
 }
 
-const COINS_WIN = 50;
-const COINS_LOSS = 15;
+const COINS_WIN = 5;
+const COINS_LOSS = 1;
+const XP_WIN = 10;
+const XP_LOSS = 2;
 
 // Probabilidade de gol por chute, derivada do overall (entre 25% e 90%).
 function shotChance(overall: number): number {
