@@ -246,11 +246,13 @@ export const startTraining = createServerFn({ method: "POST" })
       .eq("id", player.id);
 
     const now = Date.now();
-    const update: Record<string, string | null> = {
-      global_lock_until: new Date(now + GLOBAL_LOCK_MS).toISOString(),
-    };
+    const update: Record<string, string | null> = {};
     update[tierKeyCol] = catKey;
-    update[tierUntilCol] = new Date(now + TIERS[tier].cooldownMs).toISOString();
+    // Durante o impulso, não grava novos cooldowns (treino livre).
+    if (!boosted) {
+      update.global_lock_until = new Date(now + GLOBAL_LOCK_MS).toISOString();
+      update[tierUntilCol] = new Date(now + TIERS[tier].cooldownMs).toISOString();
+    }
     await supabaseAdmin.from("player_training").update(update as never).eq("player_id", player.id);
 
     player.attributes = attrs;
