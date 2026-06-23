@@ -1,8 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { getShopItem } from "@/lib/shop-items";
-import { levelFromXp } from "@/lib/progression";
-import { positionGroup } from "@/lib/player";
 
 export interface OwnedItem {
   itemId: string;
@@ -208,8 +206,5 @@ export const equipCleat = createServerFn({ method: "POST" })
       .update({ equipped_cleat: data.itemId })
       .eq("id", data.playerId);
 
-    // Mantém position para uso futuro; cálculo de bônus acontece no Gol a Gol.
-    void positionGroup;
-    void levelFromXp;
     return { ok: true as const, equippedCleat: data.itemId };
   });
