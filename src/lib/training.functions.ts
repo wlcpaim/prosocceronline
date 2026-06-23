@@ -211,11 +211,16 @@ export const startTraining = createServerFn({ method: "POST" })
     const tierUntilCol = `${tier}_until` as const;
     const tierKeyCol = `${tier}_key` as const;
     const tierUntil = training[tierUntilCol];
-    if (isActive(tierUntil)) {
-      return { ok: false as const, error: `Treino ${TIERS[tier].label} já em andamento.` };
-    }
-    if (isActive(training.global_lock_until)) {
-      return { ok: false as const, error: "Aguarde para treinar outra categoria." };
+
+    // Consumível ativo (energético): ignora todos os cooldowns por 1 minuto.
+    const boosted = isActive(training.boost_until);
+    if (!boosted) {
+      if (isActive(tierUntil)) {
+        return { ok: false as const, error: `Treino ${TIERS[tier].label} já em andamento.` };
+      }
+      if (isActive(training.global_lock_until)) {
+        return { ok: false as const, error: "Aguarde para treinar outra categoria." };
+      }
     }
 
     const def = CATEGORIES.find((c) => c.key === catKey);
