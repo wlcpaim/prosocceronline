@@ -150,10 +150,18 @@ export const joinGolQueue = createServerFn({ method: "POST" })
     // Carrega o jogador e confirma que pertence ao usuário.
     const { data: player } = await supabaseAdmin
       .from("players")
-      .select("id, user_id, name, overall")
+      .select("id, user_id, name, overall, position, equipped_cleat")
       .eq("id", data.playerId)
       .maybeSingle();
     if (!player || player.user_id !== userId) throw new Error("Jogador inválido");
+
+    // Overall efetivo = base + bônus da chuteira equipada (conforme a posição).
+    const playerOverall =
+      (player.overall as number) +
+      cleatOverallBonus(
+        player.equipped_cleat as string | null,
+        positionGroup(player.position as string),
+      );
 
     // Já está numa partida em aberto?
     const { data: existing } = await supabaseAdmin
@@ -185,7 +193,7 @@ export const joinGolQueue = createServerFn({ method: "POST" })
           p2_user_id: userId,
           p2_player_id: player.id,
           p2_name: player.name,
-          p2_overall: player.overall,
+          p2_overall: playerOverall,
         })
         .eq("id", candidate.id)
         .eq("status", "waiting")
@@ -193,7 +201,7 @@ export const joinGolQueue = createServerFn({ method: "POST" })
         .maybeSingle();
 
       if (claimed) {
-        const sim = simulate(claimed.p1_overall as number, player.overall as number);
+        const sim = simulate(claimed.p1_overall as number, playerOverall);
         const winnerUserId =
           sim.winner === 1 ? (claimed.p1_user_id as string) : userId;
         const { data: finished } = await supabaseAdmin
@@ -209,10 +217,10 @@ export const joinGolQueue = createServerFn({ method: "POST" })
           .select()
           .maybeSingle();
 
-        // Premia ambos os jogadores.
+        // Premia ambos os jogadores (vitória: +5 R$ e +10 XP).
         const loserUserId = sim.winner === 1 ? userId : (claimed.p1_user_id as string);
-        await award(winnerUserId, COINS_WIN);
-        await award(loserUserId, COINS_LOSS);
+        await reward(winnerUserId, COINS_WIN, XP_WIN);
+        await reward(loserUserId, COINS_LOSS, XP_LOSS);
 
         return toSnapshot(finished ?? claimed, userId);
       }
@@ -226,7 +234,7 @@ export const joinGolQueue = createServerFn({ method: "POST" })
         p1_user_id: userId,
         p1_player_id: player.id,
         p1_name: player.name,
-        p1_overall: player.overall,
+        p1_overall: playerOverall,
       })
       .select()
       .maybeSingle();
