@@ -418,6 +418,8 @@ function CarreiraInner() {
           {tab === "ranking" && <RankingSection player={player} />}
           {tab === "rankingGol" && <GolRankingSection />}
           {tab === "loja" && <LojaSection />}
+          {tab === "missoes" && <MissoesSection />}
+          {tab === "inventario" && <InventarioSection player={player} />}
           {tab === "hallda" && <HallSection />}
         </main>
       </div>
