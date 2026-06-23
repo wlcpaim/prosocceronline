@@ -80,16 +80,20 @@ function toSnapshot(row: any, userId: string): GolMatch {
   const youAreP1 = row.p1_user_id === userId;
   let outcome: GolMatch["outcome"] = null;
   let coinsAwarded: number | null = null;
+  let xpAwarded: number | null = null;
   if (row.status === "finished") {
     if (row.winner_user_id === userId) {
       outcome = "win";
       coinsAwarded = COINS_WIN;
+      xpAwarded = XP_WIN;
     } else if (row.winner_user_id) {
       outcome = "loss";
       coinsAwarded = COINS_LOSS;
+      xpAwarded = XP_LOSS;
     } else {
       outcome = "draw";
       coinsAwarded = COINS_LOSS;
+      xpAwarded = XP_LOSS;
     }
   }
   return {
@@ -105,23 +109,28 @@ function toSnapshot(row: any, userId: string): GolMatch {
     youAreP1,
     outcome,
     coinsAwarded,
+    xpAwarded,
   };
 }
 
-async function award(userId: string, amount: number) {
+// Credita coins e XP na carteira e recalcula o nível (server-authoritative).
+async function reward(userId: string, coins: number, xp: number) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin
     .from("wallets")
-    .select("coins")
+    .select("coins, xp")
     .eq("user_id", userId)
     .maybeSingle();
   if (data) {
+    const newXp = ((data.xp as number | null) ?? 0) + xp;
     await supabaseAdmin
       .from("wallets")
-      .update({ coins: (data.coins as number) + amount })
+      .update({ coins: (data.coins as number) + coins, xp: newXp, level: levelFromXp(newXp) })
       .eq("user_id", userId);
   } else {
-    await supabaseAdmin.from("wallets").insert({ user_id: userId, coins: 1000 + amount });
+    await supabaseAdmin
+      .from("wallets")
+      .insert({ user_id: userId, coins: 1000 + coins, xp, level: levelFromXp(xp) });
   }
 }
 
