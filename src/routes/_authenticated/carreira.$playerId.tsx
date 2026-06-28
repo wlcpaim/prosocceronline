@@ -40,6 +40,7 @@ import {
   Sparkle,
 } from "lucide-react";
 import { TrainingTab } from "@/components/TrainingTab";
+import { AccessGate } from "@/components/AccessGate";
 import { Button } from "@/components/ui/button";
 import { PlayerCard } from "@/components/PlayerCard";
 import { Logo } from "@/components/Logo";
