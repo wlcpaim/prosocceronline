@@ -1,7 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, ArrowLeft, ShieldCheck, Check } from "lucide-react";
+import { Loader2, ArrowLeft, ShieldCheck, Check, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Logo } from "@/components/Logo";
 import { toast } from "sonner";
@@ -54,13 +55,21 @@ async function persistDraftAndGo(navigate: ReturnType<typeof useNavigate>) {
 
 function AuthPage() {
   const navigate = useNavigate();
+  const hasDraft = typeof window !== "undefined" && !!loadDraft();
+
+  const [mode, setMode] = useState<"signup" | "login">(hasDraft ? "signup" : "login");
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
+  const [emailLoading, setEmailLoading] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isNotRobot, setIsNotRobot] = useState(false);
   const [captchaVerifying, setCaptchaVerifying] = useState(false);
-  const hasDraft = typeof window !== "undefined" && !!loadDraft();
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     persistDraftAndGo(navigate);
@@ -71,12 +80,87 @@ function AuthPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const gateOk = () => {
+    if (!isNotRobot) {
+      toast.error("Confirme que você não é um robô para continuar.");
+      return false;
+    }
+    if (!acceptedTerms) {
+      toast.error("Aceite os termos de uso para continuar.");
+      return false;
+    }
+    return true;
+  };
 
-  const handleOAuth = async (provider: "google" | "apple") => {
-    if (!acceptedTerms || !isNotRobot) {
-      toast.error("Por favor, aceite os termos e confirme que não é um robô para continuar.");
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!gateOk()) return;
+
+    const cleanEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      toast.error("Digite um e-mail válido.");
       return;
     }
+    if (password.length < 6) {
+      toast.error("A senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
+    if (mode === "signup" && password !== confirmPassword) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
+
+    setEmailLoading(true);
+    try {
+      if (mode === "signup") {
+        const { data, error } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password,
+          options: { emailRedirectTo: `${window.location.origin}/auth` },
+        });
+        if (error) {
+          const msg = error.message?.toLowerCase() ?? "";
+          if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+            toast.error("Este e-mail já está cadastrado. Faça login para continuar.");
+            setMode("login");
+          } else if (msg.includes("disabled")) {
+            toast.error("O cadastro por e-mail ainda não está ativo. Tente novamente em instantes.");
+          } else if (msg.includes("weak") || msg.includes("pwned") || msg.includes("compromised")) {
+            toast.error("Essa senha é muito comum/vazada. Escolha uma senha mais forte.");
+          } else {
+            toast.error("Não foi possível criar a conta. Tente novamente.");
+          }
+          return;
+        }
+        if (!data.session) {
+          toast.error("Não foi possível iniciar a sessão automaticamente. Faça login.");
+          setMode("login");
+          return;
+        }
+        toast.success("Cadastro feito com sucesso! Bem-vindo ao Pro Soccer Online. ⚽");
+        await persistDraftAndGo(navigate);
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
+        if (error) {
+          toast.error("E-mail ou senha incorretos.");
+          return;
+        }
+        toast.success("Login realizado com sucesso!");
+        await persistDraftAndGo(navigate);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Algo deu errado. Tente novamente.");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handleOAuth = async (provider: "google" | "apple") => {
+    if (!gateOk()) return;
     setOauthLoading(provider);
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
@@ -97,7 +181,8 @@ function AuthPage() {
     }
   };
 
-
+  const busy = !!oauthLoading || emailLoading;
+  const canSubmit = isNotRobot && acceptedTerms && !busy;
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-5 py-10 text-foreground">
@@ -115,15 +200,15 @@ function AuthPage() {
           <Logo />
 
           <h1 className="mt-6 font-display text-2xl font-bold">
-            {hasDraft ? "Crie sua conta" : "Entrar"}
+            {mode === "signup" ? "Crie sua conta" : "Entrar"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {hasDraft
+            {mode === "signup"
               ? "Crie sua conta para salvar seu jogador e iniciar a carreira."
               : "Entre para continuar sua carreira."}
           </p>
 
-          {/* Custom CAPTCHA "Não sou robô" */}
+          {/* CAPTCHA "Não sou robô" */}
           <div className="mt-6 flex items-center justify-between rounded-2xl border border-border bg-muted/20 p-4.5 shadow-sm select-none">
             <div className="flex items-center gap-3">
               <button
@@ -158,7 +243,7 @@ function AuthPage() {
             </div>
           </div>
 
-          {/* Termos de Uso (Clicável centralizado e elegante abaixo do CAPTCHA) */}
+          {/* Termos de Uso */}
           <div className="mt-4 flex items-start gap-2.5 px-1.5 py-1">
             <Checkbox
               id="terms"
@@ -182,14 +267,102 @@ function AuthPage() {
             </label>
           </div>
 
+          {/* Formulário e-mail/senha */}
+          <form onSubmit={handleEmailAuth} className="mt-6 space-y-3">
+            <div className="relative">
+              <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="email"
+                autoComplete="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-9"
+                disabled={busy}
+              />
+            </div>
+
+            <div className="relative">
+              <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type={showPassword ? "text" : "password"}
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                placeholder="Sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-9 pr-10"
+                disabled={busy}
+              />
+              <button
+                type="button"
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+
+            {mode === "signup" && (
+              <div className="relative">
+                <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type={showConfirm ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="Confirme a senha"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="pl-9 pr-10"
+                  disabled={busy}
+                />
+                <button
+                  type="button"
+                  aria-label={showConfirm ? "Ocultar senha" : "Mostrar senha"}
+                  onClick={() => setShowConfirm((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            )}
+
+            <Button type="submit" variant="hero" className="w-full" size="lg" disabled={!canSubmit}>
+              {emailLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : mode === "signup" ? (
+                "Criar conta"
+              ) : (
+                "Entrar"
+              )}
+            </Button>
+          </form>
+
+          <p className="mt-3 text-center text-xs text-muted-foreground">
+            {mode === "signup" ? "Já tem uma conta?" : "Ainda não tem conta?"}{" "}
+            <button
+              type="button"
+              onClick={() => setMode(mode === "signup" ? "login" : "signup")}
+              className="font-semibold text-primary hover:underline"
+            >
+              {mode === "signup" ? "Entrar" : "Criar conta"}
+            </button>
+          </p>
+
+          {/* Divisor */}
+          <div className="my-6 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">ou continue com</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
           {/* OAuth */}
-          <div className="mt-6 space-y-3">
+          <div className="space-y-3">
             <Button
               type="button"
               variant="outline"
               className="w-full transition-all duration-300"
               size="lg"
-              disabled={!!oauthLoading || !acceptedTerms || !isNotRobot}
+              disabled={busy}
               onClick={() => handleOAuth("google")}
             >
               {oauthLoading === "google" ? (
@@ -204,7 +377,7 @@ function AuthPage() {
               variant="outline"
               className="w-full transition-all duration-300"
               size="lg"
-              disabled={!!oauthLoading || !acceptedTerms || !isNotRobot}
+              disabled={busy}
               onClick={() => handleOAuth("apple")}
             >
               {oauthLoading === "apple" ? (
@@ -234,10 +407,10 @@ function AuthPage() {
                 <h3 className="font-semibold text-foreground">1. Cadastro e Contas</h3>
                 <p>
                   Para salvar sua carreira, criar personagens e disputar as partidas,
-                  você deve se cadastrar utilizando um método de autenticação válido
-                  (Google ou Apple). É permitida apenas uma conta ativa por jogador.
-                  O uso de bots, scripts de automação ou hacks é expressamente proibido
-                  e resultará na suspensão permanente da conta.
+                  você deve se cadastrar utilizando um e-mail válido ou um método de
+                  autenticação (Google ou Apple). É permitida apenas uma conta ativa por
+                  jogador. O uso de bots, scripts de automação ou hacks é expressamente
+                  proibido e resultará na suspensão permanente da conta.
                 </p>
 
                 <h3 className="font-semibold text-foreground">2. Economia do Jogo</h3>
@@ -275,7 +448,6 @@ function AuthPage() {
               </div>
             </DialogContent>
           </Dialog>
-
         </div>
       </div>
     </div>

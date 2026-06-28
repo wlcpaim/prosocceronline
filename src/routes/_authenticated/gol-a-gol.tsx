@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { AccessGate } from "@/components/AccessGate";
 import { supabase } from "@/integrations/supabase/client";
 import {
   joinGolQueue,
@@ -29,8 +30,17 @@ export const Route = createFileRoute("/_authenticated/gol-a-gol")({
   head: () => ({
     meta: [{ title: "Gol a Gol — Pro Soccer Online" }],
   }),
-  component: GolAGolPage,
+  component: GolAGolRoute,
 });
+
+function GolAGolRoute() {
+  return (
+    <AccessGate>
+      <GolAGolPage />
+    </AccessGate>
+  );
+}
+
 
 interface MyPlayer {
   id: string;
