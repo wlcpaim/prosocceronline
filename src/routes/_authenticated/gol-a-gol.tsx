@@ -30,8 +30,17 @@ export const Route = createFileRoute("/_authenticated/gol-a-gol")({
   head: () => ({
     meta: [{ title: "Gol a Gol — Pro Soccer Online" }],
   }),
-  component: GolAGolPage,
+  component: GolAGolRoute,
 });
+
+function GolAGolRoute() {
+  return (
+    <AccessGate>
+      <GolAGolPage />
+    </AccessGate>
+  );
+}
+
 
 interface MyPlayer {
   id: string;
