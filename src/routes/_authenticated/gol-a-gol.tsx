@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { AccessGate } from "@/components/AccessGate";
 import { supabase } from "@/integrations/supabase/client";
 import {
   joinGolQueue,
