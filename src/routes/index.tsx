@@ -31,6 +31,7 @@ import contract from "@/assets/contract.jpg";
 import { PlayerEvolution } from "@/components/PlayerEvolution";
 import { Logo } from "@/components/Logo";
 import { PresaleBanner } from "@/components/PresaleBanner";
+import { OnlineCounter } from "@/components/OnlineCounter";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
