@@ -122,6 +122,9 @@ function Landing() {
             <p className="mx-auto mt-5 max-w-md text-base text-muted-foreground md:mx-0 md:text-lg">
               {L.heroSubtitle}
             </p>
+            <div className="mt-6 flex justify-center md:justify-start">
+              <OnlineCounter label={lang === "en" ? "players online now" : "jogadores online agora"} />
+            </div>
             <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center md:justify-start">
               <Button variant="hero" size="lg" asChild>
                 <a href="#jogar">
