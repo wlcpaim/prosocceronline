@@ -122,7 +122,11 @@ function initials(name: string) {
 }
 
 function CarreiraPage() {
-  return <CarreiraInner />;
+  return (
+    <AccessGate>
+      <CarreiraInner />
+    </AccessGate>
+  );
 }
 
 function CarreiraInner() {
